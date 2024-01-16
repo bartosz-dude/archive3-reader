@@ -3,6 +3,8 @@ import * as htmlParser from "htmlparser2";
 import { testHtml2 } from "../../../assets/testHtml2";
 import { AO3Work, MetaNumberStat, MetaTag, MetaTextStat } from "../types/work";
 import { testHtml3 } from "../../../assets/testHtml3";
+import { textContent } from "domutils";
+import nCleaner from "../tools/nCleaner";
 
 export async function fetchWork(id: string, chapterId: string) {
 	// const content = await fetch(`https://archiveofourown.org/works/${id}/chapters/${chapterId}`)
@@ -25,7 +27,7 @@ export async function fetchWork(id: string, chapterId: string) {
 	// 	return false
 	// }, dom.children)
 
-	const a = workScrapper(123)
+	// const a = workScrapper(123)
 
 	// console.log(a.chapters)
 	// console.log(a)
@@ -35,12 +37,15 @@ export async function fetchWork(id: string, chapterId: string) {
 
 // export function workScrapper(workId: number, chapter?: number): Promise<AO3Work>
 // export function workScrapper(workId: number, chapterId?: string): Promise<AO3Work>
-export function workScrapper(workId: number, chapterId?: string): Promise<AO3Work> {
+export function workScrapper(workId: number, chapterId: string): Promise<AO3Work> {
 	const asyncParsing = new Promise<AO3Work>(async (resolve, reject) => {
 		try {
 			// console.log("link", `https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`)
 
-			const htmlStr = await fetch(`https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`, { mode: "no-cors" })
+			const htmlStr = !(chapterId == "first") ?
+				await fetch(`https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`)
+				:
+				await fetch(`https://archiveofourown.org/works/${workId}?view_adult=true`)
 
 			const htmlText = await htmlStr.text()
 			// const htmlText = testHtml3
@@ -196,86 +201,90 @@ export function workScrapper(workId: number, chapterId?: string): Promise<AO3Wor
 					}
 				},
 				chapterslist: (() => {
-					if (chapterId) {
-						// for a single chapter view
-						const chapters = htmlParser.DomUtils.findAll((elem) => elem.name == "option" && elem.attribs[ "value" ].length > 0, dom.children)
-						return chapters.map((v) => {
-							return {
-								id: parseInt(v.attribs[ "value" ]),
-								// @ts-expect-error
-								title: (v.children[ 0 ].data as string).replace(/^\d*\. /, "")
-							}
-						})
-					} else {
-						// for a full work view
-						const chapters = htmlParser.DomUtils.findAll((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)
-						const parsedChapters = chapters.map((v) => {
-							const chapterTitleSection = htmlParser.DomUtils.findAll((elem) => elem.attribs[ "class" ] == "chapter preface group", v.children)[ 0 ]
-							// htmlParser.DomUtils.findAll((elem) => elem.attribs[])
-							return {
-								title: htmlParser.DomUtils.textContent(chapterTitleSection.children[ 1 ])
-									.replace(/\r?\n|\r/g, "")
-									.replace(/^Chapter \d*: /, ""),
-								// @ts-expect-error
-								id: parseInt(chapterTitleSection.children[ 1 ].children[ 1 ].attribs[ "href" ].replace(/.*\//, ""))
-							}
-						})
-						return parsedChapters
-					}
+					// if (chapterId) {
+					// for a single chapter view
+					const chapters = htmlParser.DomUtils.findAll((elem) => elem.name == "option" && elem.attribs[ "value" ].length > 0, dom.children)
+					return chapters.map((v) => {
+						return {
+							id: parseInt(v.attribs[ "value" ]),
+							// @ts-expect-error
+							title: (v.children[ 0 ].data as string).replace(/^\d*\. /, "")
+						}
+					})
+					// } else {
+					// 	// for a full work view
+					// 	const chapters = htmlParser.DomUtils.findAll((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)
+					// 	const parsedChapters = chapters.map((v) => {
+					// 		const chapterTitleSection = htmlParser.DomUtils.findAll((elem) => elem.attribs[ "class" ] == "chapter preface group", v.children)[ 0 ]
+					// 		// htmlParser.DomUtils.findAll((elem) => elem.attribs[])
+					// 		return {
+					// 			title: htmlParser.DomUtils.textContent(chapterTitleSection.children[ 1 ])
+					// 				.replace(/\r?\n|\r/g, "")
+					// 				.replace(/^Chapter \d*: /, ""),
+					// 			// @ts-expect-error
+					// 			id: parseInt(chapterTitleSection.children[ 1 ].children[ 1 ].attribs[ "href" ].replace(/.*\//, ""))
+					// 		}
+					// 	})
+					// 	return parsedChapters
+					// }
 				})(),
 				chapters: (() => {
 					// console.log("chapters")
-					if (chapterId) {
-						const chapter = htmlParser.DomUtils.findAll((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)[ 0 ]
-						const [ chapterTitleSection, chapterContent, chapaterEndSection ] = [ chapter.children[ 1 ], chapter.children[ 3 ], chapter.children[ 5 ] ]
-						return [ {
-							chapter: parseInt(htmlParser.DomUtils
-								.findOne((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)
-								?.attribs[ "id" ]
-								.replace(/chapter-/, "") ?? "-1"),
-							id: workId,
+					// if (chapterId) {
+					const chapter = htmlParser.DomUtils.findAll((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)[ 0 ]
+					const [ chapterTitleSection, chapterContent, chapaterEndSection ] = [ chapter.children[ 1 ], chapter.children[ 3 ], chapter.children[ 5 ] ]
+					return [ {
+						chapter: parseInt(htmlParser.DomUtils
+							.findOne((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)
+							?.attribs[ "id" ]
+							.replace(/chapter-/, "") ?? "-1"),
+						id: workId,
+						// @ts-expect-error
+						title: htmlParser.DomUtils.textContent(chapterTitleSection.children[ 1 ])
+							.replace(/\r?\n|\r/g, "")
+							.replace(/^Chapter \d*: /, ""),
+						// @ts-expect-error
+						summary: chapterTitleSection.children[ 3 ]?.children[ 3 ]?.children[ 1 ]?.children[ 0 ].data ?? "",
+						// @ts-expect-error
+						startNotes: chapterTitleSection.children[ 5 ]?.children[ 3 ] ? htmlParser.DomUtils.textContent(chapterTitleSection.children[ 5 ]?.children[ 3 ]).replace(/\r?\n|\r/g, "") : "",
+						// @ts-expect-error
+						endNotes: chapaterEndSection?.children[ 1 ]?.children[ 3 ] ? htmlParser.DomUtils.textContent(chapaterEndSection?.children[ 1 ]?.children[ 3 ]).replace(/\r?\n|\r/g, "") : "",
+						// @ts-expect-error
+						content: chapterContent.children
+							.slice(3, -1)
 							// @ts-expect-error
-							title: htmlParser.DomUtils.textContent(chapterTitleSection.children[ 1 ])
-								.replace(/\r?\n|\r/g, "")
-								.replace(/^Chapter \d*: /, ""),
-							// @ts-expect-error
-							summary: chapterTitleSection.children[ 3 ]?.children[ 3 ]?.children[ 1 ]?.children[ 0 ].data ?? "",
-							// @ts-expect-error
-							startNotes: chapterTitleSection.children[ 5 ]?.children[ 3 ] ? htmlParser.DomUtils.textContent(chapterTitleSection.children[ 5 ]?.children[ 3 ]).replace(/\r?\n|\r/g, "") : "",
-							// @ts-expect-error
-							endNotes: chapaterEndSection?.children[ 1 ]?.children[ 3 ] ? htmlParser.DomUtils.textContent(chapaterEndSection?.children[ 1 ]?.children[ 3 ]).replace(/\r?\n|\r/g, "") : "",
-							// @ts-expect-error
-							content: chapterContent.children
-								.slice(3, -1)
-								// @ts-expect-error
-								.map((v) => v.children[ 0 ].data)
-						} ]
-					} else {
-						const chapters = htmlParser.DomUtils.findAll((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)
-						return chapters.map((v) => {
-							const [ chapterTitleSection, chapterContent, chapaterEndSection ] = [ v.children[ 1 ], v.children[ 3 ], v.children[ 5 ] ]
-							return {
-								// @ts-expect-error
-								id: parseInt(chapterTitleSection.children[ 1 ].children[ 1 ].attribs[ "href" ].replace(/.*\//, "")),
-								chapter: parseInt(v.attribs[ "id" ].replace(/chapter-/, "")),
-								// @ts-expect-error
-								title: htmlParser.DomUtils.textContent(chapterTitleSection.children[ 1 ])
-									.replace(/\r?\n|\r/g, "")
-									.replace(/^Chapter \d*: /, ""),
-								// @ts-expect-error
-								summary: chapterTitleSection.children[ 3 ]?.children[ 3 ]?.children[ 1 ]?.children[ 0 ].data ?? "",
-								// @ts-expect-error
-								startNotes: chapterTitleSection.children[ 5 ]?.children[ 3 ] ? htmlParser.DomUtils.textContent(chapterTitleSection.children[ 5 ]?.children[ 3 ]).replace(/\r?\n|\r/g, "") : "",
-								// @ts-expect-error
-								endNotes: chapaterEndSection?.children[ 1 ]?.children[ 3 ] ? htmlParser.DomUtils.textContent(chapaterEndSection?.children[ 1 ]?.children[ 3 ]).replace(/\r?\n|\r/g, "") : "",
-								// @ts-expect-error
-								content: chapterContent.children
-									.slice(3, -1)
-									// @ts-expect-error
-									.map((v) => v.children[ 0 ].data)
-							}
-						})
-					}
+							.map((v) => textContent(v.children).replace(/(\r\n|\n|\r)/gm, ""))
+						// content: chapterContent.children
+						// 	.slice(3, -1)
+						// 	// @ts-expect-error
+						// 	.map((v) => textContent(nCleaner(v.children)).replace(/^\d*\. /, ""))
+					} ]
+					// } else {
+					// 	const chapters = htmlParser.DomUtils.findAll((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)
+					// 	return chapters.map((v) => {
+					// 		const [ chapterTitleSection, chapterContent, chapaterEndSection ] = [ v.children[ 1 ], v.children[ 3 ], v.children[ 5 ] ]
+					// 		return {
+					// 			// @ts-expect-error
+					// 			id: parseInt(chapterTitleSection.children[ 1 ].children[ 1 ].attribs[ "href" ].replace(/.*\//, "")),
+					// 			chapter: parseInt(v.attribs[ "id" ].replace(/chapter-/, "")),
+					// 			// @ts-expect-error
+					// 			title: htmlParser.DomUtils.textContent(chapterTitleSection.children[ 1 ])
+					// 				.replace(/\r?\n|\r/g, "")
+					// 				.replace(/^Chapter \d*: /, ""),
+					// 			// @ts-expect-error
+					// 			summary: chapterTitleSection.children[ 3 ]?.children[ 3 ]?.children[ 1 ]?.children[ 0 ].data ?? "",
+					// 			// @ts-expect-error
+					// 			startNotes: chapterTitleSection.children[ 5 ]?.children[ 3 ] ? htmlParser.DomUtils.textContent(chapterTitleSection.children[ 5 ]?.children[ 3 ]).replace(/\r?\n|\r/g, "") : "",
+					// 			// @ts-expect-error
+					// 			endNotes: chapaterEndSection?.children[ 1 ]?.children[ 3 ] ? htmlParser.DomUtils.textContent(chapaterEndSection?.children[ 1 ]?.children[ 3 ]).replace(/\r?\n|\r/g, "") : "",
+					// 			// @ts-expect-error
+					// 			content: chapterContent.children
+					// 				.slice(3, -1)
+					// 				// @ts-expect-error
+					// 				.map((v) => v.children[ 0 ].data)
+					// 		}
+					// 	})
+					// }
 				})()
 			}
 
