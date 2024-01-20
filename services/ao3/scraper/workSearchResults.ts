@@ -87,7 +87,7 @@ export default function workSearchResultsScraper(queryUrl: URL) {
 				}
 			})
 
-			const paginationChildren = findOne((elem) => elem.attribs[ "class" ] == "pagination actions", dom.children)?.children as Element[]
+			const paginationChildren = findOne((elem) => elem.attribs[ "class" ] == "pagination actions", dom.children)?.children
 
 			// if (!(paginationChildren.length > 0)) {
 			// 	reject()
@@ -102,10 +102,10 @@ export default function workSearchResultsScraper(queryUrl: URL) {
 			const fundCountElem = findOne((elem) => elem.attribs[ "class" ] == "heading" && elem.name == "h3", dom.children)
 
 			const searchResults: AO3WorkSearchResults = {
-				results: results,
-				currentPage: parseInt(textContent(findOne((elem) => elem.attribs[ "class" ] == "current", paginationChildren) as Element)),
-				totalPages: parseInt(textContent(paginationChildren.at(-3) as Element)),
-				totalWorks: fundCountElem ? parseInt(textContent(fundCountElem?.children).replace(" Found ?", "")) : -1
+				results: results.filter((v) => v ?? false) as AO3WorkResult[],
+				currentPage: paginationChildren ? parseInt(textContent(findOne((elem) => elem.attribs[ "class" ] == "current", paginationChildren) as Element)) : 1,
+				totalPages: paginationChildren ? parseInt(textContent(paginationChildren.at(-3) as Element)) : 1,
+				totalWorks: fundCountElem ? parseInt(textContent(fundCountElem?.children).replace(",", "").replace(" Found ?", "")) : -1
 			}
 			resolve(searchResults)
 		}
