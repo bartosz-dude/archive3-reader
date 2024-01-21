@@ -1,5 +1,5 @@
 import Constants from "expo-constants";
-import { router, useGlobalSearchParams } from "expo-router";
+import { Link, router, useGlobalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { FlatList, TextInput, TextInputProps, View } from "react-native";
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from "react-native-popup-menu";
@@ -71,7 +71,8 @@ export default function SearchIndex() {
 
 	return (
 		<>
-			<SearchBar />
+			{/* <SearchBar /> */}
+			{/* <Link href={"/search/savedSearches"}>Saved Searches</Link> */}
 			<Loaded
 				isLoading={loading}
 				loading={<LoadingIndicator />}

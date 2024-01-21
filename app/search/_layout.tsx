@@ -5,6 +5,7 @@ import workSearchURL from "../../services/ao3/scraper/workSearchUrl";
 import worksQuery from "../../services/ao3/api/worksQuery";
 import workSearchResultsScraper from "../../services/ao3/scraper/workSearchResults";
 import useAsyncMemo from "../../hooks/useAsyncMemo";
+import SearchBar from "../../components/search/SearchBar";
 
 export default function Layout() {
 
@@ -18,7 +19,12 @@ export default function Layout() {
 
 	return (
 		<>
-			<Stack>
+			<SearchBar />
+			<Stack
+				screenOptions={{
+					animation: "none"
+				}}
+			>
 				<Stack.Screen
 					name="index"
 					options={{
@@ -32,10 +38,15 @@ export default function Layout() {
 						presentation: "fullScreenModal"
 					}}
 				/>
+				<Stack.Screen
+					name="savedSearches"
+					options={{
+						headerShown: false,
 
-
-				{/* <Slot /> */}
+					}}
+				/>
 			</Stack>
+			{/* <Slot /> */}
 		</>
 	)
 }
