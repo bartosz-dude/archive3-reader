@@ -76,7 +76,7 @@ export default function SearchResultItem({ item }: { item: ListRenderItemInfo<AO
 					<Foreach
 						list={result.meta.authors}
 						each={(v) => <Text style={style.author} key={v}>{v}</Text>}
-						separator={<Text style={style.authorSeparator}>,</Text>}
+					// separator={<Text style={style.authorSeparator}>,</Text>}
 					/>
 					{/* {result.meta.authors.map((v) => <Text style={style.author} key={v}>{v}</Text>)} */}
 				</View>
