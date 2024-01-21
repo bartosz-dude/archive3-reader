@@ -1,8 +1,10 @@
+import workSearchObj from "../scraper/workSearchObj"
 import workSearchURL from "../scraper/workSearchUrl"
 import { AO3WorkSearchQuery } from "../types/workSearch"
 
 export type WorkQueryReturn = {
 	url: URL,
+	paramsAsQuery: () => AO3WorkSearchQuery,
 	paramsAsObj: () => { [ k: string ]: string },
 	paramsAsJSON: () => string
 }
@@ -22,6 +24,7 @@ export default function worksQuery(query: AO3WorkSearchQuery | string): WorkQuer
 
 		return {
 			url: searchURL,
+			paramsAsQuery: () => workSearchObj(searchURL),
 			paramsAsObj: () => Object.fromEntries(searchURL.searchParams.entries()),
 			paramsAsJSON: () => JSON.stringify(Object.fromEntries(searchURL.searchParams.entries()))
 		}
@@ -32,6 +35,7 @@ export default function worksQuery(query: AO3WorkSearchQuery | string): WorkQuer
 
 	return {
 		url: url,
+		paramsAsQuery: () => workSearchObj(url),
 		paramsAsObj: () => Object.fromEntries(url.searchParams.entries()),
 		paramsAsJSON: () => JSON.stringify(Object.fromEntries(url.searchParams.entries()))
 	}
