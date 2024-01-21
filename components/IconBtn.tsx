@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Pressable, PressableProps, StyleProp, StyleSheet, Text, TextStyle, ViewStyle } from "react-native";
 
-export default function IconBtn({ name, size, iconStyle, style, ...pressable }: { name: React.ComponentProps<typeof MaterialCommunityIcons>[ "name" ], size: number, iconStyle: StyleProp<TextStyle>, style: StyleProp<ViewStyle> } & Omit<PressableProps, "style">) {
+export default function IconBtn({ name, size, iconStyle, style, ...pressable }: { name: React.ComponentProps<typeof MaterialCommunityIcons>[ "name" ], size: number, iconStyle?: StyleProp<TextStyle>, style?: StyleProp<ViewStyle> } & Omit<PressableProps, "style">) {
 
 	const styleLocal = StyleSheet.create({
 		view: {
