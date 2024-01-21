@@ -86,3 +86,8 @@ export interface AO3WorkSearch {
 	sortBy: "bestMatch" | "authors" | "title" | "createdAt" | "revisedAt" | "wordCount" | "hits" | "kudosCount" | "commentsCount" | "bookmarksCount",
 	sortDirection: "asc" | "desc"
 }
+
+export interface AO3Query {
+	commit: "Search",
+	// TODO
+}

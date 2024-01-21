@@ -28,7 +28,7 @@ export interface AO3WorkResult {
 }
 
 export interface AO3WorkSearchResults {
-	results: (AO3WorkResult | null)[],
+	results: AO3WorkResult[],
 	currentPage: number,
 	totalPages: number,
 	totalWorks: number
