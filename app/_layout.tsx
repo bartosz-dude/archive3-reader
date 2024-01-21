@@ -5,6 +5,7 @@ import { Link, Slot, SplashScreen, Stack } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ScrollView, Text, View, useColorScheme } from 'react-native';
 import { fetchWork } from "../services/ao3/scraper/Work";
+import { MenuProvider } from "react-native-popup-menu";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -68,7 +69,9 @@ function RootLayoutNav() {
       }}>
         {work.map((v, i) => <Text key={i} style={{ marginVertical: 10, textAlign: "justify" }}>{v}</Text>)}
       </ScrollView> */}
+      <MenuProvider>
       <Slot />
+      </MenuProvider>
     </ThemeProvider>
   );
 }
