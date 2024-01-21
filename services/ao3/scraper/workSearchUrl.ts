@@ -26,6 +26,7 @@ export default function workSearchURL(query: AO3WorkSearchQuery) {
 		...query
 	}
 
+	// TODO rating not implemented somehow
 	const params = new Map<string, string | string[]>([
 		[ "query", workSearch.anyField ],
 		[ "title", workSearch.title ],
