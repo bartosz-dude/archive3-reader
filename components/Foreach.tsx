@@ -7,7 +7,7 @@ export default function Foreach<T>({ list, each, separator: Separator }: { list:
 				prev.push(each(v, i, arr))
 				if (i < (arr.length - 1) && Separator) {
 					const separatorElem = Separator
-					separatorElem.key = prev.length.toString()
+					separatorElem.key = i.toString() + "-separator"
 					prev.push(separatorElem)
 				}
 				return prev
