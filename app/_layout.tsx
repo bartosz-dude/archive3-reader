@@ -67,7 +67,12 @@ function RootLayoutNav() {
               headerShown: false,
               animation: "none"
             }}
+            initialRouteName="(tabs)"
           >
+            <Stack.Screen
+              name="index"
+              redirect
+            />
             <Stack.Screen
               name="(tabs)"
               options={{
