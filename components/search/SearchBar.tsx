@@ -9,6 +9,8 @@ import Constants from "expo-constants"
 import saveQuery, { SaveQueryErrors } from "../../services/saver/api/saveQuery"
 import getSavedQueries from "../../services/saver/api/getSavedQueries"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
+import saveSettings from "../../services/appSettings/api/saveSettings"
+import { useSettings } from "../../services/appSettings/components/settingsProvider"
 
 export default function SearchBar() {
 
@@ -72,6 +74,7 @@ export default function SearchBar() {
 
 	const pathname = usePathname()
 
+	const { settings, update } = useSettings()
 
 	return (
 		<>
@@ -122,7 +125,9 @@ export default function SearchBar() {
 						}
 						<MenuOption text="Saved searches" onSelect={() => router.push("/search/savedSearches")} />
 						<MenuOption text="History" />
-						<MenuOption text="Settings" />
+						<MenuOption text="Settings" onSelect={() => {
+							update({ savedSearchesAsDefault: !settings.savedSearchesAsDefault })
+						}} />
 					</MenuOptions>
 				</Menu>
 			</View >

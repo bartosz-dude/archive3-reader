@@ -4,6 +4,7 @@ import { View, StyleSheet } from "react-native";
 import workSearchURL from "../services/ao3/scraper/workSearchUrl";
 import useAsyncMemo from "../hooks/useAsyncMemo"
 import { useEffect } from "react";
+import { useSettings } from "../services/appSettings/components/settingsProvider";
 
 export default function Page() {
 
@@ -14,12 +15,13 @@ export default function Page() {
 	// useEffect(() => {
 	// 	data?.text().then((v) => console.log(v))
 	// }, [ data ])
+	const { settings } = useSettings()
 
 	return (
 		<>
 			<View style={styles.container}>
 				<Link href={"/work/48613378/chapter/122623150"} style={{ height: 50, width: 50, backgroundColor: "blue", color: "white" }}>Works</Link>
-				<Link href={"/search"} style={{ height: 50, width: 50, backgroundColor: "blue", color: "white" }}>Search</Link>
+				<Link href={settings.savedSearchesAsDefault ? "/search/savedSearches" : "/search"} style={{ height: 50, width: 50, backgroundColor: "blue", color: "white" }}>Search</Link>
 			</View>
 		</>
 	)
