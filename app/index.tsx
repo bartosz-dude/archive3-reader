@@ -6,7 +6,7 @@ import useAsyncMemo from "../hooks/useAsyncMemo"
 import { useEffect } from "react";
 import { useSettings } from "../services/appSettings/components/settingsProvider";
 
-export default function Page() {
+export default function RootIndex() {
 
 	const { settings } = useSettings()
 
