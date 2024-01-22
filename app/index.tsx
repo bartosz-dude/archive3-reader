@@ -8,13 +8,6 @@ import { useSettings } from "../services/appSettings/components/settingsProvider
 
 export default function Page() {
 
-	// const data = useAsyncMemo(() => fetch(workSearchURL({
-	// 	anyField: "ascendance of a bookworm"
-	// })), (r) => {}, [])
-
-	// useEffect(() => {
-	// 	data?.text().then((v) => console.log(v))
-	// }, [ data ])
 	const { settings } = useSettings()
 
 	return (
