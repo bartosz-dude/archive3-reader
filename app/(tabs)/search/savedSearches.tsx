@@ -1,23 +1,19 @@
 import { FlatList, Text, View } from "react-native";
-import useLoading from "../../hooks/useLoading";
-import getSavedQueries from "../../services/saver/api/getSavedQueries";
-import Loaded from "../../components/Loaded";
-import Foreach from "../../components/Foreach";
+import useLoading from "../../../hooks/useLoading";
+import getSavedQueries from "../../../services/saver/api/getSavedQueries";
+import Loaded from "../../../components/Loaded";
+import Foreach from "../../../components/Foreach";
 import { useEffect } from "react";
-import LoadingIndicator from "../../components/LoadingIndicator";
-import worksQuery from "../../services/ao3/api/worksQuery";
-import workSearchObj from "../../services/ao3/scraper/workSearchObj";
-import SaveSearchItem from "../../components/search/savedSearchItem";
-import SearchBarTitle from "../../components/search/searchBarTitle";
-import useStyle from "../../hooks/useStyle";
+import LoadingIndicator from "../../../components/LoadingIndicator";
+import worksQuery from "../../../services/ao3/api/worksQuery";
+import workSearchObj from "../../../services/ao3/scraper/workSearchObj";
+import SaveSearchItem from "../../../components/search/savedSearchItem";
+import SearchBarTitle from "../../../components/search/searchBarTitle";
+import useStyle from "../../../hooks/useStyle";
 
 export default function SaveSearches() {
 
 	const savedQueries = useLoading(getSavedQueries, [])
-
-	useEffect(() => {
-		console.log("queries", savedQueries)
-	}, [ savedQueries.data ])
 
 	const style = useStyle({
 		// noSavedContainer: {

@@ -3,16 +3,16 @@ import { Link, router, useGlobalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { FlatList, TextInput, TextInputProps, View } from "react-native";
 import { Menu, MenuOption, MenuOptions, MenuTrigger } from "react-native-popup-menu";
-import IconBtn from "../../components/IconBtn";
-import Loaded from "../../components/Loaded";
-import LoadingIndicator from "../../components/LoadingIndicator";
-import SearchResultItem from "../../components/search/SearchResultItem";
-import useAsyncMemo from "../../hooks/useAsyncMemo";
-import useStyle from "../../hooks/useStyle";
-import worksQuery from "../../services/ao3/api/worksQuery";
-import worksSearch from "../../services/ao3/api/worksSearch";
-import { AO3WorkSearchResults } from "../../services/ao3/types/workSearchResults";
-import SearchBar from "../../components/search/SearchBar";
+import IconBtn from "../../../components/IconBtn";
+import Loaded from "../../../components/Loaded";
+import LoadingIndicator from "../../../components/LoadingIndicator";
+import SearchResultItem from "../../../components/search/SearchResultItem";
+import useAsyncMemo from "../../../hooks/useAsyncMemo";
+import useStyle from "../../../hooks/useStyle";
+import worksQuery from "../../../services/ao3/api/worksQuery";
+import worksSearch from "../../../services/ao3/api/worksSearch";
+import { AO3WorkSearchResults } from "../../../services/ao3/types/workSearchResults";
+import SearchBar from "../../../components/search/SearchBar";
 import fastHashCode from "fast-hash-code";
 
 export default function SearchIndex() {
