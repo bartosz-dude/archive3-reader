@@ -1,7 +1,18 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
-export default function Loaded({ isLoading, loading, fallback, children }: { isLoading: boolean | ("loading" | "loaded" | "failed"), loading?: ReactNode, fallback?: ReactNode, children?: ReactNode }) {
-	if ((typeof isLoading == "boolean" && isLoading) || (typeof isLoading == "string" && isLoading == "loading"))
+export default function Loaded({ isLoading, loading, fallback, children, options = { loadingDelay: 0, immediatelyShowLoading: false } }:
+	{
+		isLoading: boolean | ("loading" | "loaded" | "failed"), loading?: JSX.Element, fallback?: JSX.Element, children?: JSX.Element,
+		options?: { loadingDelay?: number, immediatelyShowLoading?: boolean }
+	}) {
+
+	const [ loadingDelayReached, setLoadingDelayReached ] = useState(false)
+
+	const loadingDelay = setTimeout(() => {
+		setLoadingDelayReached(true)
+	}, 4)
+
+	if (((typeof isLoading == "boolean" && isLoading) || (typeof isLoading == "string" && isLoading == "loading")))
 		return (
 			<>
 				{loading &&
@@ -23,13 +34,14 @@ export default function Loaded({ isLoading, loading, fallback, children }: { isL
 			</>
 		)
 
-	return (
-		<>
-			{children &&
-				<>
-					{children}
-				</>
-			}
-		</>
-	)
+	if ((typeof isLoading == "boolean" && !isLoading) || (typeof isLoading == "string" && isLoading == "loaded"))
+		return (
+			<>
+				{children &&
+					<>
+						{children}
+					</>
+				}
+			</>
+		)
 }

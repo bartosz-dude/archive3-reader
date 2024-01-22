@@ -14,6 +14,7 @@ import worksSearch from "../../../services/ao3/api/worksSearch";
 import { AO3WorkSearchResults } from "../../../services/ao3/types/workSearchResults";
 import SearchBar from "../../../components/search/SearchBar";
 import fastHashCode from "fast-hash-code";
+import useLoading from "../../../hooks/useLoading";
 
 export default function SearchIndex() {
 
@@ -24,32 +25,32 @@ export default function SearchIndex() {
 	const [ page, setPage ] = useState(1)
 	const [ fetchedPages, setFetchedPages ] = useState<AO3WorkSearchResults[]>([])
 
-	const results = useAsyncMemo(async () => {
-		// resets search results cache on new query
+	const data = useLoading(() => {
 		if (ao3Query !== cachedQuery) {
-			setLoading(true)
 			setCachedQuery(ao3Query)
 			setPage(1)
 			setFetchedPages([])
 			return worksSearch(worksQuery(ao3Query), 1)
 		}
 
-		if (!fetchedPages[ page ])
-			return worksSearch(worksQuery(ao3Query), page)
+		// if (!fetchedPages[ page ])
+		return worksSearch(worksQuery(ao3Query), page)
+	}, [ ao3Query, page ])
 
-	}, () => {}, [ ao3Query, page ])
 
 	useEffect(() => {
-		if (results)
+		if (data.status == "loaded") {
+			setLoading(true)
 			setFetchedPages((prev) => {
 				const newPages = [ ...prev ]
-				newPages[ results?.currentPage - 1 ] = results
+				if (data.data)
+					newPages[ data.data.currentPage - 1 ] = data.data
 
 				return newPages
 			})
-		setLoading(false)
-
-	}, [ results ])
+			setLoading(false)
+		}
+	}, [ data.status ])
 
 
 	function fetchedResults() {
