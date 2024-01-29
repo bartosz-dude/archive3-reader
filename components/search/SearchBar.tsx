@@ -126,7 +126,8 @@ export default function SearchBar() {
 						<MenuOption text="Saved searches" onSelect={() => router.push("/search/savedSearches")} />
 						<MenuOption text="History" disabled />
 						<MenuOption text="Settings" onSelect={() => {
-							update({ savedSearchesAsDefault: !settings.savedSearchesAsDefault })
+							router.push("/settings")
+							// update({ savedSearchesAsDefault: !settings.savedSearchesAsDefault })
 						}} />
 					</MenuOptions>
 				</Menu>
