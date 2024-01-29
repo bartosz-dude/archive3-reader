@@ -1,5 +1,5 @@
-import workSearchObj from "../scraper/workSearchObj"
-import workSearchURL from "../scraper/workSearchUrl"
+import workSearchObj from "../tools/workSearchObj"
+import workSearchURL from "../tools/workSearchUrl"
 import { AO3WorkSearchQuery } from "../types/workSearch"
 
 export type WorkQueryReturn = {

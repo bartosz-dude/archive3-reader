@@ -4,7 +4,7 @@ import { useFonts } from 'expo-font';
 import { Link, Slot, SplashScreen, Stack, Tabs } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { DevSettings, ScrollView, Text, View, useColorScheme } from 'react-native';
-import { fetchWork } from "../services/ao3/scraper/Work";
+import { fetchWork } from "../services/ao3/scraper/work";
 import { MenuProvider } from "react-native-popup-menu";
 import setupDB from "../services/saver/api/setupDB";
 import getDB from "../services/database/getDB";

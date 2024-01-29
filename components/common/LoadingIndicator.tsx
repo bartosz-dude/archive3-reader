@@ -1,5 +1,5 @@
 import { ActivityIndicator, View } from "react-native";
-import useStyle from "../hooks/useStyle";
+import useStyle from "../../hooks/useStyle";
 
 export default function LoadingIndicator({}) {
 

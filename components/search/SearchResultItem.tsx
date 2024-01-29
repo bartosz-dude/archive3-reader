@@ -2,7 +2,7 @@ import { ListRenderItemInfo, Text, View } from "react-native";
 import { AO3WorkResult } from "../../services/ao3/types/workSearchResults";
 import useStyle from "../../hooks/useStyle";
 import { useState } from "react";
-import Foreach from "../Foreach";
+import Foreach from "../common/Foreach";
 import { Link } from "expo-router";
 
 export default function SearchResultItem({ item }: { item: ListRenderItemInfo<AO3WorkResult> }) {

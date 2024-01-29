@@ -1,12 +1,12 @@
 import { FlatList, Text, View } from "react-native";
 import useLoading from "../../../hooks/useLoading";
 import getSavedQueries from "../../../services/saver/api/getSavedQueries";
-import Loaded from "../../../components/Loaded";
-import Foreach from "../../../components/Foreach";
+import Loaded from "../../../components/common/Loaded";
+import Foreach from "../../../components/common/Foreach";
 import { useEffect } from "react";
-import LoadingIndicator from "../../../components/LoadingIndicator";
+import LoadingIndicator from "../../../components/common/LoadingIndicator";
 import worksQuery from "../../../services/ao3/api/worksQuery";
-import workSearchObj from "../../../services/ao3/scraper/workSearchObj";
+import workSearchObj from "../../../services/ao3/tools/workSearchObj";
 import SaveSearchItem from "../../../components/search/savedSearchItem";
 import SearchBarTitle from "../../../components/search/searchBarTitle";
 import useStyle from "../../../hooks/useStyle";

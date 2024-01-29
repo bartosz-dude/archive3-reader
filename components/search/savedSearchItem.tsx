@@ -3,7 +3,7 @@ import { AO3WorkSearchQuery } from "../../services/ao3/types/workSearch";
 import useStyle from "../../hooks/useStyle";
 import { router, useNavigation } from "expo-router";
 import worksQuery from "../../services/ao3/api/worksQuery";
-import IconBtn from "../IconBtn";
+import IconBtn from "../common/IconBtn";
 import { useState } from "react";
 import deleteQuery from "../../services/saver/api/deleteQuery";
 

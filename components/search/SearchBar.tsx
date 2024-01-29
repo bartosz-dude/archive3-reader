@@ -4,7 +4,7 @@ import { TextInputProps, View, TextInput, Text, ToastAndroid } from "react-nativ
 import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-menu"
 import useStyle from "../../hooks/useStyle"
 import worksQuery from "../../services/ao3/api/worksQuery"
-import IconBtn from "../IconBtn"
+import IconBtn from "../common/IconBtn"
 import Constants from "expo-constants"
 import saveQuery, { SaveQueryErrors } from "../../services/saver/api/saveQuery"
 import getSavedQueries from "../../services/saver/api/getSavedQueries"
@@ -88,7 +88,7 @@ export default function SearchBar() {
 					placeholder="Search for works..."
 					placeholderTextColor={"lightgrey"}
 				/>
-				<IconBtn style={style.searchBarBtn} iconStyle={{ color: "white" }} name="filter-outline" size={32} />
+				<IconBtn style={style.searchBarBtn} iconStyle={{ color: "grey" }} name="filter-outline" size={32} disabled />
 				{/* <IconBtn style={style.searchBarBtn} iconStyle={{ color: "white" }} name="dots-vertical" size={32}
 					onPress={() => menu.current?.open()}
 				/> */}
@@ -124,7 +124,7 @@ export default function SearchBar() {
 							}} />
 						}
 						<MenuOption text="Saved searches" onSelect={() => router.push("/search/savedSearches")} />
-						<MenuOption text="History" />
+						<MenuOption text="History" disabled />
 						<MenuOption text="Settings" onSelect={() => {
 							update({ savedSearchesAsDefault: !settings.savedSearchesAsDefault })
 						}} />

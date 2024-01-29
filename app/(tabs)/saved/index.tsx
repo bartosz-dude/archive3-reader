@@ -1,6 +1,6 @@
 import { Text } from "react-native";
 import { useSettings } from "../../../services/appSettings/components/settingsProvider";
-import Foreach from "../../../components/Foreach";
+import Foreach from "../../../components/common/Foreach";
 
 export default function SavedIndex() {
 
