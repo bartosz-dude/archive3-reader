@@ -1,11 +1,12 @@
 {
   "expo": {
+    "owner": "bartosz-dude",
     "name": "archive3-reader",
     "slug": "archive3-reader",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "archive3-reader",
     "userInterfaceStyle": "automatic",
     "jsEngine": "hermes",
     "splash": {
@@ -23,7 +24,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.bartoszdude.archive3reader"
     },
     "androidStatusBar": {
       "translucent": true
@@ -38,6 +40,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d6efdf62-e429-4a84-bb54-c61f1582cd5d"
+      }
     }
   }
 }
