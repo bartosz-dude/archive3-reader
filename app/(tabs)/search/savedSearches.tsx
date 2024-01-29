@@ -11,7 +11,7 @@ import SaveSearchItem from "../../../components/search/savedSearchItem";
 import SearchBarTitle from "../../../components/search/searchBarTitle";
 import useStyle from "../../../hooks/useStyle";
 
-export default function SaveSearches() {
+export default function SavedSearches() {
 
 	const savedQueries = useLoading(getSavedQueries, [])
 

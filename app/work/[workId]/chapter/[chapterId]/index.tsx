@@ -11,7 +11,7 @@ import Btn from "../../../../../components/common/Btn";
 import { useNavigationState } from "@react-navigation/native";
 import useLoading from "../../../../../hooks/useLoading";
 
-export default function Page() {
+export default function WorkReader() {
 	const { workId, chapterId } = useLocalSearchParams() as { workId: string, chapterId: string }
 	// const work = useAsyncMemo(async () => workScraperNew(parseInt(workId), chapterId), (r) => {}, [])
 	// const work = useAsyncMemo(async () => workScraper(parseInt(workId), chapterId), (r) => {}, [])

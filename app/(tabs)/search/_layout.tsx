@@ -6,8 +6,9 @@ import worksQuery from "../../../services/ao3/api/worksQuery";
 import workSearchResultsScraper from "../../../services/ao3/scraper/workSearchResults";
 import useAsyncMemo from "../../../hooks/useAsyncMemo";
 import SearchBar from "../../../components/search/SearchBar";
+import { useSettings } from "../../../services/appSettings/components/settingsProvider";
 
-export default function Layout() {
+export default function SearchLayout() {
 
 
 

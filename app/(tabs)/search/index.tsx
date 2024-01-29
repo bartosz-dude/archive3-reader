@@ -16,7 +16,7 @@ import SearchBar from "../../../components/search/SearchBar";
 import fastHashCode from "fast-hash-code";
 import useLoading from "../../../hooks/useLoading";
 
-export default function SearchIndex() {
+export default function SearchPage() {
 
 	const { ao3Query } = useGlobalSearchParams() as { ao3Query: string }
 
