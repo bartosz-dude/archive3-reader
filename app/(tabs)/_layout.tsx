@@ -31,14 +31,18 @@ export default function TabsLayout() {
 							return <MaterialCommunityIcons name="magnify" size={props.size} color={props.color} />
 						},
 					}}
+					listeners={{ tabPress: (e) => { console.log(settings.savedSearchesAsDefault) } }}
 				/>
-				{/* <Tabs.Screen
+				<Tabs.Screen
 					name="saved/index"
 					options={{
 						href: "/saved",
-						title: "Saved"
+						title: "Saved",
+						tabBarIcon(props) {
+							return <MaterialCommunityIcons name="book-outline" size={props.size} color={props.color} />
+						}
 					}}
-				/> */}
+				/>
 			</Tabs>
 		</>
 	)
