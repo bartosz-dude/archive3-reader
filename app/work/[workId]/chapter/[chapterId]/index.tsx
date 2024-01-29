@@ -1,19 +1,28 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, View, Text, StyleSheet, useWindowDimensions, Pressable, FlatList, Button, ActivityIndicator } from "react-native";
-import { fetchWork, workScrapper } from "../../../../../services/ao3/scraper/Work";
+import { workScraper, workScraperNew } from "../../../../../services/ao3/scraper/work";
 import { Link, useLocalSearchParams, useNavigation, useRootNavigationState } from "expo-router";
 import Constants from 'expo-constants';
 import useAsyncMemo from "../../../../../hooks/useAsyncMemo";
 import { StatusBar, setStatusBarBackgroundColor, setStatusBarHidden, setStatusBarStyle, setStatusBarTranslucent } from "expo-status-bar";
 import Animated, { Easing, Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
-import Btn from "../../../../../components/Btn";
+import Btn from "../../../../../components/common/Btn";
 import { useNavigationState } from "@react-navigation/native";
+import useLoading from "../../../../../hooks/useLoading";
 
 export default function Page() {
 	const { workId, chapterId } = useLocalSearchParams() as { workId: string, chapterId: string }
-	const work = useAsyncMemo(async () => workScrapper(parseInt(workId), chapterId), (r) => {}, [])
+	// const work = useAsyncMemo(async () => workScraperNew(parseInt(workId), chapterId), (r) => {}, [])
+	// const work = useAsyncMemo(async () => workScraper(parseInt(workId), chapterId), (r) => {}, [])
 	// console.log("work", work)
+
+	const work = useLoading(() => workScraperNew(parseInt(workId), chapterId), [])
+
+	// TODO When at the end of chapter it for some reason starts firing multiple times
+	useEffect(() => {
+		console.log("work", work.status, work.data, work.error)
+	}, [ work ])
 
 	const window = useWindowDimensions()
 
@@ -37,7 +46,7 @@ export default function Page() {
 		content: {
 			paddingTop: titleBarHeight + 20,
 			paddingVertical: 20,
-			paddingHorizontal: 30,
+			paddingHorizontal: 20,
 			paddingBottom: 40
 		},
 		bottomNav: {
@@ -119,14 +128,14 @@ export default function Page() {
 	const scrollViewHeight = useSharedValue(0)
 	const scrollViewContentHeight = useSharedValue(0)
 
-	if (work)
+	if (work.status == "loaded" && work.data)
 		return (
 			<>
 
 				<Animated.View style={[ style.titleBar, rollUp ]}
 					onLayout={(e) => setTitleBarHeight(e.nativeEvent.layout.height)}>
-					<Text style={style.titleBarText}>{work.meta.title}</Text>
-					<Text style={style.titleBarText}>Chapter {work.chapters[ 0 ].chapter} ({chapterId}): {work.chapters[ 0 ].title}</Text>
+					<Text style={style.titleBarText}>{work.data.meta.title}</Text>
+					<Text style={style.titleBarText}>Chapter {work.data.chapters[ 0 ].chapter} ({chapterId}): {work.data.chapters[ 0 ].title}</Text>
 				</Animated.View>
 
 				{
@@ -180,23 +189,23 @@ export default function Page() {
 						}
 					}}>
 						<View style={[ style.content, { paddingTop: titleBarHeight + 20 } ]}>
-							{work.chapters[ 0 ].content.map((v, i) => <Text key={i} style={{ paddingBottom: 10 }}>{v}</Text>)}
+							{work.data.chapters[ 0 ].content.map((v, i) => <Text key={i} style={{ paddingBottom: 10, textAlign: "justify", lineHeight: 22 }}>{v}</Text>)}
 						</View>
 					</Pressable>
 					<View style={style.bottomNav}>
 						<Link
-							style={[ style.bottomNavBtn, { backgroundColor: work.chapterslist[ work.chapters[ 0 ].chapter - 2 ] ? "red" : "grey" } ]}
-							href={`/work/${workId}/chapter/${work.chapterslist[ work.chapters[ 0 ].chapter - 2 ] ? work.chapterslist[ work.chapters[ 0 ].chapter - 2 ].id : null}`}
-							disabled={!work.chapterslist[ work.chapters[ 0 ].chapter - 2 ]}
+							style={[ style.bottomNavBtn, { backgroundColor: work.data.chapterslist[ work.data.chapters[ 0 ].chapter - 2 ] ? "red" : "grey" } ]}
+							href={`/work/${workId}/chapter/${work.data.chapterslist[ work.data.chapters[ 0 ].chapter - 2 ] ? work.data.chapterslist[ work.data.chapters[ 0 ].chapter - 2 ].id : null}`}
+							disabled={!work.data.chapterslist[ work.data.chapters[ 0 ].chapter - 2 ]}
 							replace
 							onPress={() => setNavigating(true)}
 						>
 							Previous Chapter
 						</Link>
 						<Link
-							style={[ style.bottomNavBtn, { backgroundColor: work.chapterslist[ work.chapters[ 0 ].chapter ] ? "red" : "grey" } ]}
-							href={`/work/${workId}/chapter/${work.chapterslist[ work.chapters[ 0 ].chapter ] ? work.chapterslist[ work.chapters[ 0 ].chapter ].id : null}`}
-							disabled={!work.chapterslist[ work.chapters[ 0 ].chapter ]}
+							style={[ style.bottomNavBtn, { backgroundColor: work.data.chapterslist[ work.data.chapters[ 0 ].chapter ] ? "red" : "grey" } ]}
+							href={`/work/${workId}/chapter/${work.data.chapterslist[ work.data.chapters[ 0 ].chapter ] ? work.data.chapterslist[ work.data.chapters[ 0 ].chapter ].id : null}`}
+							disabled={!work.data.chapterslist[ work.data.chapters[ 0 ].chapter ]}
 							replace
 							onPress={() => {
 								// console.log("navigating")
