@@ -3,41 +3,28 @@ import * as htmlParser from "htmlparser2";
 import { testHtml2 } from "../../../assets/testHtml2";
 import { AO3Work, MetaNumberStat, MetaTag, MetaTextStat } from "../types/work";
 import { testHtml3 } from "../../../assets/testHtml3";
-import { textContent } from "domutils";
+import { findAll, findOne, textContent } from "domutils";
 import nCleaner from "../tools/nCleaner";
+import htmlPruner from "../tools/htmlPruner";
+import { DomUtils, parseDocument } from "htmlparser2";
+import { AnyNode } from "domhandler";
+import findAllBy from "../tools/findAllBy";
+import findOneBy from "../tools/findOneBy";
+import cleanTextContent from "../tools/cleanTextContent";
+import parseComaDecToInt from "../tools/parseComaDecToInt";
+import { Element } from "domhandler"
 
-export async function fetchWork(id: string, chapterId: string) {
-	// const content = await fetch(`https://archiveofourown.org/works/${id}/chapters/${chapterId}`)
-	// const content = await fetch("services/__tests__/test_work.html")
-	// const content = testHtml
-	// const htmlStr = (await content).split("</head>")[ 1 ].split("<script")[ 0 ]
 
-	// const dom = htmlparser2.parseDocument(htmlStr)
-
-	// htmlparser2.DomUtils.findAll((elem) => {
-	// 	if (elem.name == "a" && elem.attribs[ "class" ] == "tag") {
-	// 		// console.log(elem)
-	// 		elem.children.forEach((v) => {
-	// 			if (v.type == "text") {
-	// 				console.log(v.data)
-	// 			}
-	// 		})
-	// 		return true
-	// 	}
-	// 	return false
-	// }, dom.children)
-
-	// const a = workScrapper(123)
-
-	// console.log(a.chapters)
-	// console.log(a)
-	// return a.chapters[ 56 ].content
-	// return [ "a", "a" ]
+export enum WorkScraperError {
+	noChapter = "No chapter section found",
+	noMeta = "No meta section found",
+	noTitle = "No title section found",
+	noArticle = "No article found"
 }
 
 // export function workScrapper(workId: number, chapter?: number): Promise<AO3Work>
 // export function workScrapper(workId: number, chapterId?: string): Promise<AO3Work>
-export function workScrapper(workId: number, chapterId: string): Promise<AO3Work> {
+export function workScraper(workId: number, chapterId: string): Promise<AO3Work> {
 	const asyncParsing = new Promise<AO3Work>(async (resolve, reject) => {
 		try {
 			// console.log("link", `https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`)
@@ -298,4 +285,137 @@ export function workScrapper(workId: number, chapterId: string): Promise<AO3Work
 
 	// console.log(work)
 	return asyncParsing
+}
+
+export async function workScraperNew(workId: number, chapterId: string): Promise<AO3Work> {
+	// return new Promise<AO3Work>(async (resolve, reject) => {
+	const fetchedHtml = !(chapterId == "first") ?
+		await fetch(`https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`)
+		:
+		await fetch(`https://archiveofourown.org/works/${workId}?view_adult=true`)
+
+	const htmlText = await fetchedHtml.text()
+	const prunedHtmlStr = htmlPruner(htmlText)
+
+	const dom = parseDocument(prunedHtmlStr)
+
+	const metaContainer = findOneBy("class", "work meta group", dom.children)
+	const chapterContainer = findOneBy("id", "chapters", dom.children, (elem) => elem.attribs[ "role" ] != "article") ?? findOneBy("id", "workskin", dom.children)
+	const titleContainer = findOneBy("class", "preface group", dom.children)
+
+	// console.log("htmlText", htmlText)
+	// console.log("htmlPruned", prunedHtmlStr)
+
+	if (!chapterContainer)
+		throw new Error(WorkScraperError.noChapter)
+
+	if (!metaContainer)
+		throw new Error(WorkScraperError.noMeta)
+
+	if (!titleContainer)
+		throw new Error(WorkScraperError.noTitle)
+	// reject()
+	// })
+
+	// findOne((elem) => elem.attribs[])
+
+	// console.log("chapterContainer", chapterContainer)
+	// console.log("authors", chapterContainer.children)
+	// throw new Error("still in development")
+
+	const metaValueElemTest: Parameters<typeof findOneBy>[ 3 ] = (elem) => elem.name == "dd"
+
+	const work: AO3Work = {
+		meta: {
+			id: workId,
+			authors: findAllBy("rel", "author", titleContainer.children).map((v) => textContent(v)),
+			language: cleanTextContent(findOneBy("class", "language", metaContainer.children, metaValueElemTest)),
+			title: cleanTextContent(findOneBy("class", "title heading", titleContainer.children)),
+			summary: cleanTextContent(findOneBy("class", "userstuff", titleContainer.children)),
+			stats: {
+				bookmarks: parseComaDecToInt(cleanTextContent(findOneBy("class", "bookmarks", metaContainer.children, metaValueElemTest) ?? "0")),
+				comments: parseComaDecToInt(cleanTextContent(findOneBy("class", "comments", metaContainer.children, metaValueElemTest) ?? "0")),
+				hits: parseComaDecToInt(cleanTextContent(findOneBy("class", "hits", metaContainer.children, metaValueElemTest) ?? "0")),
+				kudos: parseComaDecToInt(cleanTextContent(findOneBy("class", "kudos", metaContainer.children, metaValueElemTest) ?? "0")),
+				words: parseComaDecToInt(cleanTextContent(findOneBy("class", "words", metaContainer.children, metaValueElemTest) ?? "0")),
+				chapters: parseComaDecToInt(cleanTextContent(findOneBy("class", "chapters", metaContainer.children, metaValueElemTest) ?? "0").split("/")[ 0 ]),
+				maxChapters: (() => {
+					const value = cleanTextContent(findOneBy("class", "chapters", metaContainer.children, metaValueElemTest) ?? "0/?").split("/")[ 1 ]
+					if (value == "?")
+						return null
+
+					return parseComaDecToInt(value)
+				})(),
+				published: cleanTextContent(findOneBy("class", "published", metaContainer.children, metaValueElemTest) ?? ""),
+				updated: cleanTextContent(findOneBy("class", "updated", metaContainer.children, metaValueElemTest) ?? "")
+			},
+			tags: { //TODO fill in tags scraping
+				additionalTags: [],
+				archiveWarnings: [],
+				categories: [],
+				characters: [],
+				fandoms: [],
+				rating: "",
+				relationships: []
+			}
+		},
+		chapterslist: (() => {
+			const chapterSelectContainer = findOneBy("name", "selected_id", dom.children)
+
+			if (chapterSelectContainer) {
+				return findAll((elem) => elem.name == "option", chapterSelectContainer.children).map((v) =>
+				({
+					id: parseInt(v.attribs[ "value" ]),
+					title: cleanTextContent(v).replace(/^\d*\. /, "")
+				}))
+			}
+
+			return []
+		})(),
+		chapters: [
+			{
+				id: (() => {
+					if (chapterId != "first")
+						return parseInt(chapterId)
+
+					const selectedChapterElem = findOneBy("selected", "selected", dom.children)
+					if (selectedChapterElem)
+						return parseInt(selectedChapterElem.attribs[ "value" ])
+
+					return -1
+				})(),
+				chapter: (() => {
+					const chapterElem = findOneBy("class", "chapter", chapterContainer.children)
+
+					if (chapterElem)
+						return parseInt(chapterElem.attribs[ "id" ].replace("chapter-", ""))
+
+					return 0
+				})(),
+				summary: cleanTextContent(findOneBy("class", "userstuff", titleContainer.children)).replace(/^Summary:/, ""),
+				title: cleanTextContent(findOneBy("class", "title", chapterContainer.children)).replace(/^Chapter \d*(: )?/, ""),
+				startNotes: cleanTextContent(findOneBy("class", "notes module", chapterContainer.children)).replace(/^Notes:/, ""),
+				endNotes: cleanTextContent(findOneBy("class", "end notes module", chapterContainer.children)).replace(/^Notes:/, ""),
+				content: (() => {
+					// TODO add support for <br>
+					// TODO add support of italic and bold text
+					const articleContainer = findOneBy("role", "article", chapterContainer.children)
+
+					if (!articleContainer)
+						throw new Error(WorkScraperError.noArticle)
+
+					const content = nCleaner(articleContainer.children) as Element[]
+					if (content.length > 1)
+						content.shift()
+
+					return content.map((v) => cleanTextContent(v))
+				})()
+			}
+		]
+	}
+
+	return work
+
+	// console.log("work", work)
+	// })
 }
