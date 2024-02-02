@@ -8,7 +8,7 @@ export enum SaveQueryErrors {
 }
 
 export default async function saveQuery(query: ReturnType<typeof worksQuery>) {
-	console.log("save query")
+	// console.log("save query")
 	const queryHash = fastHashCode(query.paramsAsJSON())
 
 	const db = getDB()
