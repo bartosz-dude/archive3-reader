@@ -11,6 +11,7 @@ import getSavedQueries from "../../services/saver/api/getSavedQueries"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import saveSettings from "../../services/appSettings/api/saveSettings"
 import { useSettings } from "../../services/appSettings/components/settingsProvider"
+import Header from "../common/Header"
 
 export default function SearchBar() {
 
@@ -78,7 +79,7 @@ export default function SearchBar() {
 
 	return (
 		<>
-			<View style={style.searchBar}>
+			<Header>
 				<TextInput
 					style={style.searchInput}
 					onChangeText={setSearchAnyText}
@@ -131,7 +132,7 @@ export default function SearchBar() {
 						}} />
 					</MenuOptions>
 				</Menu>
-			</View >
+			</Header >
 		</>
 	)
 }
