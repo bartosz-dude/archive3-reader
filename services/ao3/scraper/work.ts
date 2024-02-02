@@ -347,7 +347,7 @@ export async function workScraperNew(workId: number, chapterId: string): Promise
 					return parseComaDecToInt(value)
 				})(),
 				published: cleanTextContent(findOneBy("class", "published", metaContainer.children, metaValueElemTest) ?? ""),
-				updated: cleanTextContent(findOneBy("class", "updated", metaContainer.children, metaValueElemTest) ?? "")
+				updated: cleanTextContent(findOneBy("class", "status", metaContainer.children, metaValueElemTest) ?? "")
 			},
 			tags: { //TODO fill in tags scraping
 				additionalTags: [],
