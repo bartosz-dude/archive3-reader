@@ -3,17 +3,14 @@ import { useEffect } from "react"
 import { View } from "react-native"
 
 export default function TabBar(props: BottomTabBarProps) {
+	// useEffect(() => {
 
-	useEffect(() => {
-
-		console.log("props", props)
-	}, [ props ])
+	// 	console.log("props", props)
+	// }, [ props ])
 
 	return (
 		<>
-			<View>
-
-			</View>
+			<View></View>
 		</>
 	)
 }
