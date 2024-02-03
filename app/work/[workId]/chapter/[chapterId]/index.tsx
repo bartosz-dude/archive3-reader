@@ -419,58 +419,6 @@ function WorkReader() {
 }
 
 export default function newWorkReader() {
-	// const { workId, chapterId } = useLocalSearchParams() as {
-	// 	workId: string
-	// 	chapterId: string
-	// }
-
-	// const work = useLoading(() => workScraperNew(parseInt(workId), chapterId))
-
-	// const workDb = useLoading(() => getWork(parseInt(workId)))
-	// const readDb = useLoading(() => getReadthrough(parseInt(workId), 0))
-
-	// useEffect(() => {
-	// 	// console.log("work", workDb.data)
-	// 	if (
-	// 		workDb.status == "loaded" &&
-	// 		workDb.data === null &&
-	// 		work.status == "loaded" &&
-	// 		!(work.data === null)
-	// 	) {
-	// 		updateWork({
-	// 			workId: parseInt(workId),
-	// 			availableChapters: work.data?.meta.stats.chapters,
-	// 			isOffline: false,
-	// 			isSaved: false,
-	// 			lastUpdate: new Date(work.data.meta.stats.updated),
-	// 			totalChapters: work.data.meta.stats.maxChapters,
-	// 		}).then(() => workDb.reload())
-	// 	}
-	// }, [workDb, work])
-
-	// useEffect(() => {
-	// 	// console.log("read", readDb.data)
-	// 	if (
-	// 		readDb.status == "loaded" &&
-	// 		readDb.data === null &&
-	// 		work.status == "loaded" &&
-	// 		!(work.data === null) &&
-	// 		workDb.status == "loaded" &&
-	// 		!(workDb.data === null)
-	// 	) {
-	// 		updateReadthrough({
-	// 			workId: work.data.meta.id,
-	// 			currentChapter: chapter?.chapter ?? 0,
-	// 			currentChapterPosition: 0,
-	// 			readthrough: 0,
-	// 			datedProgress: [],
-	// 			readChapters: [],
-	// 		}).then(() => readDb.reload())
-	// 	}
-	// }, [readDb, workDb])
-
-	// const chapter = work.data?.chapters[0]
-	// const chapter = useChapterContext()
 	const work = useWorkContext()
 
 	const style = useStyle({
@@ -497,9 +445,19 @@ export default function newWorkReader() {
 			lineHeight: 22,
 		},
 		nextChapter: {
-			height: 40,
-			width: 80,
+			height: 80,
+			// width: 80,
 			backgroundColor: "red",
+			// alignSelf: "stretch",
+			// flexBasis: 1,
+			flexGrow: 1,
+		},
+		chapterNav: {
+			display: "flex",
+			flexDirection: "row",
+			alignItems: "stretch",
+			backgroundColor: "red",
+			// flexBasis: 1,
 		},
 	})
 
@@ -529,7 +487,7 @@ export default function newWorkReader() {
 							}}
 						/>
 					</View>
-					<View>
+					<View style={style.chapterNav}>
 						<Btn
 							style={[
 								style.nextChapter,
@@ -539,6 +497,7 @@ export default function newWorkReader() {
 										: "grey",
 								},
 							]}
+							textStyle={{ color: "white" }}
 							disabled={!work.isPreviousChapter()}
 							onPress={() => work.previousChapter()}
 						>
@@ -553,6 +512,7 @@ export default function newWorkReader() {
 										: "grey",
 								},
 							]}
+							textStyle={{ color: "white" }}
 							disabled={!work.isNextChapter()}
 							onPress={() => work.nextChapter()}
 						>
