@@ -1,4 +1,10 @@
-import { Link, Slot, router, useLocalSearchParams } from "expo-router"
+import {
+	Link,
+	Slot,
+	router,
+	useLocalSearchParams,
+	useNavigation,
+} from "expo-router"
 import { createContext, useContext, useEffect, useState } from "react"
 import { Text, View } from "react-native"
 import useLoading from "../../../../hooks/useLoading"
@@ -32,10 +38,6 @@ export default function ChapterReaderLayout() {
 		},
 	})
 
-	useEffect(() => {
-		console.log("currentMeta", work.currentMeta())
-	}, [work.currentMeta().status])
-
 	return (
 		<>
 			<Header>
@@ -63,6 +65,14 @@ export default function ChapterReaderLayout() {
 							style={style.titleText}
 							ellipsizeMode="tail"
 							numberOfLines={1}
+							disabled={(() => {
+								const maxChapters =
+									work.currentMeta().data?.stats.maxChapters
+
+								return maxChapters && maxChapters == 1
+									? true
+									: false
+							})()}
 						>
 							{(() => {
 								const chapter =
@@ -70,14 +80,18 @@ export default function ChapterReaderLayout() {
 								const maxChapters =
 									work.currentMeta().data?.stats.maxChapters
 
+								const title =
+									chapter?.title ??
+									work.work.data?.chapters[0].title
+
 								if (
-									chapter?.title &&
+									title &&
 									(maxChapters === null ||
 										(maxChapters && maxChapters > 1))
 								) {
 									return `Chapter ${
 										work.currentChapter + 1
-									}: ${chapter.title}`
+									}: ${title}`
 								}
 
 								if (
@@ -87,7 +101,7 @@ export default function ChapterReaderLayout() {
 									return `Chapter ${work.currentChapter + 1}`
 								}
 
-								if (chapter?.title) return `${chapter.title}`
+								if (chapter?.title) return `${title}`
 							})()}
 						</Link>
 					</Loaded>
