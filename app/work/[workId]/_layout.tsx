@@ -153,7 +153,10 @@ export default function WorkReaderLayout() {
 					/>
 					<Stack.Screen
 						name="chapterSelect"
-						options={{ headerShown: true }}
+						options={{
+							headerShown: false,
+							presentation: "modal",
+						}}
 					/>
 				</Stack>
 			</WorkContext.Provider>
