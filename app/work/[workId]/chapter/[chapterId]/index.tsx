@@ -1,57 +1,30 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
-import {
-	ScrollView,
-	View,
-	Text,
-	StyleSheet,
-	useWindowDimensions,
-	Pressable,
-	FlatList,
-	Button,
-	ActivityIndicator,
-} from "react-native"
-import {
-	workScraper,
-	workScraperNew,
-} from "../../../../../services/ao3/scraper/work"
-import {
-	Link,
-	useLocalSearchParams,
-	useNavigation,
-	useRootNavigationState,
-} from "expo-router"
 import Constants from "expo-constants"
-import useAsyncMemo from "../../../../../hooks/useAsyncMemo"
+import { Link, useLocalSearchParams, useNavigation } from "expo-router"
+import { setStatusBarTranslucent } from "expo-status-bar"
+import { useEffect, useRef, useState } from "react"
 import {
-	StatusBar,
-	setStatusBarBackgroundColor,
-	setStatusBarHidden,
-	setStatusBarStyle,
-	setStatusBarTranslucent,
-} from "expo-status-bar"
+	ActivityIndicator,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+	useWindowDimensions,
+} from "react-native"
 import Animated, {
-	Easing,
-	Extrapolation,
 	interpolate,
 	useAnimatedStyle,
 	useSharedValue,
-	withTiming,
 } from "react-native-reanimated"
-import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar"
 import Btn from "../../../../../components/common/Btn"
-import { useNavigationState } from "@react-navigation/native"
-import useLoading from "../../../../../hooks/useLoading"
-import updateWork from "../../../../../services/saver/database/updateWork"
+import Foreach from "../../../../../components/common/Foreach"
 import IconBtn from "../../../../../components/common/IconBtn"
 import Loaded from "../../../../../components/common/Loaded"
 import LoadingIndicator from "../../../../../components/common/LoadingIndicator"
+import useLoading from "../../../../../hooks/useLoading"
 import useStyle from "../../../../../hooks/useStyle"
-import Header from "../../../../../components/common/Header"
-import getReadthrough from "../../../../../services/saver/database/getReadthrough"
-import getWork from "../../../../../services/saver/database/getWork"
-import useUpdater from "../../../../../hooks/useUpdater"
-import updateReadthrough from "../../../../../services/saver/database/updateReadthrough"
-import Foreach from "../../../../../components/common/Foreach"
+import { workScraperNew } from "../../../../../services/ao3/scraper/work"
+import updateWork from "../../../../../services/saver/database/updateWork"
 import { useWorkContext } from "../../_layout"
 
 function WorkReader() {
@@ -421,6 +394,13 @@ function WorkReader() {
 export default function newWorkReader() {
 	const work = useWorkContext()
 
+	const [scrollViewHeight, setScrollViewHeight] = useState<
+		number | undefined
+	>()
+	const [scrollViewOffsetY, setScrollViewOffsetY] = useState<
+		number | undefined
+	>()
+
 	const style = useStyle({
 		titleColumn: {
 			display: "flex",
@@ -461,6 +441,11 @@ export default function newWorkReader() {
 		},
 	})
 
+	useEffect(() => {
+		if (scrollViewHeight && scrollViewOffsetY)
+			console.log("chapter position", scrollViewHeight, scrollViewOffsetY)
+	}, [scrollViewHeight, scrollViewOffsetY])
+
 	return (
 		<>
 			<Loaded
@@ -471,7 +456,15 @@ export default function newWorkReader() {
 					</>
 				}
 			>
-				<ScrollView>
+				<ScrollView
+					// onContentSizeChange={(e) => setScrollViewHeight(e)}
+					onLayout={(e) =>
+						setScrollViewHeight(e.nativeEvent.layout.height)
+					}
+					onScroll={(e) =>
+						setScrollViewOffsetY(e.nativeEvent.contentOffset.y)
+					}
+				>
 					<View style={style.content}>
 						<Foreach
 							list={work.work.data?.chapters[0].content ?? []}
