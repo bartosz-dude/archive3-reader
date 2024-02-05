@@ -8,7 +8,6 @@ export enum SaveQueryErrors {
 }
 
 export default async function saveQuery(query: ReturnType<typeof worksQuery>) {
-	// console.log("save query")
 	const queryHash = fastHashCode(query.paramsAsJSON())
 
 	const db = getDB()
@@ -18,7 +17,6 @@ export default async function saveQuery(query: ReturnType<typeof worksQuery>) {
 
 			await tx.executeSqlAsync("INSERT INTO 'query_storage' VALUES (?, ?)", [ queryHash, query.paramsAsJSON() ])
 		} catch (err) {
-			console.log("err", err)
 			if ((err as { message: string }).message.startsWith("UNIQUE constraint failed"))
 				throw Error(SaveQueryErrors.alreadyExists)
 
