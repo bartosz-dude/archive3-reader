@@ -1,7 +1,23 @@
-import { router, useGlobalSearchParams, useNavigation, usePathname } from "expo-router"
+import {
+	router,
+	useGlobalSearchParams,
+	useNavigation,
+	usePathname,
+} from "expo-router"
 import { useState, useRef, useEffect } from "react"
-import { TextInputProps, View, TextInput, Text, ToastAndroid } from "react-native"
-import { Menu, MenuTrigger, MenuOptions, MenuOption } from "react-native-popup-menu"
+import {
+	TextInputProps,
+	View,
+	TextInput,
+	Text,
+	ToastAndroid,
+} from "react-native"
+import {
+	Menu,
+	MenuTrigger,
+	MenuOptions,
+	MenuOption,
+} from "react-native-popup-menu"
 import useStyle from "../../hooks/useStyle"
 import worksQuery from "../../services/ao3/api/worksQuery"
 import IconBtn from "../common/IconBtn"
@@ -14,34 +30,31 @@ import { useSettings } from "../../services/appSettings/components/settingsProvi
 import Header from "../common/Header"
 
 export default function SearchBar() {
-
 	const { ao3Query } = useGlobalSearchParams() as { ao3Query: string }
 
-	const [ searchAnyText, setSearchAnyText ] = useState("")
-	const [ query, setQuery ] = useState(worksQuery({}))
+	const [searchAnyText, setSearchAnyText] = useState("")
+	const [query, setQuery] = useState(worksQuery({}))
 
 	const menu = useRef<Menu>(null)
 
 	useEffect(() => {
 		const q = worksQuery(ao3Query).paramsAsQuery()
-		if (q.anyField)
-			setSearchAnyText(q.anyField)
-		else
-			setSearchAnyText("")
-	}, [ ao3Query ])
+		if (q.anyField) setSearchAnyText(q.anyField)
+		else setSearchAnyText("")
+	}, [ao3Query])
 
 	// useEffect(() => {
 	// setQuery(worksQuery)
 	// }, [searchAnyText])
 
-	const submitHander: TextInputProps[ "onSubmitEditing" ] = (e) => {
+	const submitHander: TextInputProps["onSubmitEditing"] = (e) => {
 		const q = worksQuery({
-			anyField: searchAnyText.trim()
+			anyField: searchAnyText.trim(),
 		})
 
 		router.replace("/search")
 		router.setParams({
-			ao3Query: q.paramsAsJSON()
+			ao3Query: q.paramsAsJSON(),
 		})
 	}
 
@@ -54,10 +67,10 @@ export default function SearchBar() {
 			display: "flex",
 			flexDirection: "row",
 			gap: 10,
-			alignItems: "center"
+			alignItems: "center",
 		},
 		searchBarText: {
-			color: "white"
+			color: "white",
 		},
 		searchInput: {
 			borderStyle: "solid",
@@ -66,11 +79,11 @@ export default function SearchBar() {
 			borderRadius: 50,
 			paddingHorizontal: 15,
 			color: "white",
-			flexGrow: 1
+			flexGrow: 1,
 		},
 		searchBarBtn: {
-			color: "white"
-		}
+			color: "white",
+		},
 	})
 
 	const pathname = usePathname()
@@ -89,10 +102,8 @@ export default function SearchBar() {
 					placeholder="Search for works..."
 					placeholderTextColor={"lightgrey"}
 				/>
-				<IconBtn style={style.searchBarBtn} iconStyle={{ color: "grey" }} name="filter-outline" size={32} disabled />
-				{/* <IconBtn style={style.searchBarBtn} iconStyle={{ color: "white" }} name="dots-vertical" size={32}
-					onPress={() => menu.current?.open()}
-				/> */}
+				{/* <IconBtn style={style.searchBarBtn} iconStyle={{ color: "grey" }} name="filter-outline" size={32} disabled /> */}
+
 				<Menu
 					ref={menu}
 					name="search-extra-options"
@@ -100,39 +111,66 @@ export default function SearchBar() {
 					<MenuTrigger
 						customStyles={{
 							TriggerTouchableComponent: IconBtn,
-							triggerTouchable: { name: "dots-vertical", size: 32, iconStyle: { color: "white" } }
+							triggerTouchable: {
+								name: "dots-vertical",
+								size: 32,
+								iconStyle: { color: "white" },
+							},
 						}}
-					>
-						{/* <MaterialCommunityIcons style={{ color: "white" }} name="dots-vertical" size={32} /> */}
-					</MenuTrigger>
+					></MenuTrigger>
 					<MenuOptions
-						customStyles={{
-							// optionsContainer: {
-							// 	marginTop: 32
-							// }
-						}}
-					>
-						{pathname == "/search" &&
-							<MenuOption text="Save search" onSelect={() => {
-								saveQuery(worksQuery(ao3Query))
-									.then(() => {
-										ToastAndroid.show("Search saved", ToastAndroid.SHORT)
-									})
-									.catch((err) => {
-										if (err.message == SaveQueryErrors.alreadyExists)
-											ToastAndroid.show("Already saved", ToastAndroid.SHORT)
-									})
-							}} />
+						customStyles={
+							{
+								// optionsContainer: {
+								// 	marginTop: 32
+								// }
+							}
 						}
-						<MenuOption text="Saved searches" onSelect={() => router.push("/search/savedSearches")} />
-						<MenuOption text="History" disabled />
-						<MenuOption text="Settings" onSelect={() => {
-							router.push("/settings")
-							// update({ savedSearchesAsDefault: !settings.savedSearchesAsDefault })
-						}} />
+					>
+						{pathname == "/search" && (
+							<MenuOption
+								text="Save search"
+								onSelect={() => {
+									saveQuery(worksQuery(ao3Query))
+										.then(() => {
+											ToastAndroid.show(
+												"Search saved",
+												ToastAndroid.SHORT
+											)
+										})
+										.catch((err) => {
+											if (
+												err.message ==
+												SaveQueryErrors.alreadyExists
+											)
+												ToastAndroid.show(
+													"Already saved",
+													ToastAndroid.SHORT
+												)
+										})
+								}}
+							/>
+						)}
+						<MenuOption
+							text="Saved searches"
+							onSelect={() =>
+								router.push("/search/savedSearches")
+							}
+						/>
+						{/* <MenuOption
+							text="History"
+							disabled
+						/> */}
+						<MenuOption
+							text="Settings"
+							onSelect={() => {
+								router.push("/settings")
+								// update({ savedSearchesAsDefault: !settings.savedSearchesAsDefault })
+							}}
+						/>
 					</MenuOptions>
 				</Menu>
-			</Header >
+			</Header>
 		</>
 	)
 }
