@@ -116,6 +116,7 @@ export default function ChapterReaderLayout() {
 							size={32}
 							iconStyle={{ color: "white" }}
 							onPress={() => {
+								work.setSaved(!work.isSaved)
 								// if (workDb.data)
 								// 	updateWork({
 								// 		workId: workDb.data.workId,

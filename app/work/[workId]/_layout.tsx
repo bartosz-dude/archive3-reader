@@ -19,6 +19,9 @@ import getReadthrough from "../../../services/saver/database/getReadthrough"
 import getWork from "../../../services/saver/database/getWork"
 import updateReadthrough from "../../../services/saver/database/updateReadthrough"
 import updateWork from "../../../services/saver/database/updateWork"
+import getSavedWork from "../../../services/saver/database/getSavedWork"
+import updateSavedWork from "../../../services/saver/database/updateSavedWork"
+import deleteSavedWork from "../../../services/saver/database/deleteSavedWork"
 
 const WorkContext = createContext<unknown>(null)
 
@@ -39,6 +42,7 @@ export default function WorkReaderLayout() {
 
 	const workDb = useLoading(() => getWork(parseInt(workId)))
 	const readDb = useLoading(() => getReadthrough(parseInt(workId), 0))
+	const savedWorkDb = useLoading(() => getSavedWork(parseInt(workId)))
 
 	const chapter = () => work.data?.chapters[currentChapter]
 	const currentChapterFromList = () => ({
@@ -127,7 +131,7 @@ export default function WorkReaderLayout() {
 				// })
 				setCurrentChapter(chapter)
 				work.reload()
-				console.log("navigate")
+				// console.log("navigate")
 			}
 		},
 		currentChapterFromList: () => currentChapterFromList(),
@@ -136,6 +140,29 @@ export default function WorkReaderLayout() {
 		chapterList: chaptersList,
 		work: work,
 		isSaved: workDb.data?.isSaved,
+		setSaved: (isSaved: boolean) => {
+			if (meta && chaptersList) {
+				updateWork({
+					workId: meta.id,
+					isSaved: isSaved,
+				}).then(() => workDb.reload())
+
+				if (isSaved)
+					updateSavedWork({
+						workId: meta.id,
+						title: meta.title,
+						summary: meta.summary,
+						tags: meta.tags,
+						stats: meta.stats,
+						chaptersList: chaptersList,
+						language: meta.language,
+						authors: meta.authors,
+					}).then(() => savedWorkDb.reload())
+				else deleteSavedWork(meta.id).then(() => savedWorkDb.reload())
+			}
+
+			return
+		},
 	}
 
 	return (
@@ -196,5 +223,6 @@ export function useWorkContext() {
 			reload: () => void
 		}
 		isSaved: boolean | undefined
+		setSaved: (isSaved: boolean) => void
 	}
 }
