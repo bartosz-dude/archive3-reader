@@ -19,6 +19,7 @@ import parseDataHandle from "../../tools/parseDataHandle"
 import { DataHandle, LoadingStatusText } from "../../types/common"
 import { DBReadthrough, DBSavedWork, DBWork } from "../../types/database"
 import { View, Text } from "react-native"
+import useUpdater from "../../hooks/useUpdater"
 
 const ReaderContext = createContext<unknown>(null)
 
@@ -69,7 +70,9 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 		localWork.savedWorkDataHandle.status,
 	])
 
+	const [workFetchUpdater, workFetchUpdate] = useUpdater()
 	const fetchCounter = useRef(0)
+
 	const work = useLoading(async () => {
 		if (localWork.savedWorkDataHandle.data !== null) {
 			fetchCounter.current += 1
@@ -83,8 +86,6 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 
 					return "first"
 				})()
-				// localWork.savedWorkDataHandle.data.chaptersList[currentChapter]
-				// .id ?? "first"
 			)
 		}
 		if (noData(read.dataHandle) || noData(localWork.savedWorkDataHandle)) {
@@ -95,14 +96,33 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 			)
 		}
 		return null
+	}, [workFetchUpdater])
+
+	useEffect(() => {
+		if (work.data?.chapters[0].chapter === 0) return
+
+		if (
+			work.status == "success" &&
+			work.data?.chapters[0].chapter !== currentChapter + 1
+		) {
+			workFetchUpdate()
+		}
 	}, [forWorkLocal, isProgressFromLocal, currentChapter])
 
-	// in case some bug throws into fetch-looping, this will break it
+	// in case some bug throws into work loading into fetch-looping, this will break it
 	useEffect(() => {
 		if (fetchCounter.current > 3)
 			throw new Error("too many requests, wait before trying again")
 
 		console.log(work.status, fetchCounter.current)
+		if (fetchCounter.current > 0) {
+			const resetTimeout = setTimeout(() => {
+				fetchCounter.current = 0
+			}, 1000)
+			return () => {
+				clearTimeout(resetTimeout)
+			}
+		}
 	}, [work.status])
 
 	const managerLoading = useLoadingHandler([
@@ -113,7 +133,6 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 
 	useEffect(() => {
 		if (work.status == "failed") throw work.error
-
 		if (loaded(work) && work.data !== null) {
 			localWork.saveLocalWork(work.data)
 		}
