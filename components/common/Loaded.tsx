@@ -1,53 +1,34 @@
 import { PropsWithChildren, ReactNode, useEffect, useState } from "react"
+import { LoadingStatus, LoadingStatusText } from "../../types/common"
+import useLoadingHandler from "../../hooks/useLoadingHandler"
 
-type LoadingStatus = "loading" | "loaded" | "failed"
+// type LoadingStatus = "loading" | "loaded" | "failed"
 
-export default function Loaded({
-	isLoading,
-	loading,
-	fallback,
-	children,
-	options = { loadingDelay: 0, immediatelyShowLoading: false },
-}: {
-	isLoading: boolean | LoadingStatus | LoadingStatus[]
-	loading?: JSX.Element
-	fallback?: JSX.Element
-	options?: { loadingDelay?: number; immediatelyShowLoading?: boolean }
-} & PropsWithChildren) {
-	const [loadingDelayReached, setLoadingDelayReached] = useState(false)
+/**
+ * Based on isLoading status render different elements
+ * @param loading renders when status is either false or "loading"
+ * @param fallback renders when status is "failed"
+ * @param children renders when status is either true or "loaded"
+ */
+export default function Loaded(
+	props: {
+		isLoading: LoadingStatus
+		loading?: JSX.Element
+		fallback?: JSX.Element
+	} & PropsWithChildren
+) {
+	const loadingStatus = useLoadingHandler(props.isLoading)
 
-	const loadingDelay = setTimeout(() => {
-		setLoadingDelayReached(true)
-	}, 4)
+	if (typeof loadingStatus == "boolean") {
+		return <>{loadingStatus ? props.children : props.loading}</>
+	}
 
-	const [loadingStatus, setLoadingStatus] = useState<LoadingStatus | boolean>(
-		"loading"
-	)
-
-	useEffect(() => {
-		if (Array.isArray(isLoading)) {
-			if (isLoading.find((v) => v == "failed")) setLoadingStatus("failed")
-			if (isLoading.find((v) => v == "loading"))
-				setLoadingStatus("loading")
-			if (isLoading.every((v) => v == "loaded"))
-				setLoadingStatus("loaded")
-		} else {
-			setLoadingStatus(isLoading)
-		}
-	}, [isLoading])
-
-	if (
-		(typeof loadingStatus == "boolean" && loadingStatus) ||
-		(typeof loadingStatus == "string" && loadingStatus == "loading")
-	)
-		return <>{loading && <>{loading}</>}</>
-
-	if (typeof loadingStatus == "string" && loadingStatus == "failed")
-		return <>{fallback && <>{fallback}</>}</>
-
-	if (
-		(typeof loadingStatus == "boolean" && !loadingStatus) ||
-		(typeof loadingStatus == "string" && loadingStatus == "loaded")
-	)
-		return <>{children && <>{children}</>}</>
+	switch (loadingStatus) {
+		case "loading":
+			return <>{props.loading}</>
+		case "failed":
+			return <>{props.fallback}</>
+		case "success":
+			return <>{props.children}</>
+	}
 }

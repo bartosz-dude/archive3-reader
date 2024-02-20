@@ -19,9 +19,11 @@ import Header from "../../../../components/common/Header"
 import { AO3Work } from "../../../../services/ao3/types/work"
 import Loaded from "../../../../components/common/Loaded"
 import { useWorkContext } from "../_layout"
+import { useReaderContext } from "../../../../components/reader/ReaderManager"
+import LoadingIndicator from "../../../../components/common/LoadingIndicator"
 
 export default function ChapterReaderLayout() {
-	const work = useWorkContext()
+	const reader = useReaderContext()
 
 	const style = useStyle({
 		titleColumn: {
@@ -40,34 +42,41 @@ export default function ChapterReaderLayout() {
 
 	return (
 		<>
-			<Header>
-				<View style={style.titleColumn}>
-					{/* work title */}
-					<Loaded
-						isLoading={work.currentMeta().status}
-						loading={<Text></Text>}
-					>
+			<Loaded
+				isLoading={reader.meta.status}
+				loading={
+					<>
+						<Header>
+							<View>
+								<Text style={style.titleText}></Text>
+								<Text style={style.titleText}></Text>
+							</View>
+						</Header>
+					</>
+				}
+			>
+				<Header>
+					<View style={style.titleColumn}>
+						{/* work title */}
 						<Text
 							style={style.titleText}
 							ellipsizeMode="tail"
 							numberOfLines={1}
 						>
-							{work.currentMeta().data?.title}
+							{reader.meta.data?.title}
 						</Text>
-					</Loaded>
-					{/* chapter name */}
-					<Loaded
-						isLoading={work.currentChapterFromList().status}
-						loading={<Text></Text>}
-					>
+
 						<Link
 							href={"../chapterSelect"}
 							style={style.titleText}
 							ellipsizeMode="tail"
 							numberOfLines={1}
+							onPress={() => {
+								// work.endReadingSession()
+							}}
 							disabled={(() => {
 								const maxChapters =
-									work.currentMeta().data?.stats.maxChapters
+									reader.meta.data?.stats.maxChapters
 
 								return maxChapters && maxChapters == 1
 									? true
@@ -75,14 +84,15 @@ export default function ChapterReaderLayout() {
 							})()}
 						>
 							{(() => {
-								const chapter =
-									work.currentChapterFromList().data
+								const chapter = reader.currentChapter
 								const maxChapters =
-									work.currentMeta().data?.stats.maxChapters
+									reader.meta.data?.stats.maxChapters
 
-								const title =
-									chapter?.title ??
-									work.work.data?.chapters[0].title
+								const title = chapter?.title ?? ""
+								// work.work.data?.chapters[0].title
+
+								if (title == `Chapter ${chapter.chapter + 1}`)
+									return title
 
 								if (
 									title &&
@@ -90,7 +100,7 @@ export default function ChapterReaderLayout() {
 										(maxChapters && maxChapters > 1))
 								) {
 									return `Chapter ${
-										work.currentChapter + 1
+										chapter.chapter + 1
 									}: ${title}`
 								}
 
@@ -98,41 +108,30 @@ export default function ChapterReaderLayout() {
 									maxChapters === null ||
 									(maxChapters && maxChapters > 1)
 								) {
-									return `Chapter ${work.currentChapter + 1}`
+									return `Chapter ${chapter.chapter + 1}`
 								}
 
 								if (chapter?.title) return `${title}`
 							})()}
 						</Link>
-					</Loaded>
-				</View>
-				{/* save work btn */}
-				<View>
-					<Loaded isLoading={work.currentMeta().status}>
+					</View>
+					{/* save work btn */}
+					<View>
 						<IconBtn
 							name={
-								work.isSaved ? "bookmark" : "bookmark-outline"
+								reader.local.data?.isSaved
+									? "bookmark"
+									: "bookmark-outline"
 							}
 							size={32}
 							iconStyle={{ color: "white" }}
 							onPress={() => {
-								work.setSaved(!work.isSaved)
-								// if (workDb.data)
-								// 	updateWork({
-								// 		workId: workDb.data.workId,
-								// 		availableChapters:
-								// 			workDb.data.availableChapters,
-								// 		isOffline: workDb.data.isOffline,
-								// 		isSaved: !workDb.data.isSaved,
-								// 		lastUpdate: workDb.data.lastUpdate,
-								// 		totalChapters:
-								// 			workDb.data.totalChapters,
-								// 	}).then(() => workDb.reload())
+								reader.setSavedWork(!reader.local.data?.isSaved)
 							}}
 						/>
-					</Loaded>
-				</View>
-			</Header>
+					</View>
+				</Header>
+			</Loaded>
 			<Slot />
 		</>
 	)

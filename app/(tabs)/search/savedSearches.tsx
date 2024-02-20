@@ -1,18 +1,18 @@
-import { FlatList, Text, View } from "react-native";
-import useLoading from "../../../hooks/useLoading";
-import getSavedQueries from "../../../services/saver/api/getSavedQueries";
-import Loaded from "../../../components/common/Loaded";
-import Foreach from "../../../components/common/Foreach";
-import { useEffect } from "react";
-import LoadingIndicator from "../../../components/common/LoadingIndicator";
-import worksQuery from "../../../services/ao3/api/worksQuery";
-import workSearchObj from "../../../services/ao3/tools/workSearchObj";
-import SaveSearchItem from "../../../components/search/savedSearchItem";
-import SearchBarTitle from "../../../components/search/searchBarTitle";
-import useStyle from "../../../hooks/useStyle";
+import { FlatList, Text, View } from "react-native"
+import useLoading from "../../../hooks/useLoading"
+import getSavedQueries from "../../../services/saver/api/getSavedQueries"
+import Loaded from "../../../components/common/Loaded"
+import Foreach from "../../../components/common/Foreach"
+import { useEffect } from "react"
+import LoadingIndicator from "../../../components/common/LoadingIndicator"
+import worksQuery from "../../../services/ao3/api/worksQuery"
+import workSearchObj from "../../../services/ao3/tools/workSearchObj"
+import SaveSearchItem from "../../../components/search/savedSearchItem"
+import SearchBarTitle from "../../../components/search/searchBarTitle"
+import useStyle from "../../../hooks/useStyle"
+import { useNavigation } from "expo-router"
 
 export default function SavedSearches() {
-
 	const savedQueries = useLoading(getSavedQueries, [])
 
 	const style = useStyle({
@@ -21,8 +21,8 @@ export default function SavedSearches() {
 		// },
 		noSavedText: {
 			textAlign: "center",
-			marginTop: 40
-		}
+			marginTop: 40,
+		},
 	})
 
 	return (
@@ -36,32 +36,37 @@ export default function SavedSearches() {
 			>
 				<>
 					<Loaded
-						isLoading={(savedQueries.data === null || savedQueries.data.length == 0) ? "failed" : "loaded"}
-						fallback={<Text style={style.noSavedText}>No saved searches</Text>}
+						isLoading={
+							!(
+								savedQueries.data === null ||
+								savedQueries.data.length == 0
+							)
+						}
+						fallback={
+							<Text style={style.noSavedText}>
+								No saved searches
+							</Text>
+						}
 					>
-						{/* <Foreach
-							list={savedQueries.data as string[]}
-							each={(item, i) => {
-								// const query = worksQuery(item).paramsAsObj()
-								// console.log(query)
-								// const a = workSearchObj(worksQuery(item).url)
-								// console.log("obj", a)
-								const query = worksQuery(item).paramsAsQuery()
-
-								return (
-									<Text key={i}>{query.anyField}</Text>
-								)
-							}}
-						/> */}
 						<FlatList
 							data={savedQueries.data as string[]}
 							renderItem={(item) => {
-								// const query = worksQuery(item.item).paramsAsQuery()
-								return <SaveSearchItem key={item.index} query={item.item} />
+								return (
+									<SaveSearchItem
+										key={item.index}
+										query={item.item}
+									/>
+								)
 							}}
-							ItemSeparatorComponent={() =>
-								<View style={{ height: 1, backgroundColor: "lightgrey", marginHorizontal: 10 }} />
-							}
+							ItemSeparatorComponent={() => (
+								<View
+									style={{
+										height: 1,
+										backgroundColor: "lightgrey",
+										marginHorizontal: 10,
+									}}
+								/>
+							)}
 						/>
 					</Loaded>
 				</>

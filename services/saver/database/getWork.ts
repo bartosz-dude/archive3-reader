@@ -2,15 +2,18 @@ import * as SQLite from "expo-sqlite"
 import { DBReadthrough, DBWork, SQLWork } from "../../../types/database"
 
 export default async function getWork(workId: number) {
-	const db = SQLite.openDatabase('archive3storage.db')
+	const db = SQLite.openDatabase("archive3storage.db")
 
 	let workContent
 
-	await db.transactionAsync(async tx => {
+	await db.transactionAsync(async (tx) => {
 		try {
-			const entry = await tx.executeSqlAsync(`SELECT * FROM 'works' WHERE work_id = ?`, [ workId ])
+			const entry = await tx.executeSqlAsync(
+				`SELECT * FROM 'works' WHERE work_id = ?`,
+				[workId]
+			)
 			// console.log("entry", entry)
-			workContent = entry.rows[ 0 ] as SQLWork ?? null
+			workContent = (entry.rows[0] as SQLWork) ?? null
 			if (workContent) {
 				// console.log("workContent", workContent)
 				workContent = {
@@ -19,7 +22,9 @@ export default async function getWork(workId: number) {
 					isSaved: workContent.is_saved == 1,
 					lastUpdate: new Date(workContent.last_update),
 					totalChapters: workContent.total_chapters,
-					workId: workContent.work_id
+					workId: workContent.work_id,
+					hasNewChapters: workContent.has_new_chapters,
+					newChapters: workContent.new_chapters,
 				} as DBWork
 			}
 		} catch (error) {
@@ -28,5 +33,5 @@ export default async function getWork(workId: number) {
 		}
 	})
 
-	return workContent as unknown as (DBWork | null)
+	return workContent as unknown as DBWork | null
 }

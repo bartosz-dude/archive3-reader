@@ -10,7 +10,7 @@ import {
 	View,
 	TextInput,
 	Text,
-	ToastAndroid,
+	// ToastAndroid,
 } from "react-native"
 import {
 	Menu,
@@ -133,20 +133,21 @@ export default function SearchBar() {
 								onSelect={() => {
 									saveQuery(worksQuery(ao3Query))
 										.then(() => {
-											ToastAndroid.show(
-												"Search saved",
-												ToastAndroid.SHORT
-											)
+											// ToastAndroid.show(
+											// 	"Search saved",
+											// 	ToastAndroid.SHORT
+											// )
 										})
 										.catch((err) => {
 											if (
 												err.message ==
 												SaveQueryErrors.alreadyExists
 											)
-												ToastAndroid.show(
-													"Already saved",
-													ToastAndroid.SHORT
-												)
+												return
+											// ToastAndroid.show(
+											// 	"Already saved",
+											// 	ToastAndroid.SHORT
+											// )
 										})
 								}}
 							/>

@@ -4,7 +4,7 @@ import getDB from "../../database/getDB";
 
 export enum SaveQueryErrors {
 	alreadyExists = "entry already exists",
-	tableNotFound = "table not found"
+	// tableNotFound = "table not found"
 }
 
 export default async function saveQuery(query: ReturnType<typeof worksQuery>) {

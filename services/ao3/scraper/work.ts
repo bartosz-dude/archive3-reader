@@ -1,38 +1,64 @@
 // import parse from "node-html-parser"
-import * as htmlParser from "htmlparser2";
-import { testHtml2 } from "../../../assets/testHtml2";
-import { AO3Work, MetaNumberStat, MetaTag, MetaTextStat } from "../types/work";
-import { testHtml3 } from "../../../assets/testHtml3";
-import { findAll, findOne, textContent } from "domutils";
-import nCleaner from "../tools/nCleaner";
-import htmlPruner from "../tools/htmlPruner";
-import { DomUtils, parseDocument } from "htmlparser2";
-import { AnyNode } from "domhandler";
-import findAllBy from "../tools/findAllBy";
-import findOneBy from "../tools/findOneBy";
-import cleanTextContent from "../tools/cleanTextContent";
-import parseComaDecToInt from "../tools/parseComaDecToInt";
+import * as htmlParser from "htmlparser2"
+import { testHtml2 } from "../../../assets/testHtml2"
+import { AO3Work, MetaNumberStat, MetaTag, MetaTextStat } from "../types/work"
+import { testHtml3 } from "../../../assets/testHtml3"
+import { findAll, findOne, textContent } from "domutils"
+import nCleaner from "../tools/nCleaner"
+import htmlPruner from "../tools/htmlPruner"
+import { DomUtils, parseDocument } from "htmlparser2"
+import { AnyNode } from "domhandler"
+import findAllBy from "../tools/findAllBy"
+import findOneBy from "../tools/findOneBy"
+import cleanTextContent from "../tools/cleanTextContent"
+import parseComaDecToInt from "../tools/parseComaDecToInt"
 import { Element } from "domhandler"
-
 
 export enum WorkScraperError {
 	noChapter = "No chapter section found",
 	noMeta = "No meta section found",
 	noTitle = "No title section found",
-	noArticle = "No article found"
+	noArticle = "No article found",
 }
 
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
 // export function workScrapper(workId: number, chapter?: number): Promise<AO3Work>
 // export function workScrapper(workId: number, chapterId?: string): Promise<AO3Work>
-export function workScraper(workId: number, chapterId: string): Promise<AO3Work> {
+export function workScraper(
+	workId: number,
+	chapterId: string
+): Promise<AO3Work> {
 	const asyncParsing = new Promise<AO3Work>(async (resolve, reject) => {
 		try {
 			// console.log("link", `https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`)
 
-			const htmlStr = !(chapterId == "first") ?
-				await fetch(`https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`)
-				:
-				await fetch(`https://archiveofourown.org/works/${workId}?view_adult=true`)
+			const htmlStr = await (async () => {
+				let tryCounter = 0
+				let htmlData = null
+				while (htmlData === null) {
+					const data = !(chapterId == "first")
+						? await fetch(
+								`https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`
+						  )
+						: await fetch(
+								`https://archiveofourown.org/works/${workId}?view_adult=true`
+						  )
+					// if (data.status === 429)
+					if (data.ok) {
+						return data
+					}
+					tryCounter++
+
+					if (tryCounter >= 3)
+						throw new Error(
+							"Could not reach ao3; too many attempts"
+						)
+
+					await delay(5000)
+				}
+
+				return htmlData
+			})()
 
 			const htmlText = await htmlStr.text()
 			// const htmlText = testHtml3
@@ -43,7 +69,9 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 			// if (!htmlParser)
 			// 	reject("")
 			// const htmlStr = testHtml3
-			const prunedHtmlStr = htmlText.split("</head>")[ 1 ].split("<script")[ 0 ]
+			const prunedHtmlStr = htmlText
+				.split("</head>")[1]
+				.split("<script")[0]
 
 			// console.log("prune", prunedHtmlStr)
 
@@ -54,12 +82,13 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 
 				htmlParser.DomUtils.findAll((elem) => {
 					// gets the parent containing the tags then the tags, because you can't get attribs on a elem.parent
-					if (elem.attribs[ "class" ] == `${type} tags` &&
-						elem.name == "dd") {
+					if (
+						elem.attribs["class"] == `${type} tags` &&
+						elem.name == "dd"
+					) {
 						htmlParser.DomUtils.findAll((elem) => {
-
-							if (elem.attribs[ "class" ] == "tag") {
-								const tag = elem.children[ 0 ]
+							if (elem.attribs["class"] == "tag") {
+								const tag = elem.children[0]
 
 								if (tag.type == "text") {
 									tags.push(tag.data)
@@ -79,18 +108,26 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 			function metaStatParser(type: "maxChapters"): number | null
 			function metaStatParser(type: MetaNumberStat): number
 			function metaStatParser(type: MetaTextStat): string
-			function metaStatParser(type: MetaNumberStat | MetaTextStat): number | string | null {
+			function metaStatParser(
+				type: MetaNumberStat | MetaTextStat
+			): number | string | null {
 				let stat: any
 
 				htmlParser.DomUtils.findAll((elem) => {
-					if (elem.attribs[ "class" ] == `${type == "maxChapters" ? "chapters" : type}` &&
-						elem.name == "dd") {
-						const text = elem.children[ 0 ]
+					if (
+						elem.attribs["class"] ==
+							`${type == "maxChapters" ? "chapters" : type}` &&
+						elem.name == "dd"
+					) {
+						const text = elem.children[0]
 
 						if (type == "bookmarks") {
-							const bookmarkText = htmlParser.DomUtils.getChildren(text)[ 0 ]
+							const bookmarkText =
+								htmlParser.DomUtils.getChildren(text)[0]
 							if (bookmarkText.type == "text") {
-								stat = parseInt(bookmarkText.data.replace(",", ""))
+								stat = parseInt(
+									bookmarkText.data.replace(",", "")
+								)
 							}
 						}
 
@@ -100,8 +137,9 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 								case "chapters": {
 									stat = text.data
 										.split("/")
-										.map((v) => parseInt(v.replace(",", "")))
-									[ type == "chapters" ? 0 : 1 ]
+										.map((v) =>
+											parseInt(v.replace(",", ""))
+										)[type == "chapters" ? 0 : 1]
 									break
 								}
 								case "words":
@@ -121,8 +159,7 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 					return false
 				}, dom.children)
 
-				if (typeof stat != "string" && isNaN(stat))
-					return null
+				if (typeof stat != "string" && isNaN(stat)) return null
 
 				if (!stat) {
 					return null
@@ -132,28 +169,47 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 			}
 
 			function otherParser(elemName: string, classStr: string) {
-				return (htmlParser.DomUtils
-					.findAll((elem) => elem.name == elemName && elem.attribs[ "class" ] == classStr, dom.children)
-					.map((v) => v.children[ 0 ].type == "text" && v.children[ 0 ].data)
-					.filter((v) => typeof v == "string") as string[])
-					.map((v) => v.replace(/\r?\n|\r/g, ""))
+				return (
+					htmlParser.DomUtils.findAll(
+						(elem) =>
+							elem.name == elemName &&
+							elem.attribs["class"] == classStr,
+						dom.children
+					)
+						.map(
+							(v) =>
+								v.children[0].type == "text" &&
+								v.children[0].data
+						)
+						.filter((v) => typeof v == "string") as string[]
+				).map((v) => v.replace(/\r?\n|\r/g, ""))
 			}
 
 			const work: AO3Work = {
 				meta: {
 					id: workId,
 
-					language: otherParser("dd", "language")[ 0 ],
-					title: otherParser("h2", "title heading")[ 0 ],
+					language: otherParser("dd", "language")[0],
+					title: otherParser("h2", "title heading")[0],
 
-					authors: htmlParser.DomUtils
-						.findAll((elem) => elem.attribs[ "rel" ] == "author", dom.children)
-						.map((v) => v.children[ 0 ].type == "text" && v.children[ 0 ].data)
+					authors: htmlParser.DomUtils.findAll(
+						(elem) => elem.attribs["rel"] == "author",
+						dom.children
+					)
+						.map(
+							(v) =>
+								v.children[0].type == "text" &&
+								v.children[0].data
+						)
 						.filter((v) => typeof v == "string") as string[],
 
 					summary: (() => {
-						const blockquote = htmlParser.DomUtils
-							.findOne((elem) => elem.name == "blockquote" && elem.attribs[ "class" ] == "userstuff", dom.children)
+						const blockquote = htmlParser.DomUtils.findOne(
+							(elem) =>
+								elem.name == "blockquote" &&
+								elem.attribs["class"] == "userstuff",
+							dom.children
+						)
 
 						if (blockquote) {
 							return blockquote.children
@@ -171,8 +227,8 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 						categories: metaTagParser("category"),
 						characters: metaTagParser("character"),
 						fandoms: metaTagParser("fandom"),
-						rating: metaTagParser("rating")[ 0 ],
-						relationships: metaTagParser("relationship")
+						rating: metaTagParser("rating")[0],
+						relationships: metaTagParser("relationship"),
 					},
 
 					stats: {
@@ -184,18 +240,26 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 						maxChapters: metaStatParser("maxChapters"),
 						published: metaStatParser("published"),
 						updated: metaStatParser("status"),
-						words: metaStatParser("words")
-					}
+						words: metaStatParser("words"),
+					},
 				},
 				chapterslist: (() => {
 					// if (chapterId) {
 					// for a single chapter view
-					const chapters = htmlParser.DomUtils.findAll((elem) => elem.name == "option" && elem.attribs[ "value" ].length > 0, dom.children)
+					const chapters = htmlParser.DomUtils.findAll(
+						(elem) =>
+							elem.name == "option" &&
+							elem.attribs["value"].length > 0,
+						dom.children
+					)
 					return chapters.map((v) => {
 						return {
-							id: parseInt(v.attribs[ "value" ]),
+							id: parseInt(v.attribs["value"]),
 							// @ts-expect-error
-							title: (v.children[ 0 ].data as string).replace(/^\d*\. /, "")
+							title: (v.children[0].data as string).replace(
+								/^\d*\. /,
+								""
+							),
 						}
 					})
 					// } else {
@@ -218,34 +282,76 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 				chapters: (() => {
 					// console.log("chapters")
 					// if (chapterId) {
-					const chapter = htmlParser.DomUtils.findAll((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)[ 0 ]
-					const [ chapterTitleSection, chapterContent, chapaterEndSection ] = [ chapter.children[ 1 ], chapter.children[ 3 ], chapter.children[ 5 ] ]
-					return [ {
-						chapter: parseInt(htmlParser.DomUtils
-							.findOne((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)
-							?.attribs[ "id" ]
-							.replace(/chapter-/, "") ?? "-1"),
-						id: workId,
-						// @ts-expect-error
-						title: htmlParser.DomUtils.textContent(chapterTitleSection.children[ 1 ])
-							.replace(/\r?\n|\r/g, "")
-							.replace(/^Chapter \d*: /, ""),
-						// @ts-expect-error
-						summary: chapterTitleSection.children[ 3 ]?.children[ 3 ]?.children[ 1 ]?.children[ 0 ].data ?? "",
-						// @ts-expect-error
-						startNotes: chapterTitleSection.children[ 5 ]?.children[ 3 ] ? htmlParser.DomUtils.textContent(chapterTitleSection.children[ 5 ]?.children[ 3 ]).replace(/\r?\n|\r/g, "") : "",
-						// @ts-expect-error
-						endNotes: chapaterEndSection?.children[ 1 ]?.children[ 3 ] ? htmlParser.DomUtils.textContent(chapaterEndSection?.children[ 1 ]?.children[ 3 ]).replace(/\r?\n|\r/g, "") : "",
-						// @ts-expect-error
-						content: chapterContent.children
-							.slice(3, -1)
+					const chapter = htmlParser.DomUtils.findAll(
+						(elem) =>
+							elem.name == "div" &&
+							elem.attribs["class"] == "chapter",
+						dom.children
+					)[0]
+					const [
+						chapterTitleSection,
+						chapterContent,
+						chapaterEndSection,
+					] = [
+						chapter.children[1],
+						chapter.children[3],
+						chapter.children[5],
+					]
+					return [
+						{
+							chapter: parseInt(
+								htmlParser.DomUtils.findOne(
+									(elem) =>
+										elem.name == "div" &&
+										elem.attribs["class"] == "chapter",
+									dom.children
+								)?.attribs["id"].replace(/chapter-/, "") ?? "-1"
+							),
+							id: workId,
+							title: htmlParser.DomUtils.textContent(
+								// @ts-expect-error
+								chapterTitleSection.children[1]
+							)
+								.replace(/\r?\n|\r/g, "")
+								.replace(/^Chapter \d*: /, ""),
+							summary:
+								// @ts-expect-error
+								chapterTitleSection.children[3]?.children[3]
+									?.children[1]?.children[0].data ?? "",
 							// @ts-expect-error
-							.map((v) => textContent(v.children).replace(/(\r\n|\n|\r)/gm, ""))
-						// content: chapterContent.children
-						// 	.slice(3, -1)
-						// 	// @ts-expect-error
-						// 	.map((v) => textContent(nCleaner(v.children)).replace(/^\d*\. /, ""))
-					} ]
+							startNotes: chapterTitleSection.children[5]
+								?.children[3]
+								? htmlParser.DomUtils.textContent(
+										// @ts-expect-error
+										chapterTitleSection.children[5]
+											?.children[3]
+								  ).replace(/\r?\n|\r/g, "")
+								: "",
+							// @ts-expect-error
+							endNotes: chapaterEndSection?.children[1]
+								?.children[3]
+								? htmlParser.DomUtils.textContent(
+										// @ts-expect-error
+										chapaterEndSection?.children[1]
+											?.children[3]
+								  ).replace(/\r?\n|\r/g, "")
+								: "",
+							// @ts-expect-error
+							content: chapterContent.children
+								.slice(3, -1)
+								// @ts-expect-error
+								.map((v) =>
+									textContent(v.children).replace(
+										/(\r\n|\n|\r)/gm,
+										""
+									)
+								),
+							// content: chapterContent.children
+							// 	.slice(3, -1)
+							// 	// @ts-expect-error
+							// 	.map((v) => textContent(nCleaner(v.children)).replace(/^\d*\. /, ""))
+						},
+					]
 					// } else {
 					// 	const chapters = htmlParser.DomUtils.findAll((elem) => elem.name == "div" && elem.attribs[ "class" ] == "chapter", dom.children)
 					// 	return chapters.map((v) => {
@@ -272,9 +378,8 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 					// 		}
 					// 	})
 					// }
-				})()
+				})(),
 			}
-
 
 			// console.log("parWork", work)
 			resolve(work)
@@ -287,12 +392,18 @@ export function workScraper(workId: number, chapterId: string): Promise<AO3Work>
 	return asyncParsing
 }
 
-export async function workScraperNew(workId: number, chapterId: string): Promise<AO3Work> {
+export async function workScraperNew(
+	workId: number,
+	chapterId: number | "first"
+): Promise<AO3Work> {
 	// return new Promise<AO3Work>(async (resolve, reject) => {
-	const fetchedHtml = !(chapterId == "first") ?
-		await fetch(`https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`)
-		:
-		await fetch(`https://archiveofourown.org/works/${workId}?view_adult=true`)
+	const fetchedHtml = !(chapterId === "first")
+		? await fetch(
+				`https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`
+		  )
+		: await fetch(
+				`https://archiveofourown.org/works/${workId}?view_adult=true`
+		  )
 
 	const htmlText = await fetchedHtml.text()
 	const prunedHtmlStr = htmlPruner(htmlText)
@@ -300,20 +411,23 @@ export async function workScraperNew(workId: number, chapterId: string): Promise
 	const dom = parseDocument(prunedHtmlStr)
 
 	const metaContainer = findOneBy("class", "work meta group", dom.children)
-	const chapterContainer = findOneBy("id", "chapters", dom.children, (elem) => elem.attribs[ "role" ] != "article") ?? findOneBy("id", "workskin", dom.children)
+	const chapterContainer =
+		findOneBy(
+			"id",
+			"chapters",
+			dom.children,
+			(elem) => elem.attribs["role"] != "article"
+		) ?? findOneBy("id", "workskin", dom.children)
 	const titleContainer = findOneBy("class", "preface group", dom.children)
 
 	// console.log("htmlText", htmlText)
 	// console.log("htmlPruned", prunedHtmlStr)
 
-	if (!chapterContainer)
-		throw new Error(WorkScraperError.noChapter)
+	if (!chapterContainer) throw new Error(WorkScraperError.noChapter)
 
-	if (!metaContainer)
-		throw new Error(WorkScraperError.noMeta)
+	if (!metaContainer) throw new Error(WorkScraperError.noMeta)
 
-	if (!titleContainer)
-		throw new Error(WorkScraperError.noTitle)
+	if (!titleContainer) throw new Error(WorkScraperError.noTitle)
 	// reject()
 	// })
 
@@ -323,50 +437,145 @@ export async function workScraperNew(workId: number, chapterId: string): Promise
 	// console.log("authors", chapterContainer.children)
 	// throw new Error("still in development")
 
-	const metaValueElemTest: Parameters<typeof findOneBy>[ 3 ] = (elem) => elem.name == "dd"
+	const metaValueElemTest: Parameters<typeof findOneBy>[3] = (elem) =>
+		elem.name == "dd"
 
 	const work: AO3Work = {
 		meta: {
 			id: workId,
-			authors: findAllBy("rel", "author", titleContainer.children).map((v) => textContent(v)),
-			language: cleanTextContent(findOneBy("class", "language", metaContainer.children, metaValueElemTest)),
-			title: cleanTextContent(findOneBy("class", "title heading", titleContainer.children)),
-			summary: cleanTextContent(findOneBy("class", "userstuff", titleContainer.children)),
+			authors: findAllBy("rel", "author", titleContainer.children).map(
+				(v) => textContent(v)
+			),
+			language: cleanTextContent(
+				findOneBy(
+					"class",
+					"language",
+					metaContainer.children,
+					metaValueElemTest
+				)
+			),
+			title: cleanTextContent(
+				findOneBy("class", "title heading", titleContainer.children)
+			),
+			summary: cleanTextContent(
+				findOneBy("class", "userstuff", titleContainer.children)
+			),
 			stats: {
-				bookmarks: parseComaDecToInt(cleanTextContent(findOneBy("class", "bookmarks", metaContainer.children, metaValueElemTest) ?? "0")),
-				comments: parseComaDecToInt(cleanTextContent(findOneBy("class", "comments", metaContainer.children, metaValueElemTest) ?? "0")),
-				hits: parseComaDecToInt(cleanTextContent(findOneBy("class", "hits", metaContainer.children, metaValueElemTest) ?? "0")),
-				kudos: parseComaDecToInt(cleanTextContent(findOneBy("class", "kudos", metaContainer.children, metaValueElemTest) ?? "0")),
-				words: parseComaDecToInt(cleanTextContent(findOneBy("class", "words", metaContainer.children, metaValueElemTest) ?? "0")),
-				chapters: parseComaDecToInt(cleanTextContent(findOneBy("class", "chapters", metaContainer.children, metaValueElemTest) ?? "0").split("/")[ 0 ]),
+				bookmarks: parseComaDecToInt(
+					cleanTextContent(
+						findOneBy(
+							"class",
+							"bookmarks",
+							metaContainer.children,
+							metaValueElemTest
+						) ?? "0"
+					)
+				),
+				comments: parseComaDecToInt(
+					cleanTextContent(
+						findOneBy(
+							"class",
+							"comments",
+							metaContainer.children,
+							metaValueElemTest
+						) ?? "0"
+					)
+				),
+				hits: parseComaDecToInt(
+					cleanTextContent(
+						findOneBy(
+							"class",
+							"hits",
+							metaContainer.children,
+							metaValueElemTest
+						) ?? "0"
+					)
+				),
+				kudos: parseComaDecToInt(
+					cleanTextContent(
+						findOneBy(
+							"class",
+							"kudos",
+							metaContainer.children,
+							metaValueElemTest
+						) ?? "0"
+					)
+				),
+				words: parseComaDecToInt(
+					cleanTextContent(
+						findOneBy(
+							"class",
+							"words",
+							metaContainer.children,
+							metaValueElemTest
+						) ?? "0"
+					)
+				),
+				chapters: parseComaDecToInt(
+					cleanTextContent(
+						findOneBy(
+							"class",
+							"chapters",
+							metaContainer.children,
+							metaValueElemTest
+						) ?? "0"
+					).split("/")[0]
+				),
 				maxChapters: (() => {
-					const value = cleanTextContent(findOneBy("class", "chapters", metaContainer.children, metaValueElemTest) ?? "0/?").split("/")[ 1 ]
-					if (value == "?")
-						return null
+					const value = cleanTextContent(
+						findOneBy(
+							"class",
+							"chapters",
+							metaContainer.children,
+							metaValueElemTest
+						) ?? "0/?"
+					).split("/")[1]
+					if (value == "?") return null
 
 					return parseComaDecToInt(value)
 				})(),
-				published: cleanTextContent(findOneBy("class", "published", metaContainer.children, metaValueElemTest) ?? ""),
-				updated: cleanTextContent(findOneBy("class", "status", metaContainer.children, metaValueElemTest) ?? "")
+				published: cleanTextContent(
+					findOneBy(
+						"class",
+						"published",
+						metaContainer.children,
+						metaValueElemTest
+					) ?? ""
+				),
+				updated: cleanTextContent(
+					findOneBy(
+						"class",
+						"status",
+						metaContainer.children,
+						metaValueElemTest
+					) ?? ""
+				),
 			},
-			tags: { //TODO fill in tags scraping
+			tags: {
+				//TODO fill in tags scraping
 				additionalTags: [],
 				archiveWarnings: [],
 				categories: [],
 				characters: [],
 				fandoms: [],
 				rating: "",
-				relationships: []
-			}
+				relationships: [],
+			},
 		},
 		chapterslist: (() => {
-			const chapterSelectContainer = findOneBy("name", "selected_id", dom.children)
+			const chapterSelectContainer = findOneBy(
+				"name",
+				"selected_id",
+				dom.children
+			)
 
 			if (chapterSelectContainer) {
-				return findAll((elem) => elem.name == "option", chapterSelectContainer.children).map((v) =>
-				({
-					id: parseInt(v.attribs[ "value" ]),
-					title: cleanTextContent(v).replace(/^\d*\. /, "")
+				return findAll(
+					(elem) => elem.name == "option",
+					chapterSelectContainer.children
+				).map((v) => ({
+					id: parseInt(v.attribs["value"]),
+					title: cleanTextContent(v).replace(/^\d*\. /, ""),
 				}))
 			}
 
@@ -375,43 +584,73 @@ export async function workScraperNew(workId: number, chapterId: string): Promise
 		chapters: [
 			{
 				id: (() => {
-					if (chapterId != "first")
-						return parseInt(chapterId)
+					if (chapterId != "first") return chapterId
 
-					const selectedChapterElem = findOneBy("selected", "selected", dom.children)
+					const selectedChapterElem = findOneBy(
+						"selected",
+						"selected",
+						dom.children
+					)
 					if (selectedChapterElem)
-						return parseInt(selectedChapterElem.attribs[ "value" ])
+						return parseInt(selectedChapterElem.attribs["value"])
 
 					return -1
 				})(),
 				chapter: (() => {
-					const chapterElem = findOneBy("class", "chapter", chapterContainer.children)
+					const chapterElem = findOneBy(
+						"class",
+						"chapter",
+						chapterContainer.children
+					)
 
 					if (chapterElem)
-						return parseInt(chapterElem.attribs[ "id" ].replace("chapter-", ""))
+						return parseInt(
+							chapterElem.attribs["id"].replace("chapter-", "")
+						)
 
 					return 0
 				})(),
-				summary: cleanTextContent(findOneBy("class", "userstuff", titleContainer.children)).replace(/^Summary:/, ""),
-				title: cleanTextContent(findOneBy("class", "title", chapterContainer.children)).replace(/^Chapter \d*(: )?/, ""),
-				startNotes: cleanTextContent(findOneBy("class", "notes module", chapterContainer.children)).replace(/^Notes:/, ""),
-				endNotes: cleanTextContent(findOneBy("class", "end notes module", chapterContainer.children)).replace(/^Notes:/, ""),
+				summary: cleanTextContent(
+					findOneBy("class", "userstuff", titleContainer.children)
+				).replace(/^Summary:/, ""),
+				title: cleanTextContent(
+					findOneBy("class", "title", chapterContainer.children)
+				).replace(/^Chapter \d*(: )?/, ""),
+				startNotes: cleanTextContent(
+					findOneBy(
+						"class",
+						"notes module",
+						chapterContainer.children
+					)
+				).replace(/^Notes:/, ""),
+				endNotes: cleanTextContent(
+					findOneBy(
+						"class",
+						"end notes module",
+						chapterContainer.children
+					)
+				).replace(/^Notes:/, ""),
 				content: (() => {
 					// TODO add support for <br>
 					// TODO add support of italic and bold text
-					const articleContainer = findOneBy("role", "article", chapterContainer.children)
+					const articleContainer = findOneBy(
+						"role",
+						"article",
+						chapterContainer.children
+					)
 
 					if (!articleContainer)
 						throw new Error(WorkScraperError.noArticle)
 
-					const content = nCleaner(articleContainer.children) as Element[]
-					if (content.length > 1)
-						content.shift()
+					const content = nCleaner(
+						articleContainer.children
+					) as Element[]
+					if (content.length > 1) content.shift()
 
 					return content.map((v) => cleanTextContent(v))
-				})()
-			}
-		]
+				})(),
+			},
+		],
 	}
 
 	return work

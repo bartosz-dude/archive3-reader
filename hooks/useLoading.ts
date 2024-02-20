@@ -1,31 +1,119 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useReducer, useState } from "react"
+import { LoadingHandle, DataHandle, LoadingStatusText } from "../types/common"
 
-export default function useLoading<T extends any>(loader: () => Promise<T>, deps?: React.DependencyList) {
+function loadingReducer<T extends unknown>(
+	state: DataHandle<T>,
+	action: DataHandle<T>
+) {}
 
-	const [ data, setData ] = useState<T | null>(null)
-	const [ status, setStatus ] = useState<"loading" | "loaded" | "failed">("loading")
-	const [ error, setError ] = useState<any | null>(null)
-	const [ updater, setUpdater ] = useState(false)
+type LoadingReducerState<T extends unknown, E extends any> =
+	| {
+			data: null
+			error: null
+			status: "loading"
+	  }
+	| {
+			data: T
+			error: null
+			status: "success"
+	  }
+	| {
+			data: null
+			error: E
+			status: "failed"
+	  }
+
+type LoadingReducerAction<T extends unknown, E extends any> =
+	| {
+			type: "loading"
+	  }
+	| {
+			type: "success"
+			payload: {
+				data: T
+			}
+	  }
+	| {
+			type: "failed"
+			payload: {
+				error: E
+			}
+	  }
+
+function reducer<T extends unknown, E extends any>(
+	state: LoadingReducerState<T, E>,
+	action: LoadingReducerAction<T, E>
+): LoadingReducerState<T, E> {
+	switch (action.type) {
+		case "loading": {
+			return {
+				data: null,
+				error: null,
+				status: "loading",
+			}
+		}
+		case "success": {
+			return {
+				data: action.payload.data,
+				error: null,
+				status: "success",
+			}
+		}
+		case "failed": {
+			return {
+				data: null,
+				error: action.payload.error,
+				status: "failed",
+			}
+		}
+		default: {
+			return state
+		}
+	}
+}
+
+/**
+ * React hook for managing async data fetching
+ */
+export default function useLoading<T extends unknown, E extends any>(
+	loader: () => Promise<T>,
+	deps?: React.DependencyList
+): LoadingHandle<T> {
+	const [state, dispatch] = useReducer(reducer<T, E>, {
+		data: null,
+		error: null,
+		status: "loading",
+	})
+	const [updater, setUpdater] = useState(false)
 
 	useMemo(() => {
-		setStatus("loading")
-		setData(null)
-		setError(null)
+		dispatch({ type: "loading" })
 
 		loader()
 			.then((v) => {
-				setData(v)
-				setStatus("loaded")
+				dispatch({
+					type: "success",
+					payload: {
+						data: v,
+					},
+				})
 			})
 			.catch((v) => {
-				setError(v)
-				setStatus("failed")
+				dispatch({
+					type: "failed",
+					payload: {
+						error: v,
+					},
+				})
 			})
-	}, [ ...(deps ?? []), updater ])
+	}, [...(deps ?? []), updater])
 
 	function reload() {
-		setUpdater(prev => !prev)
+		dispatch({
+			type: "loading",
+		})
+		setUpdater((prev) => !prev)
 	}
 
-	return { data, error, status, reload }
+	return { ...state, reload }
 }

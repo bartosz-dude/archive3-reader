@@ -2,15 +2,15 @@ import * as SQLite from "expo-sqlite"
 import { DevSettings } from "react-native"
 
 export default async function setupDB() {
-	const db = SQLite.openDatabase('archive3storage.db')
+	const db = SQLite.openDatabase("archive3storage.db")
 
-	await db.transactionAsync(async tx => {
+	await db.transactionAsync(async (tx) => {
 		// await tx.executeSqlAsync(`DROP TABLE IF EXISTS 'works'`)
 		// await tx.executeSqlAsync(`DROP TABLE IF EXISTS 'saved_works'`)
 		// await tx.executeSqlAsync(`DROP TABLE IF EXISTS 'readthroughs'`)
 	})
 
-	await db.transactionAsync(async tx => {
+	await db.transactionAsync(async (tx) => {
 		// const tables = await tx.executeSqlAsync(`SELECT * FROM 'works'`)
 		// console.log(tables)
 
@@ -25,7 +25,9 @@ export default async function setupDB() {
 			available_chapters INTEGER NOT NULL,
 			last_update TEXT NOT NULL,
 			is_saved BOOLEAN NOT NULL,
-			is_offline BOOLEAN NOT NULL
+			is_offline BOOLEAN NOT NULL,
+			has_new_chapters BOOLEAN,
+			new_chapters TEXT
 			)`)
 
 		await tx.executeSqlAsync(`CREATE TABLE IF NOT EXISTS 'saved_works' (
@@ -44,7 +46,7 @@ export default async function setupDB() {
 			work_id INTEGER NOT NULL,
 			readthrough INTEGER NOT NULL,
 			current_chapter INTEGER NOT NULL,
-			current_chapter_position NUMBER NOT NULL,
+			current_chapter_position FLOAT NOT NULL,
 			read_chapters TEXT NOT NULL,
 			dated_progress TEXT NOT NULL,
 			FOREIGN KEY (work_id) REFERENCES 'works'(work_id)
@@ -54,6 +56,4 @@ export default async function setupDB() {
 		const tables = await tx.executeSqlAsync(`SELECT * FROM 'works'`)
 		// console.log(tables)
 	})
-
-
 }

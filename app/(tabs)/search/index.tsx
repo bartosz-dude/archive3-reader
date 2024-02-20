@@ -42,7 +42,7 @@ export default function SearchPage() {
 	}, [ao3Query, page])
 
 	useEffect(() => {
-		if (data.status == "loaded") {
+		if (data.status == "success") {
 			setLoading(true)
 			setFetchedPages((prev) => {
 				const newPages = [...prev]
@@ -77,9 +77,9 @@ export default function SearchPage() {
 			{/* <SearchBar /> */}
 			{/* <Link href={"/search/savedSearches"}>Saved Searches</Link> */}
 			<Loaded
-				isLoading={loading}
+				isLoading={!loading}
 				loading={<LoadingIndicator />}
-				options={{ immediatelyShowLoading: true }}
+				// options={{ immediatelyShowLoading: true }}
 			>
 				<FlatList
 					data={fetchedResults()}
@@ -110,7 +110,7 @@ export default function SearchPage() {
 					)}
 					ListFooterComponent={
 						<Loaded
-							isLoading={!isFetchedPagesEnd()}
+							isLoading={isFetchedPagesEnd()}
 							loading={
 								<View style={style.listFooterLoading}>
 									<LoadingIndicator />

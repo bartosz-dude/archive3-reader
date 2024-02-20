@@ -89,7 +89,14 @@ export default function SearchResultItem({
 								{v}
 							</Text>
 						)}
-						separator={<Text style={style.authorSeparator}>,</Text>}
+						separator={(k) => (
+							<Text
+								key={k}
+								style={style.authorSeparator}
+							>
+								,
+							</Text>
+						)}
 					/>
 					{/* {result.meta.authors.map((v) => <Text style={style.author} key={v}>{v}</Text>)} */}
 				</View>

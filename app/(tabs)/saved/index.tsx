@@ -21,13 +21,11 @@ export default function SavedPage() {
 			savedWorks.reload()
 			// console.log("savedWorks reloaded")
 		}
+
+		if (savedWorks.status == "success") {
+			savedWorks.data
+		}
 	}, [path])
-
-	// const nav = useNavigation()
-
-	// nav.addListener("beforeRemove", (e) => {
-	// 	console.log("nav", e.data)
-	// })
 
 	const style = useStyle({
 		entryList: {},
@@ -91,11 +89,14 @@ export default function SavedPage() {
 											{v}
 										</Text>
 									)}
-									separator={
-										<Text style={style.authorSeparator}>
+									separator={(k) => (
+										<Text
+											key={k}
+											style={style.authorSeparator}
+										>
 											,
 										</Text>
-									}
+									)}
 								/>
 							</View>
 							<Text

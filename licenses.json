@@ -1,0 +1,181 @@
+{
+    "@expo/vector-icons@13.0.0": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/vector-icons",
+        "licenseUrl": "https://github.com/expo/vector-icons/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "@react-native-async-storage/async-storage@1.21.0": {
+        "licenses": "MIT",
+        "repository": "https://github.com/react-native-async-storage/async-storage",
+        "licenseUrl": "https://github.com/react-native-async-storage/async-storage/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "@react-navigation/native@6.1.9": {
+        "licenses": "MIT",
+        "repository": "https://github.com/react-navigation/react-navigation",
+        "licenseUrl": "https://github.com/react-navigation/react-navigation/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "domhandler@5.0.3": {
+        "licenses": "BSD-2-Clause",
+        "repository": "https://github.com/fb55/domhandler",
+        "licenseUrl": "https://github.com/fb55/domhandler/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "domutils@3.1.0": {
+        "licenses": "BSD-2-Clause",
+        "repository": "https://github.com/fb55/domutils",
+        "licenseUrl": "https://github.com/fb55/domutils/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "expo-asset@8.10.1": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "expo-dev-client@3.3.6": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "expo-file-system@15.4.5": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "expo-font@11.4.0": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "expo-linking@5.0.2": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "expo-router@2.0.14": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/router",
+        "licenseUrl": "https://github.com/expo/router",
+        "parents": "archive3-reader"
+    },
+    "expo-splash-screen@0.20.5": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "expo-sqlite@11.3.3": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "expo-status-bar@1.6.0": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "expo-system-ui@2.4.0": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "expo-web-browser@12.3.2": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "expo@49.0.21": {
+        "licenses": "MIT",
+        "repository": "https://github.com/expo/expo",
+        "licenseUrl": "https://github.com/expo/expo",
+        "parents": "archive3-reader"
+    },
+    "fast-hash-code@2.1.0": {
+        "licenses": "ISC",
+        "repository": "https://github.com/alexandrehpiva/fast-hash-code",
+        "licenseUrl": "https://github.com/alexandrehpiva/fast-hash-code/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "htmlparser2@9.1.0": {
+        "licenses": "MIT",
+        "repository": "https://github.com/fb55/htmlparser2",
+        "licenseUrl": "https://github.com/fb55/htmlparser2/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "react-dom@18.2.0": {
+        "licenses": "MIT",
+        "repository": "https://github.com/facebook/react",
+        "licenseUrl": "https://github.com/facebook/react/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "react-native-big-list@1.6.1": {
+        "licenses": "GPL-3.0-or-later",
+        "licenseUrl": "https://marcocesarato.github.io/react-native-big-list-docs/",
+        "parents": "archive3-reader"
+    },
+    "react-native-gesture-handler@2.12.1": {
+        "licenses": "MIT",
+        "repository": "https://github.com/software-mansion/react-native-gesture-handler",
+        "licenseUrl": "https://github.com/software-mansion/react-native-gesture-handler/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "react-native-popup-menu@0.16.1": {
+        "licenses": "ISC",
+        "repository": "https://github.com:instea/react-native-popup-menu",
+        "licenseUrl": "https://github.com:instea/react-native-popup-menu/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "react-native-reanimated@3.3.0": {
+        "licenses": "MIT",
+        "repository": "https://github.com/software-mansion/react-native-reanimated",
+        "licenseUrl": "https://github.com/software-mansion/react-native-reanimated/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "react-native-safe-area-context@4.6.3": {
+        "licenses": "MIT",
+        "repository": "https://github.com/th3rdwave/react-native-safe-area-context",
+        "licenseUrl": "https://github.com/th3rdwave/react-native-safe-area-context/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "react-native-screens@3.22.1": {
+        "licenses": "MIT",
+        "repository": "https://github.com/software-mansion/react-native-screens",
+        "licenseUrl": "https://github.com/software-mansion/react-native-screens/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "react-native-web@0.19.10": {
+        "licenses": "MIT",
+        "repository": "https://github.com/necolas/react-native-web",
+        "licenseUrl": "https://github.com/necolas/react-native-web/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "react-native-webview@13.2.2": {
+        "licenses": "MIT",
+        "repository": "https://github.com/react-native-webview/react-native-webview",
+        "licenseUrl": "https://github.com/react-native-webview/react-native-webview/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    },
+    "react-native@0.72.6": {
+        "licenses": "MIT",
+        "repository": "github:facebook/react-native",
+        "licenseUrl": "github:facebook/react-native",
+        "parents": "archive3-reader"
+    },
+    "react@18.2.0": {
+        "licenses": "MIT",
+        "repository": "https://github.com/facebook/react",
+        "licenseUrl": "https://github.com/facebook/react/raw/master/LICENSE",
+        "parents": "archive3-reader"
+    }
+}

@@ -7,6 +7,8 @@ import SettingsSwitch from "../components/settings/settingsSwitch"
 import useStyle from "../hooks/useStyle"
 import { ScrollView } from "react-native"
 import { Link } from "expo-router"
+import SettingsCategoryTitle from "../components/settings/settingsCategoryTitle"
+import SettingsEntry from "../components/settings/settingsEntry"
 
 export default function SettingsPage() {
 	const { settings, update } = useSettings()
@@ -17,13 +19,13 @@ export default function SettingsPage() {
 			paddingVertical: 10,
 		},
 		aboutView: {
-			paddingHorizontal: 10,
-			paddingVertical: 10,
+			// 	paddingHorizontal: 10,
+			// 	paddingVertical: 10,
 		},
 		aboutList: {
-			display: "flex",
-			gap: 5,
-			paddingTop: 5,
+			// 	display: "flex",
+			// 	gap: 10,
+			// 	paddingTop: 5,
 		},
 	})
 
@@ -48,10 +50,19 @@ export default function SettingsPage() {
 					/>
 				</View>
 				<View style={style.aboutView}>
-					<Text>About</Text>
+					<SettingsCategoryTitle>
+						<Text>About</Text>
+					</SettingsCategoryTitle>
 					<View style={style.aboutList}>
-						<Link href={`/packages`}>Packages</Link>
-						<Link href={`/license`}>License</Link>
+						<SettingsEntry>
+							<Link href={`/packages`}>Packages</Link>
+						</SettingsEntry>
+						{/* <SettingsEntry>
+							<Link href={`/license`}>License</Link>
+						</SettingsEntry> */}
+						<SettingsEntry>
+							<Link href={`/credits`}>Credits</Link>
+						</SettingsEntry>
 					</View>
 				</View>
 			</ScrollView>

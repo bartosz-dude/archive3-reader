@@ -1,48 +1,89 @@
 import {
-	Slot,
 	Stack,
 	router,
 	useGlobalSearchParams,
-	useLocalSearchParams,
 	useNavigation,
-	usePathname,
 } from "expo-router"
 import { createContext, useContext, useEffect, useState } from "react"
-import { Text, View } from "react-native"
-import IconBtn from "../../../components/common/IconBtn"
-import Loaded from "../../../components/common/Loaded"
 import useLoading from "../../../hooks/useLoading"
-import useStyle from "../../../hooks/useStyle"
 import { workScraperNew } from "../../../services/ao3/scraper/work"
 import { AO3Work } from "../../../services/ao3/types/work"
-import getReadthrough from "../../../services/saver/database/getReadthrough"
-import getWork from "../../../services/saver/database/getWork"
-import updateReadthrough from "../../../services/saver/database/updateReadthrough"
-import updateWork from "../../../services/saver/database/updateWork"
-import getSavedWork from "../../../services/saver/database/getSavedWork"
-import updateSavedWork from "../../../services/saver/database/updateSavedWork"
-import deleteSavedWork from "../../../services/saver/database/deleteSavedWork"
+import useWork from "../../../services/saver/hooks/useWork"
+import { LoadingStatusText } from "../../../types/common"
+import useReadthrough from "../../../services/saver/hooks/useReadthrough"
+import useLoadingHandler from "../../../hooks/useLoadingHandler"
+import ReaderManager from "../../../components/reader/ReaderManager"
+
+export default function WorkReaderLayoutNew() {
+	return (
+		<>
+			{/* <WorkContext.Provider value={context}> */}
+			<ReaderManager>
+				{/* <Slot /> */}
+				<Stack
+					screenOptions={{
+						animation: "none",
+					}}
+				>
+					<Stack.Screen
+						name="chapter"
+						options={{ headerShown: false }}
+					/>
+					<Stack.Screen
+						name="chapterSelect"
+						options={{
+							headerShown: false,
+							presentation: "modal",
+						}}
+					/>
+				</Stack>
+			</ReaderManager>
+			{/* </WorkContext.Provider> */}
+		</>
+	)
+}
+
+/**
+ * Mess of an api, need to rework in the future
+ */
 
 const WorkContext = createContext<unknown>(null)
 
-export default function WorkReaderLayout() {
+function WorkReaderLayout() {
 	const { workId, chapterId } = useGlobalSearchParams<{
 		workId: string
 		chapterId: string
 	}>()
 
 	const [currentChapter, setCurrentChapter] = useState(0)
+	const [currentProgress, setCurrentProgress] = useState(0)
 	const [chaptersList, setChaptersList] = useState<AO3Work["chapterslist"]>()
 	const [meta, setMeta] = useState<AO3Work["meta"]>()
 
 	const work = useLoading(
-		() => workScraperNew(parseInt(workId), chapterId),
+		() =>
+			workScraperNew(
+				parseInt(workId),
+				chapterId == "first" ? chapterId : parseInt(chapterId)
+			),
 		[currentChapter]
 	)
 
-	const workDb = useLoading(() => getWork(parseInt(workId)))
-	const readDb = useLoading(() => getReadthrough(parseInt(workId), 0))
-	const savedWorkDb = useLoading(() => getSavedWork(parseInt(workId)))
+	const localWork = useWork(work)
+	const readthrough = useReadthrough(work, 0)
+
+	const loading = useLoadingHandler([
+		work.status,
+		localWork.handle.status,
+		readthrough.handle.status,
+	])
+
+	// useEffect(() => {
+	// 	console.log("api status", loading)
+	// }, [loading])
+	// const workDb = useLoading(() => getWork(parseInt(workId)))
+	// const readDb = useLoading(() => getReadthrough(parseInt(workId), 0))
+	// const savedWorkDb = useLoading(() => getSavedWork(parseInt(workId)))
 
 	const chapter = () => work.data?.chapters[currentChapter]
 	const currentChapterFromList = () => ({
@@ -55,52 +96,24 @@ export default function WorkReaderLayout() {
 	})
 
 	useEffect(() => {
-		if (work.status == "loaded" && work.data) {
+		if (work.status == "success" && work.data) {
 			setChaptersList(work.data.chapterslist)
 			setMeta(work.data.meta)
 			// setCurrentChapter(work.data.chapters[0].chapter - 1)
 		}
 	}, [work])
 
-	useEffect(() => {
-		if (
-			workDb.status == "loaded" &&
-			workDb.data === null &&
-			work.status == "loaded" &&
-			!(work.data === null)
-		) {
-			updateWork({
-				workId: parseInt(workId),
-				availableChapters: work.data?.meta.stats.chapters,
-				isOffline: false,
-				isSaved: false,
-				lastUpdate: new Date(work.data.meta.stats.updated),
-				totalChapters: work.data.meta.stats.maxChapters,
-			}).then(() => workDb.reload())
-		}
-	}, [workDb, work])
+	// useEffect(() => {
+	// 	console.log("saved", localWork.data?.isSaved)
+	// }, [localWork.handle.status])
 
-	useEffect(() => {
-		if (
-			readDb.status == "loaded" &&
-			readDb.data === null &&
-			work.status == "loaded" &&
-			!(work.data === null) &&
-			workDb.status == "loaded" &&
-			!(workDb.data === null)
-		) {
-			updateReadthrough({
-				workId: work.data.meta.id,
-				currentChapter: chapter()?.chapter ?? 0,
-				currentChapterPosition: 0,
-				readthrough: 0,
-				datedProgress: [],
-				readChapters: [],
-			}).then(() => readDb.reload())
-		}
-	}, [readDb, workDb])
+	function endReadingSession() {
+		// console.log("endReadingSession", currentProgress)
+		readthrough.endSession(currentProgress)
+	}
 
 	const context = {
+		status: loading,
 		nextChapter: () => {
 			const nextChapterId = work.data?.chapterslist[currentChapter + 1].id
 			if (nextChapterId) {
@@ -122,7 +135,7 @@ export default function WorkReaderLayout() {
 			work.data?.chapterslist[currentChapter - 1] ? true : false,
 		setChapter: (chapter: number) => {
 			const chapterId = work.data?.chapterslist[chapter].id
-			console.log("setChapter", chapterId)
+			// console.log("setChapter", chapterId)
 			if (chapterId) {
 				// router.
 				router.replace(`/work/${workId}/chapter/${chapterId}`)
@@ -139,53 +152,73 @@ export default function WorkReaderLayout() {
 		currentChapter: currentChapter,
 		chapterList: chaptersList,
 		work: work,
-		isSaved: workDb.data?.isSaved,
+		isSaved: localWork.data?.isSaved,
 		setSaved: (isSaved: boolean) => {
-			if (meta && chaptersList) {
-				updateWork({
-					workId: meta.id,
-					isSaved: isSaved,
-				}).then(() => workDb.reload())
-
-				if (isSaved)
-					updateSavedWork({
-						workId: meta.id,
-						title: meta.title,
-						summary: meta.summary,
-						tags: meta.tags,
-						stats: meta.stats,
-						chaptersList: chaptersList,
-						language: meta.language,
-						authors: meta.authors,
-					}).then(() => savedWorkDb.reload())
-				else deleteSavedWork(meta.id).then(() => savedWorkDb.reload())
-			}
-
-			return
+			// console.log("setSaved", meta, chaptersList)
+			// if (meta && chaptersList)
+			localWork.update({
+				isSaved: isSaved,
+			})
 		},
+		readthrough: readthrough,
+		isSessionActive: () => readthrough.isSessionActive,
+		currentProgress: currentProgress,
+		setCurrentProgress,
+		startingReadingPosition: readthrough.data?.currentChapterPosition,
+		startReadingSession() {
+			// console.log("startReadingSession")
+			readthrough.startSession(currentChapter, currentProgress)
+		},
+		endReadingSession,
 	}
+
+	// useEffect(() => {
+	// 	console.log("progress", currentProgress)
+	// }, [currentProgress])
+
+	useEffect(() => {
+		// console.log("readthrough", readthrough, currentChapter, chapterId)
+		if (readthrough.data !== null) {
+			if (
+				readthrough.data.currentChapter != currentChapter &&
+				chapterId == "first"
+			) {
+				// console.log("currentChapter", readthrough.data.currentChapter)
+				context.setChapter(readthrough.data.currentChapter)
+				setCurrentProgress(readthrough.data.currentChapterPosition)
+			}
+		}
+	}, [readthrough.handle.status])
+
+	// const nav = useNavigation()
+
+	// nav.addListener("beforeRemove", (e) => {
+	// 	if (context.isSessionActive) context.startReadingSession()
+	// })
 
 	return (
 		<>
 			<WorkContext.Provider value={context}>
-				{/* <Slot /> */}
-				<Stack
-					screenOptions={{
-						animation: "none",
-					}}
-				>
-					<Stack.Screen
-						name="chapter"
-						options={{ headerShown: false }}
-					/>
-					<Stack.Screen
-						name="chapterSelect"
-						options={{
-							headerShown: false,
-							presentation: "modal",
+				<ReaderManager>
+					{/* <Slot /> */}
+					<Stack
+						screenOptions={{
+							animation: "none",
 						}}
-					/>
-				</Stack>
+					>
+						<Stack.Screen
+							name="chapter"
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="chapterSelect"
+							options={{
+								headerShown: false,
+								presentation: "modal",
+							}}
+						/>
+					</Stack>
+				</ReaderManager>
 			</WorkContext.Provider>
 		</>
 	)
@@ -193,20 +226,21 @@ export default function WorkReaderLayout() {
 
 export function useWorkContext() {
 	return useContext(WorkContext) as {
+		status: LoadingStatusText
 		nextChapter: () => void
 		isNextChapter: () => boolean
 		previousChapter: () => void
 		isPreviousChapter: () => boolean
 		setChapter: (chapter: number) => void
 		currentChapterFromList: () => {
-			status: "loading" | "loaded" | "failed"
+			status: LoadingStatusText
 			data: {
 				id: number
 				title: string
 			} | null
 		}
 		currentMeta: () => {
-			status: "loading" | "loaded" | "failed"
+			status: LoadingStatusText
 			data: AO3Work["meta"] | null
 		}
 		currentChapter: number
@@ -219,10 +253,17 @@ export function useWorkContext() {
 		work: {
 			data: AO3Work | null
 			error: any
-			status: "loaded" | "loading" | "failed"
+			status: LoadingStatusText
 			reload: () => void
 		}
 		isSaved: boolean | undefined
 		setSaved: (isSaved: boolean) => void
+		readthrough: ReturnType<typeof useReadthrough>
+		isSessionActive: () => boolean
+		currentProgress: number
+		setCurrentProgress: (progress: number) => void
+		startingReadingPosition: number | undefined
+		startReadingSession: () => void
+		endReadingSession: () => void
 	}
 }

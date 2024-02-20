@@ -1,4 +1,3 @@
-import "react-native-url-polyfill/auto"
 import { Link, Redirect } from "expo-router"
 import { View, StyleSheet } from "react-native"
 import workSearchURL from "../services/ao3/tools/workSearchUrl"
