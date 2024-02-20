@@ -30,12 +30,13 @@ export default function WorkReaderLayoutNew() {
 	)
 }
 
-export function ErrorBoundary(props: ErrorBoundaryProps) {
-	return (
-		<View>
-			<StandardHeader title="Error" />
-			{/* <Text>{props.error.message}</Text> */}
-			<Text>Something went wrong</Text>
-		</View>
-	)
-}
+// when using it, chapterSelect page goes into loading loop
+// export function ErrorBoundary(props: ErrorBoundaryProps) {
+// 	return (
+// 		<View>
+// 			<StandardHeader title="Error" />
+// 			{/* <Text>{props.error.message}</Text> */}
+// 			<Text>Something went wrong</Text>
+// 		</View>
+// 	)
+// }
