@@ -1,4 +1,7 @@
 export interface ColorTheme {
+	common: {
+		danger: string
+	}
 	loadingIndicator: {
 		background: string
 		accent: string
