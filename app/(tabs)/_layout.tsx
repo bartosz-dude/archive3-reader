@@ -2,35 +2,23 @@ import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { Tabs, router, useNavigation } from "expo-router"
 import { Text, View } from "react-native"
 import { useSettings } from "../../services/appSettings/components/settingsProvider"
+import { useTheme } from "../../components/ThemeManager"
 
 export default function TabsLayout() {
-	const { settings } = useSettings()
-	const nav = useNavigation()
-
-	// console.log("layout", settings.savedSearchesAsDefault)
+	const theme = useTheme()
 
 	return (
 		<>
 			<Tabs
 				screenOptions={{
 					headerShown: false,
-					tabBarActiveTintColor: "red",
+					tabBarActiveTintColor: theme.tabBar.selected,
+					tabBarInactiveTintColor: theme.tabBar.unselected,
 				}}
-				// tabBar={TabBar}
 			>
-				{/* <Tabs.Screen
-					name="index"
-					options={{
-						href: "/",
-						title: "home"
-					}}
-				/> */}
 				<Tabs.Screen
 					name="search"
 					options={{
-						// href: settings.savedSearchesAsDefault
-						// 	? "/search/savedSearches"
-						// 	: "/search",
 						href: "/search",
 						title: "search",
 						tabBarIcon(props) {
@@ -41,13 +29,6 @@ export default function TabsLayout() {
 									color={props.color}
 								/>
 							)
-						},
-					}}
-					listeners={{
-						tabPress: (e) => {
-							// console.log(settings.savedSearchesAsDefault)
-							// if (settings.savedSearchesAsDefault)
-							// 	router.replace("/search/savedSearches")
 						},
 					}}
 				/>

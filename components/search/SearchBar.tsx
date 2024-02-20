@@ -10,6 +10,7 @@ import {
 	View,
 	TextInput,
 	Text,
+	ToastAndroid,
 	// ToastAndroid,
 } from "react-native"
 import {
@@ -28,8 +29,11 @@ import { MaterialCommunityIcons } from "@expo/vector-icons"
 import saveSettings from "../../services/appSettings/api/saveSettings"
 import { useSettings } from "../../services/appSettings/components/settingsProvider"
 import Header from "../common/Header"
+import { useTheme } from "../ThemeManager"
 
 export default function SearchBar() {
+	const theme = useTheme()
+
 	const { ao3Query } = useGlobalSearchParams() as { ao3Query: string }
 
 	const [searchAnyText, setSearchAnyText] = useState("")
@@ -63,32 +67,30 @@ export default function SearchBar() {
 			paddingTop: Constants.statusBarHeight + 10,
 			paddingBottom: 10,
 			paddingHorizontal: 15,
-			backgroundColor: "red",
+			backgroundColor: theme.header.background,
 			display: "flex",
 			flexDirection: "row",
 			gap: 10,
 			alignItems: "center",
 		},
 		searchBarText: {
-			color: "white",
+			color: theme.header.font,
 		},
 		searchInput: {
 			borderStyle: "solid",
 			borderWidth: 2,
-			borderColor: "white",
+			borderColor: theme.header.accent,
 			borderRadius: 50,
 			paddingHorizontal: 15,
-			color: "white",
+			color: theme.header.font,
 			flexGrow: 1,
 		},
 		searchBarBtn: {
-			color: "white",
+			color: theme.header.accent,
 		},
 	})
 
 	const pathname = usePathname()
-
-	const { settings, update } = useSettings()
 
 	return (
 		<>
@@ -133,10 +135,10 @@ export default function SearchBar() {
 								onSelect={() => {
 									saveQuery(worksQuery(ao3Query))
 										.then(() => {
-											// ToastAndroid.show(
-											// 	"Search saved",
-											// 	ToastAndroid.SHORT
-											// )
+											ToastAndroid.show(
+												"Search saved",
+												ToastAndroid.SHORT
+											)
 										})
 										.catch((err) => {
 											if (
@@ -144,10 +146,10 @@ export default function SearchBar() {
 												SaveQueryErrors.alreadyExists
 											)
 												return
-											// ToastAndroid.show(
-											// 	"Already saved",
-											// 	ToastAndroid.SHORT
-											// )
+											ToastAndroid.show(
+												"Already saved",
+												ToastAndroid.SHORT
+											)
 										})
 								}}
 							/>

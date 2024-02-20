@@ -1,0 +1,39 @@
+{
+	"header": {
+		"background": "#BD0E0E",
+		"accent": "#FFFFFF",
+		"font": "#FFFFFF",
+		"menuBackground": "#FFFFFF",
+		"menuFont": "#000000"
+	},
+	"tabBar": {
+		"selected": "#BD0E0E",
+		"unselected": "#808080",
+		"background": "#FFFFFF",
+		"selectedFont": "#FFFFFF",
+		"unselectedFont": "#808080"
+	},
+	"search": {
+		"titleFont": "#FFFFFF",
+		"authorFont": "#FFFFFF",
+		"summaryFont": "#FFFFFF",
+		"metaFont": "#FFFFFF",
+		"itemSeparator": "#FFFFFF",
+		"itemBackground": "#FFFFFF",
+		"background": "#FFFFFF"
+	},
+	"saved": {
+		"titleFont": "#FFFFFF",
+		"authorFont": "#FFFFFF",
+		"summaryFont": "#FFFFFF",
+		"metaFont": "#FFFFFF",
+		"itemSeparator": "#FFFFFF",
+		"itemBackground": "#FFFFFF",
+		"background": "#FFFFFF"
+	},
+	"savedSearches": {
+		"itemQueryFont": "#FFFFFF",
+		"itemOrderFont": "#FFFFFF",
+		"itemDelete": "#FFFFFF"
+	}
+}

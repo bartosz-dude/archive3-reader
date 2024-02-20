@@ -21,6 +21,7 @@ import getDB from "../services/database/getDB"
 import * as Dev from "expo-dev-client"
 import { SettingsProvider } from "../services/appSettings/components/settingsProvider"
 import TabBar from "../components/TabBar"
+import ThemeManager from "../components/ThemeManager"
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -64,13 +65,9 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-	const colorScheme = useColorScheme()
-
 	return (
 		<SettingsProvider>
-			<ThemeProvider
-				value={/*colorScheme === 'dark' ? DarkTheme : */ DefaultTheme}
-			>
+			<ThemeManager>
 				<MenuProvider>
 					<Stack
 						screenOptions={{
@@ -88,9 +85,8 @@ function RootLayoutNav() {
 							// options={{}}
 						/>
 					</Stack>
-					{/* <Text>Hello</Text> */}
 				</MenuProvider>
-			</ThemeProvider>
+			</ThemeManager>
 		</SettingsProvider>
 	)
 }
