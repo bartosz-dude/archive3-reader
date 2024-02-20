@@ -9,8 +9,12 @@ import { ScrollView } from "react-native"
 import { Link } from "expo-router"
 import SettingsCategoryTitle from "../components/settings/settingsCategoryTitle"
 import SettingsEntry from "../components/settings/settingsEntry"
+import BtnWithAlert from "../components/common/BtnWithAlert"
+import clearReadingData from "../services/saver/api/clearReadingData"
+import { useTheme } from "../components/ThemeManager"
 
 export default function SettingsPage() {
+	const theme = useTheme()
 	const { settings, update } = useSettings()
 
 	const style = useStyle({
@@ -64,6 +68,35 @@ export default function SettingsPage() {
 							<Link href={`/credits`}>Credits</Link>
 						</SettingsEntry>
 					</View>
+				</View>
+				<View>
+					<SettingsCategoryTitle>
+						<Text style={{ color: theme.common.danger }}>
+							Danger zone
+						</Text>
+					</SettingsCategoryTitle>
+					<SettingsEntry>
+						<BtnWithAlert
+							type="text"
+							text="Clear reading data"
+							textStyle={{ color: theme.common.danger }}
+							alert={{
+								title: "Are you sure?",
+								message:
+									"You are attempting to delete all reading data. This includes reading history, reading progress and saved works. This action is permament and unrecoverable. Are you sure you want to continue?",
+								ok: {
+									text: "Yes",
+									style: "destructive",
+									onPress: () => {
+										clearReadingData()
+									},
+								},
+								cancel: {
+									onPress: () => {},
+								},
+							}}
+						/>
+					</SettingsEntry>
 				</View>
 			</ScrollView>
 		</>
