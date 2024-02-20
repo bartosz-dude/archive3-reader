@@ -53,11 +53,11 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 
 	const [isProgressFromLocal, setIsProgressFromLocal] = useState(false)
 
+	// loads data on opening
 	useEffect(() => {
 		if (noData(read.dataHandle)) return
 
 		if (read.dataHandle.data !== null) {
-			// console.log("loaded from local")
 			setCurrentChapter(read.dataHandle.data.currentChapter)
 			setCurrentProgress(read.dataHandle.data.currentChapterPosition)
 			setIsProgressFromLocal(true)
@@ -69,8 +69,10 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 		localWork.savedWorkDataHandle.status,
 	])
 
+	const fetchCounter = useRef(0)
 	const work = useLoading(async () => {
 		if (localWork.savedWorkDataHandle.data !== null) {
+			fetchCounter.current += 1
 			return workScraperNew(
 				parseInt(workId),
 				(() => {
@@ -85,14 +87,23 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 				// .id ?? "first"
 			)
 		}
-		if (noData(read.dataHandle) || noData(localWork.savedWorkDataHandle))
+		if (noData(read.dataHandle) || noData(localWork.savedWorkDataHandle)) {
+			fetchCounter.current += 1
 			return workScraperNew(
 				parseInt(workId),
 				chapterId == "first" ? chapterId : parseInt(chapterId)
 			)
-
+		}
 		return null
 	}, [forWorkLocal, isProgressFromLocal, currentChapter])
+
+	// in case some bug throws into fetch-looping, this will break it
+	useEffect(() => {
+		if (fetchCounter.current > 3)
+			throw new Error("too many requests, wait before trying again")
+
+		console.log(work.status, fetchCounter.current)
+	}, [work.status])
 
 	const managerLoading = useLoadingHandler([
 		localWork.status,
@@ -139,11 +150,9 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 				currentChapterRef.current,
 				currentProgressRef.current
 			)
-			// console.log("startTracking")
 		},
 		endTraking: () => {
 			read.endTracking(currentProgressRef.current)
-			// console.log("endTracking")
 		},
 		changeChapter: (chapter: number) => {
 			// startTraking fires before currentChapter updates, so it takes wrong chapter, with setting ref first it works
@@ -151,7 +160,6 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 			setCurrentChapter(chapter)
 
 			const progress = read.getChapterProgress(chapter)
-			// console.log("chapterProgress", progress)
 			setCurrentProgress(progress)
 
 			router.back()
@@ -161,7 +169,6 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 			setCurrentChapter(chapter)
 
 			const progress = read.getChapterProgress(chapter)
-			// console.log("chapterProgress", progress)
 			setCurrentProgress(progress)
 		},
 		setProgress: setCurrentProgress,
@@ -197,12 +204,4 @@ interface ReaderManagerContext {
 
 export function useReaderContext() {
 	return useContext(ReaderContext) as ReaderManagerContext
-}
-
-export function ErrorBoundary(props: ErrorBoundaryProps) {
-	return (
-		<View>
-			<Text>{props.error.message}</Text>
-		</View>
-	)
 }
