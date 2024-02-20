@@ -1,4 +1,4 @@
-import { ErrorBoundaryProps, router, useGlobalSearchParams } from "expo-router"
+import { router, useGlobalSearchParams } from "expo-router"
 import {
 	PropsWithChildren,
 	createContext,
@@ -9,6 +9,7 @@ import {
 } from "react"
 import useLoading from "../../hooks/useLoading"
 import useLoadingHandler from "../../hooks/useLoadingHandler"
+import useUpdater from "../../hooks/useUpdater"
 import { workScraperNew } from "../../services/ao3/scraper/work"
 import { AO3Work } from "../../services/ao3/types/work"
 import useLocalWork from "../../services/saver/hooks/useLocalWork"
@@ -18,8 +19,6 @@ import noData from "../../tools/noData"
 import parseDataHandle from "../../tools/parseDataHandle"
 import { DataHandle, LoadingStatusText } from "../../types/common"
 import { DBReadthrough, DBSavedWork, DBWork } from "../../types/database"
-import { View, Text } from "react-native"
-import useUpdater from "../../hooks/useUpdater"
 
 const ReaderContext = createContext<unknown>(null)
 
@@ -114,7 +113,6 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 		if (fetchCounter.current > 3)
 			throw new Error("too many requests, wait before trying again")
 
-		console.log(work.status, fetchCounter.current)
 		if (fetchCounter.current > 0) {
 			const resetTimeout = setTimeout(() => {
 				fetchCounter.current = 0
@@ -136,7 +134,6 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 		if (loaded(work) && work.data !== null) {
 			localWork.saveLocalWork(work.data)
 		}
-		// console.log("manager", localWork, read, work)
 	}, [work.status, managerLoading])
 
 	const context = {

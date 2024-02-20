@@ -21,7 +21,7 @@ type DBReadthroughUpdate = Partial<DBReadthrough> &
 
 export default async function updateReadthrough(data: DBReadthroughUpdate) {
 	const db = SQLite.openDatabase("archive3storage.db")
-	console.log("updateRead", data)
+	// console.log("updateRead", data)
 
 	await db.transactionAsync(async (tx) => {
 		const work = await tx.executeSqlAsync(
