@@ -1,5 +1,4 @@
 import { ScrollView, Text, View } from "react-native"
-import { useWorkContext } from "./_layout"
 import Foreach from "../../../components/common/Foreach"
 import Loaded from "../../../components/common/Loaded"
 import { Link, router, useNavigation } from "expo-router"
@@ -15,6 +14,7 @@ import LoadingIndicator from "../../../components/common/LoadingIndicator"
 import { useReaderContext } from "../../../components/reader/ReaderManager"
 import useStatus from "../../../hooks/useStatus"
 import useWillUnmount from "../../../hooks/useWillUnmount"
+import StandardHeader from "../../../components/common/StandardHeader"
 
 export default function ChapterSelect() {
 	// const work = useWorkContext()
@@ -41,20 +41,7 @@ export default function ChapterSelect() {
 	const currentChapterRef = useRef<View>(null)
 	const scrollViewRef = useRef<ScrollView>(null)
 
-	useEffect(() => {
-		// console.log("currentChapterRef", currentChapterRef.current)
-	}, [currentChapterRef])
-
 	const [currentChapterY, setCurrentChapterY] = useState(0)
-	const [isCurrentChapter, setIsCurrentChapter] = useState(false)
-
-	// console.log("chapterSelect", work.chapterList)
-	// const nav = useNavigation()
-
-	// nav.addListener("beforeRemove", (e) => {
-	// 	// if (!work.isSessionActive) work.startReadingSession()
-	// 	console.log("beforeRemove chapters", e)
-	// })
 
 	const [isChangingChapter, setIsChangingChapter] = useState(false)
 	useEffect(() => {
@@ -68,19 +55,12 @@ export default function ChapterSelect() {
 
 	return (
 		<>
-			<Header>
-				<BackBtn />
-				<Text style={{ color: "white" }}>Select chapter</Text>
-				<View style={{ width: 32 }} />
-			</Header>
+			<StandardHeader title="Select chapter" />
 			<Curtain
 				isLoading={status}
 				loading={<LoadingIndicator />}
 			>
 				<ScrollView
-					// contentContainerStyle={{
-					// 	height: "100%",
-					// }}
 					ref={scrollViewRef}
 					contentOffset={{ x: 0, y: currentChapterY }}
 				>
@@ -130,12 +110,8 @@ export default function ChapterSelect() {
 									)}
 									<Btn
 										onPress={() => {
-											// if (l.length == 1) {
-											// 	router.back()
-											// }
 											setIsChangingChapter(true)
 											reader.changeChapter(i)
-											// router.back()
 										}}
 										style={style.chapterEntry}
 										numberOfLines={1}

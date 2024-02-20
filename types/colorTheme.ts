@@ -1,4 +1,8 @@
 export interface ColorTheme {
+	loadingIndicator: {
+		background: string
+		accent: string
+	}
 	header: {
 		background: string
 		accent: string
@@ -35,5 +39,17 @@ export interface ColorTheme {
 		itemQueryFont: string
 		itemOrderFont: string
 		itemDelete: String
+	}
+	reader: {
+		previousChapter: {
+			is: string
+			no: string
+			font: string
+		}
+		nextChapter: {
+			is: string
+			no: string
+			font: string
+		}
 	}
 }

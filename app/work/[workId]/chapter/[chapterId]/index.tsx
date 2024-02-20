@@ -13,17 +13,13 @@ import fixed from "../../../../../tools/fixed"
 import { LoadingStatusText } from "../../../../../types/common"
 import useWillUnmount from "../../../../../hooks/useWillUnmount"
 import Curtain from "../../../../../components/common/Curtain"
+import { useTheme } from "../../../../../components/ThemeManager"
 
 export default function newWorkReader() {
-	// const work = useWorkContext()
+	const theme = useTheme()
 	const reader = useReaderContext()
 
 	const [status, setStatus] = useStatus()
-
-	// useEffect(() => {
-	// 	// setStatus(reader.status)
-	// 	console.log(reader.status)
-	// }, [reader.status])
 
 	const willUnmount = useWillUnmount()
 
@@ -43,15 +39,7 @@ export default function newWorkReader() {
 			setStatus("loading")
 		}
 	}, [reader.currentChapter.chapter])
-	// const [status, b] = useStatus()
-
-	// const [scrolled, setScrolled] = useState<LoadingStatusText>("loading")
-
-	// const loading = useLoadingHandler([reader.status /*scrolled*/])
-
 	const scrollViewRef = useRef<ScrollView>(null)
-
-	// const [scrollViewHeight, setScrollViewHeight] = useState(0)
 	const [scrollViewOffsetY, setScrollViewOffsetY] = useState(0)
 	const [offsetY, setOffsetY] = useState(0)
 
@@ -70,13 +58,11 @@ export default function newWorkReader() {
 	}, [scrollViewOffsetY])
 
 	const [startChapterPosition, setStartChapterPosition] = useState(0)
-	// const [chapter]
 
 	const style = useStyle({
 		titleColumn: {
 			display: "flex",
 			flexDirection: "column",
-			// width: "80%",
 			flexShrink: 1,
 		},
 		titleText: {
@@ -88,7 +74,6 @@ export default function newWorkReader() {
 		content: {
 			paddingVertical: 40,
 			paddingHorizontal: 20,
-			// paddingBottom: 40,
 		},
 		paragraf: {
 			paddingBottom: 10,
@@ -103,30 +88,11 @@ export default function newWorkReader() {
 		chapterNav: {
 			display: "flex",
 			flexDirection: "row",
-			// paddingBottom: 50,
 			alignItems: "stretch",
 			backgroundColor: "red",
 			flexBasis: 1,
 		},
 	})
-
-	// useEffect(() => {
-	// if (
-	// 	(contentHeight == 0 || layoutHeight == 0) &&
-	// 	reader.tracker.status != "success"
-	// )
-	// 	return
-
-	// if (reader.tracker.data)
-	// 	scrollViewRef.current?.scrollTo({
-	// 		y: workHeight * reader.getProgress,
-	// 	})
-	// setStartChapterPosition(
-	// 	workHeight * reader.tracker.data?.currentChapterPosition
-	// )
-	// setStatus("success")
-	// reader.startTracking()
-	// }, [workHeight])
 
 	const loadDelay = useRef<NodeJS.Timeout>()
 
@@ -135,13 +101,6 @@ export default function newWorkReader() {
 	const [canScroll, setCanScroll] = useState(false)
 
 	useEffect(() => {
-		// console.log(
-		// 	"offset A",
-		// 	reader.getProgress,
-		// 	offsetY / workHeight,
-		// 	offsetY,
-		// 	workHeight
-		// )
 		if (isNaN(reader.getProgress ?? NaN) || isNaN(offsetY / workHeight))
 			return
 
@@ -160,23 +119,15 @@ export default function newWorkReader() {
 			fixed(offsetY / workHeight, 5) == fixed(reader.getProgress, 5) &&
 			status != "success"
 		) {
-			// clearTimeout(loadDelay.current)
-			// loadDelay.current = setTimeout(() => {
 			setStatus("success")
 			setCanScroll(true)
-			// console.log("scrolled")
 			reader.startTracking()
-			// }, 100)
 		}
-		// console.log("offset", reader.getProgress, offsetY / workHeight)
 	}, [offsetY, workHeight, status])
 
 	useEffect(() => {
-		// setStatus("loading")
-		// reader.startTracking()
 		return () => {
 			if (willUnmount) {
-				// console.log("reader willUnmount")
 				reader.endTraking()
 			}
 		}
@@ -198,8 +149,6 @@ export default function newWorkReader() {
 			: false
 	}
 
-	// scrollViewRef.current?.scrollTo()
-
 	return (
 		<>
 			<Loaded
@@ -210,53 +159,26 @@ export default function newWorkReader() {
 					</>
 				}
 			>
-				{/* <Loaded isLoading={reader.status}> */}
 				<ScrollView
 					ref={scrollViewRef}
 					scrollEnabled={canScroll}
-					// contentOffset={{ x: 0, y: startChapterPosition }}
 					contentContainerStyle={{
-						// minHeight: "auto",
-						// height: 800,
 						display: "flex",
 						flexDirection: "column",
 						justifyContent: "space-between",
 					}}
 					scrollEventThrottle={1}
 					onScroll={(e) => {
-						// console.log(
-						// 	"onScroll",
-						// 	e.nativeEvent.contentSize.height,
-						// 	e.nativeEvent.layoutMeasurement.height
-						// )
-						// setScrollViewHeight(
-						// 	e.nativeEvent.contentSize.height -
-						// 		e.nativeEvent.layoutMeasurement.height
-						// )
 						setScrollViewOffsetY(e.nativeEvent.contentOffset.y)
 					}}
-					// 	// console.log(
-					// 	// 	"scroll",
-					// 	// 	e.nativeEvent.contentSize.height,
-					// 	// 	e.nativeEvent.contentSize.height -
-					// 	// 		e.nativeEvent.layoutMeasurement.height
-					// 	// )
-					// }}
 					onLayout={(e) => {
-						// console.log("layout", e.nativeEvent.layout.height)
 						setLayoutHeight(e.nativeEvent.layout.height)
 					}}
 					onContentSizeChange={(w, h) => {
-						// console.log("sizeChange", w, h)
 						setContentHeight(h)
 					}}
 				>
-					<View
-						style={style.content}
-						onLayout={(e) => {
-							// setScrollViewHeight(e.nativeEvent.layout.height)
-						}}
-					>
+					<View style={style.content}>
 						<Foreach
 							list={reader.work.data?.chapters[0].content ?? []}
 							each={(item, i) => {
@@ -277,11 +199,13 @@ export default function newWorkReader() {
 								style.nextChapter,
 								{
 									backgroundColor: isPreviousChapter()
-										? "red"
-										: "grey",
+										? theme.reader.previousChapter.is
+										: theme.reader.previousChapter.no,
 								},
 							]}
-							textStyle={{ color: "white" }}
+							textStyle={{
+								color: theme.reader.previousChapter.font,
+							}}
 							disabled={!isPreviousChapter()}
 							onPress={() =>
 								reader.setChapter(
@@ -296,8 +220,8 @@ export default function newWorkReader() {
 								style.nextChapter,
 								{
 									backgroundColor: isNextChapter()
-										? "red"
-										: "grey",
+										? theme.reader.nextChapter.is
+										: theme.reader.nextChapter.no,
 								},
 							]}
 							textStyle={{ color: "white" }}

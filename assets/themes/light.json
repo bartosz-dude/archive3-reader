@@ -1,4 +1,8 @@
 {
+	"loadingIndicator": {
+		"background": "#BD0E0E",
+		"accent": "#FFFFFF"
+	},
 	"header": {
 		"background": "#BD0E0E",
 		"accent": "#FFFFFF",
@@ -35,5 +39,17 @@
 		"itemQueryFont": "#FFFFFF",
 		"itemOrderFont": "#FFFFFF",
 		"itemDelete": "#FFFFFF"
+	},
+	"reader": {
+		"previousChapter": {
+			"is": "#BD0E0E",
+			"no": "#808080",
+			"font": "#FFFFFF"
+		},
+		"nextChapter": {
+			"is": "#BD0E0E",
+			"no": "#808080",
+			"font": "#FFFFFF"
+		}
 	}
 }
