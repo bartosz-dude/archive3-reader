@@ -106,7 +106,7 @@ export default function SearchBar() {
 
 				<Menu
 					ref={menu}
-					name="search-extra-options"
+					name="search-options"
 				>
 					<MenuTrigger
 						customStyles={{
