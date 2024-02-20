@@ -21,6 +21,8 @@ export default function SettingsSwitch(props: {
 			<Switch
 				value={props.value}
 				onValueChange={props.onValueChange}
+				trackColor={{ true: "#ff9999" }}
+				thumbColor={props.value ? "red" : "white"}
 			/>
 		</View>
 	)
