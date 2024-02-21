@@ -22,6 +22,7 @@ import * as Dev from "expo-dev-client"
 import { SettingsProvider } from "../services/appSettings/components/settingsProvider"
 import TabBar from "../components/TabBar"
 import ThemeManager from "../components/ThemeManager"
+import setupSettings from "../services/appSettings/api/setupSettings"
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -54,6 +55,7 @@ export default function RootLayout() {
 	}, [loaded])
 
 	useEffect(() => {
+		setupSettings()
 		setupDB()
 	}, [])
 

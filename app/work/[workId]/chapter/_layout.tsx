@@ -1,26 +1,11 @@
-import {
-	Link,
-	Slot,
-	router,
-	useLocalSearchParams,
-	useNavigation,
-} from "expo-router"
-import { createContext, useContext, useEffect, useState } from "react"
+import { Link, Slot } from "expo-router"
 import { Text, View } from "react-native"
-import useLoading from "../../../../hooks/useLoading"
-import { workScraperNew } from "../../../../services/ao3/scraper/work"
-import getReadthrough from "../../../../services/saver/database/getReadthrough"
-import getWork from "../../../../services/saver/database/getWork"
-import updateReadthrough from "../../../../services/saver/database/updateReadthrough"
-import updateWork from "../../../../services/saver/database/updateWork"
-import IconBtn from "../../../../components/common/IconBtn"
-import useStyle from "../../../../hooks/useStyle"
 import Header from "../../../../components/common/Header"
-import { AO3Work } from "../../../../services/ao3/types/work"
+import IconBtn from "../../../../components/common/IconBtn"
 import Loaded from "../../../../components/common/Loaded"
-import { useWorkContext } from "../_layout"
 import { useReaderContext } from "../../../../components/reader/ReaderManager"
-import LoadingIndicator from "../../../../components/common/LoadingIndicator"
+import ReaderTabs from "../../../../components/reader/ReaderTabs"
+import useStyle from "../../../../hooks/useStyle"
 
 export default function ChapterReaderLayout() {
 	const reader = useReaderContext()
@@ -133,6 +118,9 @@ export default function ChapterReaderLayout() {
 				</Header>
 			</Loaded>
 			<Slot />
+			<Loaded isLoading={reader.status}>
+				<ReaderTabs />
+			</Loaded>
 		</>
 	)
 }

@@ -1,18 +1,16 @@
 // import parse from "node-html-parser"
+import { Element } from "domhandler"
+import { findAll, textContent } from "domutils"
 import * as htmlParser from "htmlparser2"
-import { testHtml2 } from "../../../assets/testHtml2"
-import { AO3Work, MetaNumberStat, MetaTag, MetaTextStat } from "../types/work"
-import { testHtml3 } from "../../../assets/testHtml3"
-import { findAll, findOne, textContent } from "domutils"
-import nCleaner from "../tools/nCleaner"
-import htmlPruner from "../tools/htmlPruner"
-import { DomUtils, parseDocument } from "htmlparser2"
-import { AnyNode } from "domhandler"
+import { parseDocument } from "htmlparser2"
+import cleanTextContent from "../tools/cleanTextContent"
 import findAllBy from "../tools/findAllBy"
 import findOneBy from "../tools/findOneBy"
-import cleanTextContent from "../tools/cleanTextContent"
+import htmlPruner from "../tools/htmlPruner"
+import nCleaner from "../tools/nCleaner"
 import parseComaDecToInt from "../tools/parseComaDecToInt"
-import { Element } from "domhandler"
+import { AO3Work, MetaNumberStat, MetaTag, MetaTextStat } from "../types/work"
+import workUrl from "../tools/workUrl"
 
 export enum WorkScraperError {
 	noChapter = "No chapter section found",
@@ -36,13 +34,7 @@ export function workScraper(
 				let tryCounter = 0
 				let htmlData = null
 				while (htmlData === null) {
-					const data = !(chapterId == "first")
-						? await fetch(
-								`https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`
-						  )
-						: await fetch(
-								`https://archiveofourown.org/works/${workId}?view_adult=true`
-						  )
+					const data = await fetch(workUrl(workId, chapterId))
 					// if (data.status === 429)
 					if (data.ok) {
 						return data

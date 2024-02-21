@@ -1,11 +1,6 @@
 import { useEffect, useMemo, useReducer, useState } from "react"
 import { LoadingHandle, DataHandle, LoadingStatusText } from "../types/common"
 
-function loadingReducer<T extends unknown>(
-	state: DataHandle<T>,
-	action: DataHandle<T>
-) {}
-
 type LoadingReducerState<T extends unknown, E extends any> =
 	| {
 			data: null

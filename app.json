@@ -3,7 +3,7 @@
 		"owner": "bartosz-dude",
 		"name": "Archive3 Reader",
 		"slug": "archive3-reader",
-		"version": "0.1.0",
+		"version": "0.3.0",
 		"orientation": "portrait",
 		"icon": "./assets/images/icon.png",
 		"scheme": "archive3-reader",

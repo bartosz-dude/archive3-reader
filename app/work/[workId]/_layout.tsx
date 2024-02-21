@@ -3,28 +3,31 @@ import ReaderManager from "../../../components/reader/ReaderManager"
 import { Text, View } from "react-native"
 import Header from "../../../components/common/Header"
 import StandardHeader from "../../../components/common/StandardHeader"
+import ReaderFormatter from "../../../components/reader/ReaderFormatter"
 
 export default function WorkReaderLayoutNew() {
 	return (
 		<>
 			<ReaderManager>
-				<Stack
-					screenOptions={{
-						animation: "none",
-					}}
-				>
-					<Stack.Screen
-						name="chapter"
-						options={{ headerShown: false }}
-					/>
-					<Stack.Screen
-						name="chapterSelect"
-						options={{
-							headerShown: false,
-							presentation: "modal",
+				<ReaderFormatter>
+					<Stack
+						screenOptions={{
+							animation: "none",
 						}}
-					/>
-				</Stack>
+					>
+						<Stack.Screen
+							name="chapter"
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="chapterSelect"
+							options={{
+								headerShown: false,
+								presentation: "modal",
+							}}
+						/>
+					</Stack>
+				</ReaderFormatter>
 			</ReaderManager>
 		</>
 	)
