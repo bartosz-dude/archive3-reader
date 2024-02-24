@@ -21,7 +21,6 @@ type DBReadthroughUpdate = Partial<DBReadthrough> &
 
 export default async function updateReadthrough(data: DBReadthroughUpdate) {
 	const db = SQLite.openDatabase("archive3storage.db")
-	// console.log("updateRead", data)
 
 	await db.transactionAsync(async (tx) => {
 		const work = await tx.executeSqlAsync(
@@ -62,8 +61,8 @@ export default async function updateReadthrough(data: DBReadthroughUpdate) {
 				data.currentChapter,
 				// @ts-ignore
 				data.currentChapterPosition,
-				JSON.stringify(data.datedProgress),
 				JSON.stringify(data.readChapters),
+				JSON.stringify(data.datedProgress),
 			]
 		)
 

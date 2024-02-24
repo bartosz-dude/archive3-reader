@@ -1,14 +1,16 @@
 import { ErrorBoundaryProps, Stack } from "expo-router"
 import ReaderManager from "../../../components/reader/ReaderManager"
 import { Text, View } from "react-native"
-import Header from "../../../components/common/Header"
+import AppHeader from "../../../components/common/AppHeader"
 import StandardHeader from "../../../components/common/StandardHeader"
 import ReaderFormatter from "../../../components/reader/ReaderFormatter"
+import ReaderManagerNew from "../../../components/reader/ReaderManagerNew"
 
 export default function WorkReaderLayoutNew() {
 	return (
 		<>
-			<ReaderManager>
+			<ReaderManagerNew>
+				{/* <ReaderManager> */}
 				<ReaderFormatter>
 					<Stack
 						screenOptions={{
@@ -23,12 +25,13 @@ export default function WorkReaderLayoutNew() {
 							name="chapterSelect"
 							options={{
 								headerShown: false,
-								presentation: "modal",
+								// presentation: "modal",
 							}}
 						/>
 					</Stack>
 				</ReaderFormatter>
-			</ReaderManager>
+				{/* </ReaderManager> */}
+			</ReaderManagerNew>
 		</>
 	)
 }

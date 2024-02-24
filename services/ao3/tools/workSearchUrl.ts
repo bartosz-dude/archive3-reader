@@ -24,7 +24,7 @@ export default function workSearchURL(query: AO3WorkSearchQuery) {
 		crossovers: "includeCrossovers",
 		date: "",
 		fandoms: [],
-		language: "en",
+		language: "",
 		rating: "notRated",
 		relationships: [],
 		singleChapter: false,

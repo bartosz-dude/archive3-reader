@@ -230,14 +230,6 @@ export default function useReadthrough(
 		return latestEntry ?? null
 	}
 
-	// useEffect(() => {
-	// 	console.log("readthrough", savedRead.data)
-	// 	// console.log("trackerUpdate", tracker)
-	// 	// return () => {
-	// 	// 	console.log("trackerUpdate cleanup", tracker)
-	// 	// }
-	// }, [savedRead.status])
-
 	return {
 		handle: savedRead,
 		data: savedRead.data,

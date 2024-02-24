@@ -1,6 +1,6 @@
 import { Text, View } from "react-native"
 import BackBtn from "../../components/common/BackBtn"
-import Header from "../../components/common/Header"
+import AppHeader from "../../components/common/AppHeader"
 import useStyle from "../../hooks/useStyle"
 import { ExternalLink } from "../../components/ExternalLink"
 
@@ -13,11 +13,11 @@ export default function CreditsPage() {
 
 	return (
 		<>
-			<Header>
+			<AppHeader>
 				<BackBtn />
 				<Text style={{ color: "white" }}>Credits</Text>
 				<View style={{ width: 32 }} />
-			</Header>
+			</AppHeader>
 			<View style={style.content}>
 				{/* <Text>UI - Bartosz Dudziński</Text>
 				<Text>Programming - Bartosz Dudziński</Text> */}

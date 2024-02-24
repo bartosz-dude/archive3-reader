@@ -4,7 +4,7 @@ import Foreach from "../../components/common/Foreach"
 import { Text, View } from "react-native"
 import { Link } from "expo-router"
 import { ExternalLink } from "../../components/ExternalLink"
-import Header from "../../components/common/Header"
+import AppHeader from "../../components/common/AppHeader"
 import BackBtn from "../../components/common/BackBtn"
 import useStyle from "../../hooks/useStyle"
 import * as licenses from "../../licenses.json"
@@ -61,15 +61,13 @@ export default function PackagesPage() {
 	// const a = licenses
 	// const b = Object.entries(a)
 
-	// console.log(licenses.default)
-
 	return (
 		<>
-			<Header>
+			<AppHeader>
 				<BackBtn />
 				<Text style={{ color: "white" }}>Packages</Text>
 				<View style={{ width: 32 }} />
-			</Header>
+			</AppHeader>
 			<ScrollView>
 				<Foreach
 					// @ts-expect-error

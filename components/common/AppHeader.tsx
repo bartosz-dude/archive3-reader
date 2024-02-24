@@ -2,12 +2,12 @@ import { StyleProp, View, ViewStyle } from "react-native"
 import useStyle from "../../hooks/useStyle"
 import Constants from "expo-constants"
 import { PropsWithChildren } from "react"
-import { useTheme } from "../ThemeManager"
+import { useAppTheme } from "../ThemeManager"
 
-export default function Header(
+export default function AppHeader(
 	props: { style?: StyleProp<ViewStyle> } & PropsWithChildren
 ) {
-	const theme = useTheme()
+	const theme = useAppTheme()
 
 	const headerStyle = useStyle({
 		header: {

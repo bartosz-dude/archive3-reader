@@ -28,11 +28,11 @@ import getSavedQueries from "../../services/saver/api/getSavedQueries"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
 import saveSettings from "../../services/appSettings/api/saveSettings"
 import { useSettings } from "../../services/appSettings/components/settingsProvider"
-import Header from "../common/Header"
-import { useTheme } from "../ThemeManager"
+import AppHeader from "../common/AppHeader"
+import { useAppTheme } from "../ThemeManager"
 
 export default function SearchBar() {
-	const theme = useTheme()
+	const theme = useAppTheme()
 
 	const { ao3Query } = useGlobalSearchParams() as { ao3Query: string }
 
@@ -94,7 +94,7 @@ export default function SearchBar() {
 
 	return (
 		<>
-			<Header>
+			<AppHeader>
 				<TextInput
 					style={style.searchInput}
 					onChangeText={setSearchAnyText}
@@ -173,7 +173,7 @@ export default function SearchBar() {
 						/>
 					</MenuOptions>
 				</Menu>
-			</Header>
+			</AppHeader>
 		</>
 	)
 }

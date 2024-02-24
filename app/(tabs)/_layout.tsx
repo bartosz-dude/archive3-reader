@@ -2,10 +2,10 @@ import { MaterialCommunityIcons } from "@expo/vector-icons"
 import { Tabs, router, useNavigation } from "expo-router"
 import { Text, View } from "react-native"
 import { useSettings } from "../../services/appSettings/components/settingsProvider"
-import { useTheme } from "../../components/ThemeManager"
+import { useAppTheme } from "../../components/ThemeManager"
 
 export default function TabsLayout() {
-	const theme = useTheme()
+	const theme = useAppTheme()
 
 	return (
 		<>

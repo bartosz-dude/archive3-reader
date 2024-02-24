@@ -1,7 +1,7 @@
 import Constants from "expo-constants"
 import { Link, router, useGlobalSearchParams } from "expo-router"
 import { useEffect, useRef, useState } from "react"
-import { FlatList, TextInput, TextInputProps, View } from "react-native"
+import { FlatList, Text, TextInput, TextInputProps, View } from "react-native"
 import {
 	Menu,
 	MenuOption,
@@ -20,14 +20,16 @@ import { AO3WorkSearchResults } from "../../../services/ao3/types/workSearchResu
 import SearchBar from "../../../components/search/SearchBar"
 import fastHashCode from "fast-hash-code"
 import useLoading from "../../../hooks/useLoading"
+import Show from "../../../components/common/Show"
+import { WorkSearchResultsScraperError } from "../../../services/ao3/scraper/workSearchResults"
 
 export default function SearchPage() {
 	const { ao3Query } = useGlobalSearchParams() as { ao3Query: string }
 
-	const [loading, setLoading] = useState(true)
 	const [cachedQuery, setCachedQuery] = useState<string>()
 	const [page, setPage] = useState(1)
 	const [fetchedPages, setFetchedPages] = useState<AO3WorkSearchResults[]>([])
+	// const []
 
 	const data = useLoading(() => {
 		if (ao3Query !== cachedQuery) {
@@ -43,19 +45,16 @@ export default function SearchPage() {
 
 	useEffect(() => {
 		if (data.status == "success") {
-			setLoading(true)
 			setFetchedPages((prev) => {
 				const newPages = [...prev]
 				if (data.data) newPages[data.data.currentPage - 1] = data.data
 
 				return newPages
 			})
-			setLoading(false)
 		}
 	}, [data.status])
 
 	function fetchedResults() {
-		// console.log("fetchedResults", fetchedPages)
 		return fetchedPages.flatMap((v) => v.results)
 	}
 
@@ -77,9 +76,32 @@ export default function SearchPage() {
 			{/* <SearchBar /> */}
 			{/* <Link href={"/search/savedSearches"}>Saved Searches</Link> */}
 			<Loaded
-				isLoading={!loading}
+				isLoading={data.status}
 				loading={<LoadingIndicator />}
 				// options={{ immediatelyShowLoading: true }}
+				fallback={
+					<>
+						{/* <Show
+							when={
+								data.error.message ==
+								WorkSearchResultsScraperError.noResultsFound
+							}
+						> */}
+						<Text>No works found</Text>
+						{/* </Show>
+						<Show
+							when={
+								data.error.message !=
+								WorkSearchResultsScraperError.noResultsFound
+							}
+						>
+							<Text>
+								Something went wrong when searching for this.
+								Try Different query.
+							</Text> */}
+						{/* </Show> */}
+					</>
+				}
 			>
 				<FlatList
 					data={fetchedResults()}
@@ -95,7 +117,6 @@ export default function SearchPage() {
 						)
 					}}
 					onEndReached={(e) => {
-						// console.log("end", isFetchedPagesEnd())
 						if (!isFetchedPagesEnd()) setPage((prev) => prev + 1)
 					}}
 					onEndReachedThreshold={0.4}

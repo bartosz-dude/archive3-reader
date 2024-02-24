@@ -1,24 +1,22 @@
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
+import { router } from "expo-router"
+import { useEffect, useRef, useState } from "react"
 import { ScrollView, Text, View } from "react-native"
+import Btn from "../../../components/common/Btn"
+import Curtain from "../../../components/common/Curtain"
 import Foreach from "../../../components/common/Foreach"
 import Loaded from "../../../components/common/Loaded"
-import { Link, router, useNavigation } from "expo-router"
-import useStyle from "../../../hooks/useStyle"
-import Btn from "../../../components/common/Btn"
-import Header from "../../../components/common/Header"
-import BackBtn from "../../../components/common/BackBtn"
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
-import Show from "../../../components/common/Show"
-import { useEffect, useRef, useState } from "react"
-import Curtain from "../../../components/common/Curtain"
 import LoadingIndicator from "../../../components/common/LoadingIndicator"
-import { useReaderContext } from "../../../components/reader/ReaderManager"
-import useStatus from "../../../hooks/useStatus"
-import useWillUnmount from "../../../hooks/useWillUnmount"
 import StandardHeader from "../../../components/common/StandardHeader"
+import { useReaderManager } from "../../../components/reader/ReaderManagerNew"
+import useStatus from "../../../hooks/useStatus"
+import useStyle from "../../../hooks/useStyle"
+import useWillUnmount from "../../../hooks/useWillUnmount"
+import Show from "../../../components/common/Show"
 
 export default function ChapterSelect() {
 	// const work = useWorkContext()
-	const reader = useReaderContext()
+	const newReader = useReaderManager()
 
 	const [status, setStatus] = useStatus()
 
@@ -45,10 +43,11 @@ export default function ChapterSelect() {
 
 	const [isChangingChapter, setIsChangingChapter] = useState(false)
 	useEffect(() => {
-		// console.log("select mount")
-		reader.endTraking()
+		newReader.endTracking()
 		return () => {
-			if (willUnmount) reader.startTracking()
+			if (willUnmount) {
+				newReader.startTracking()
+			}
 			// work.startReadingSession()
 		}
 	}, [])
@@ -60,78 +59,81 @@ export default function ChapterSelect() {
 				isLoading={status}
 				loading={<LoadingIndicator />}
 			>
-				<ScrollView
-					ref={scrollViewRef}
-					contentOffset={{ x: 0, y: currentChapterY }}
-				>
-					<View style={style.chaptersList}>
-						<Foreach
-							list={(() => {
-								if (
-									reader.chaptersList.data &&
-									reader.chaptersList.data.length > 0
-								)
-									return reader.chaptersList.data
-
-								return [
-									{
-										id: 1,
-										title:
-											reader.work.data?.chapters[0]
-												.title ?? "",
-									},
-								]
-							})()}
-							each={(item, i, l) => (
-								<View
-									onLayout={(e) => {
-										if (
-											reader.currentChapter.chapter == i
-										) {
-											setCurrentChapterY(
-												e.nativeEvent.layout.y
-											)
-											setStatus("success")
-										}
-									}}
-									style={{
-										display: "flex",
-										flexDirection: "row",
-									}}
-									key={i}
-								>
-									{reader.currentChapter.chapter == i ? (
-										<MaterialCommunityIcons
-											name="menu-right"
-											size={32}
-										/>
-									) : (
-										<View style={{ width: 32 }} />
-									)}
-									<Btn
-										onPress={() => {
-											setIsChangingChapter(true)
-											reader.changeChapter(i)
-										}}
-										style={style.chapterEntry}
-										numberOfLines={1}
-									>
-										{(() => {
+				<Loaded isLoading={newReader.metaStatus}>
+					<ScrollView
+						ref={scrollViewRef}
+						contentOffset={{ x: 0, y: currentChapterY }}
+					>
+						<View style={style.chaptersList}>
+							<Foreach
+								list={newReader.chapters() ?? []}
+								each={(item, i, l) => (
+									<View
+										onLayout={(e) => {
 											if (
-												item.title == `Chapter ${i + 1}`
-											)
-												return item.title
+												newReader.currentChapter
+													.chapter == i
+											) {
+												setCurrentChapterY(
+													e.nativeEvent.layout.y
+												)
+												setStatus("success")
+											}
+										}}
+										style={{
+											display: "flex",
+											flexDirection: "row",
+											alignItems: "center",
+										}}
+										key={i}
+									>
+										{newReader.currentChapter.chapter ==
+										i ? (
+											<MaterialCommunityIcons
+												name="menu-right"
+												size={32}
+											/>
+										) : (
+											<View style={{ width: 32 }} />
+										)}
+										<Btn
+											onPress={() => {
+												setIsChangingChapter(true)
+												// reader.changeChapter(i)
+												newReader.setChapter(i)
+												router.back()
+											}}
+											style={style.chapterEntry}
+											numberOfLines={1}
+										>
+											{(() => {
+												if (
+													item.title ==
+													`Chapter ${i + 1}`
+												)
+													return item.title
 
-											return `Chapter ${i + 1}: ${
-												item.title
-											}`
-										})()}
-									</Btn>
-								</View>
-							)}
-						/>
-					</View>
-				</ScrollView>
+												return `Chapter ${i + 1}: ${
+													item.title
+												}`
+											})()}
+										</Btn>
+										<Show when={item.completed}>
+											{/* <Text> Completed</Text> */}
+											<MaterialIcons
+												name="done"
+												size={24}
+												style={{
+													marginLeft: 10,
+												}}
+											/>
+										</Show>
+									</View>
+								)}
+							/>
+						</View>
+					</ScrollView>
+				</Loaded>
 			</Curtain>
 
 			{/* </Loaded> */}

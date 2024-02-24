@@ -5,7 +5,7 @@ import { View } from "react-native"
 export default function TabBar(props: BottomTabBarProps) {
 	// useEffect(() => {
 
-	// 	console.log("props", props)
+	// 	("props", props)
 	// }, [ props ])
 
 	return (

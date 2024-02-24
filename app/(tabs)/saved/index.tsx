@@ -9,7 +9,7 @@ import useCleanup from "../../../hooks/useCleanup"
 import getAllSavedWork from "../../../services/saver/database/getAllSavedWorks"
 import { Link, useNavigation, usePathname } from "expo-router"
 import useStyle from "../../../hooks/useStyle"
-import Header from "../../../components/common/Header"
+import AppHeader from "../../../components/common/AppHeader"
 
 export default function SavedPage() {
 	// const { settings } = useSettings()
@@ -19,7 +19,6 @@ export default function SavedPage() {
 	useEffect(() => {
 		if (path == "/saved") {
 			savedWorks.reload()
-			// console.log("savedWorks reloaded")
 		}
 
 		if (savedWorks.status == "success") {
@@ -45,6 +44,7 @@ export default function SavedPage() {
 			color: "grey",
 			textAlign: "justify",
 			paddingBottom: 10,
+			flexShrink: 1,
 		},
 		title: {
 			paddingVertical: 10,
@@ -61,9 +61,9 @@ export default function SavedPage() {
 
 	return (
 		<>
-			<Header style={{ justifyContent: "center" }}>
+			<AppHeader style={{ justifyContent: "center" }}>
 				<Text style={{ color: "white" }}>Saved Works</Text>
-			</Header>
+			</AppHeader>
 			<Loaded isLoading={savedWorks.status}>
 				<FlatList
 					data={savedWorks.data ?? []}

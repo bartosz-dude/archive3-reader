@@ -9,15 +9,20 @@ import Btn from "../common/Btn"
 import Foreach from "../common/Foreach"
 import Loaded from "../common/Loaded"
 import LoadingIndicator from "../common/LoadingIndicator"
-import { useReaderContext } from "./ReaderManager"
-import { useTheme } from "../ThemeManager"
+import { useAppTheme } from "../ThemeManager"
 import { FontWeightString, useFormatter } from "./ReaderFormatter"
+import IconTitleBtn from "../common/IconTitleBtn"
+import { useReaderManager } from "./ReaderManagerNew"
+import { usePathname } from "expo-router"
 
 export default function ReaderRenderer() {
-	const theme = useTheme()
-	const reader = useReaderContext()
+	const theme = useAppTheme()
+	const newReader = useReaderManager()
+	const formatter = useFormatter()
+	const pathname = usePathname()
 
-	const [status, setStatus] = useStatus()
+	useEffect(() => {}, [])
+	// const [status, setStatus] = useStatus()
 
 	const willUnmount = useWillUnmount()
 
@@ -31,16 +36,20 @@ export default function ReaderRenderer() {
 
 	const [currentChapter, setCurrentChapter] = useState(0)
 
-	useEffect(() => {
-		if (reader.currentChapter.chapter != currentChapter) {
-			setCurrentChapter(reader.currentChapter.chapter)
-			setStatus("loading")
-		}
-	}, [reader.currentChapter.chapter])
-
 	const scrollViewRef = useRef<ScrollView>(null)
 	const [scrollViewOffsetY, setScrollViewOffsetY] = useState(0)
 	const [offsetY, setOffsetY] = useState(0)
+	const [canScroll, setCanScroll] = useState(false)
+
+	useEffect(() => {
+		if (newReader.currentChapter.chapter != currentChapter) {
+			setCurrentChapter(newReader.currentChapter.chapter ?? 0)
+			setScrollViewOffsetY(0)
+			setCanScroll(false)
+			// setStatus("loading")
+			// console.log("reopened")
+		}
+	}, [newReader.currentChapter.chapter])
 
 	// update progress when scrolling
 	useEffect(() => {
@@ -52,12 +61,19 @@ export default function ReaderRenderer() {
 			}
 		)
 		setOffsetY(offsetY)
-		reader.setProgress(
-			isNaN(offsetY / workHeight) ? 0 : offsetY / workHeight
-		)
-	}, [scrollViewOffsetY])
 
-	const formatter = useFormatter()
+		if (!canScroll) return
+
+		const newProgress = (() => {
+			if (isNaN(offsetY / workHeight)) return 0
+
+			if (fixed(offsetY / workHeight, 5) >= 0.99999) return 1
+
+			return offsetY / workHeight
+		})()
+
+		newReader.setProgress(newProgress)
+	}, [scrollViewOffsetY])
 
 	const style = useStyle({
 		titleColumn: {
@@ -72,6 +88,7 @@ export default function ReaderRenderer() {
 			color: "white",
 		},
 		content: {
+			display: "flex",
 			paddingVertical: 40,
 			paddingHorizontal: formatter.format.horizontalSpacing,
 		},
@@ -101,53 +118,60 @@ export default function ReaderRenderer() {
 		},
 	})
 
-	const [canScroll, setCanScroll] = useState(false)
-
 	// scroll to saved position when opening a work
 	useEffect(() => {
-		if (isNaN(reader.getProgress ?? NaN) || isNaN(offsetY / workHeight))
+		if (
+			isNaN(newReader.currentProgress ?? NaN) ||
+			isNaN(offsetY / workHeight)
+		)
 			return
 
 		if (
-			reader.getProgress >= 0 &&
-			fixed(offsetY / workHeight, 5) != fixed(reader.getProgress, 5) &&
-			status != "success"
+			newReader.currentProgress >= 0 &&
+			fixed(offsetY / workHeight, 5) !=
+				fixed(newReader.currentProgress, 5) &&
+			// status != "success"
+			!canScroll
 		) {
 			scrollViewRef.current?.scrollTo({
-				y: workHeight * reader.getProgress,
+				y: workHeight * newReader.currentProgress,
 			})
 		}
-
 		if (
-			reader.getProgress >= 0 &&
-			fixed(offsetY / workHeight, 5) == fixed(reader.getProgress, 5) &&
-			status != "success"
+			newReader.currentProgress >= 0 &&
+			fixed(offsetY / workHeight, 5) ==
+				fixed(newReader.currentProgress, 5) &&
+			// status != "success"
+			!canScroll
 		) {
-			setStatus("success")
+			// setStatus("success")
 			setCanScroll(true)
-			reader.startTracking()
+			// for some reason when opening chapter select it still loads this component
+			// so this prevents start of tracking in such situation
+			if (!pathname.includes("chapterSelect")) newReader.startTracking()
 		}
-	}, [offsetY, workHeight, status])
+	}, [offsetY, workHeight, canScroll])
 
 	useEffect(() => {
 		return () => {
+			// this is wrong, should be willUnmount.current, but it works how it should, so better not touch it
 			if (willUnmount) {
-				reader.endTraking()
+				newReader.endTracking()
 			}
 		}
 	}, [])
 
 	function isPreviousChapter() {
-		return (reader.chaptersList.data ?? [])[
-			reader.currentChapter.chapter - 1
+		return (newReader.chapters() ?? [])[
+			(newReader.currentChapter.chapter ?? 0) - 1
 		]
 			? true
 			: false
 	}
 
 	function isNextChapter() {
-		return (reader.chaptersList.data ?? [])[
-			reader.currentChapter.chapter + 1
+		return (newReader.chapters() ?? [])[
+			(newReader.currentChapter.chapter ?? 0) + 1
 		]
 			? true
 			: false
@@ -156,10 +180,12 @@ export default function ReaderRenderer() {
 	return (
 		<>
 			<Loaded
-				isLoading={reader.status}
+				isLoading={newReader.workStatus}
 				loading={
 					<>
-						<LoadingIndicator />
+						{/* <View style={{ height: "80%" }}> */}
+						{/* <LoadingIndicator /> */}
+						{/* </View> */}
 					</>
 				}
 			>
@@ -184,7 +210,7 @@ export default function ReaderRenderer() {
 				>
 					<View style={style.content}>
 						<Foreach
-							list={reader.work.data?.chapters[0].content ?? []}
+							list={newReader.work?.chapters[0].content ?? []}
 							each={(item, i) => {
 								return (
 									<Text
@@ -205,6 +231,7 @@ export default function ReaderRenderer() {
 												0
 													? "normal"
 													: (formatter.format.fontWeight.toString() as FontWeightString),
+											flexShrink: 1,
 										}}
 									>
 										{item}
@@ -214,7 +241,7 @@ export default function ReaderRenderer() {
 						/>
 					</View>
 					<View style={style.chapterNav}>
-						<Btn
+						<IconTitleBtn
 							style={[
 								style.nextChapter,
 								{
@@ -222,20 +249,30 @@ export default function ReaderRenderer() {
 										? theme.reader.previousChapter.is
 										: theme.reader.previousChapter.no,
 								},
+								{
+									flexDirection: "row",
+									justifyContent: "center",
+								},
 							]}
 							textStyle={{
 								color: theme.reader.previousChapter.font,
 							}}
 							disabled={!isPreviousChapter()}
-							onPress={() =>
-								reader.setChapter(
-									reader.currentChapter.chapter - 1
+							onPress={() => {
+								newReader.setChapter(
+									(newReader.currentChapter.chapter ?? -68) -
+										1
 								)
-							}
-						>
-							Previous
-						</Btn>
-						<Btn
+							}}
+							name="skip-previous"
+							size={32}
+							title="Previous"
+							iconStyle={{
+								color: theme.reader.previousChapter.font,
+							}}
+							android_ripple={undefined}
+						/>
+						<IconTitleBtn
 							style={[
 								style.nextChapter,
 								{
@@ -243,17 +280,27 @@ export default function ReaderRenderer() {
 										? theme.reader.nextChapter.is
 										: theme.reader.nextChapter.no,
 								},
+								{
+									flexDirection: "row-reverse",
+									justifyContent: "center",
+								},
 							]}
-							textStyle={{ color: "white" }}
+							textStyle={{ color: theme.reader.nextChapter.font }}
 							disabled={!isNextChapter()}
-							onPress={() =>
-								reader.setChapter(
-									reader.currentChapter.chapter + 1
+							onPress={() => {
+								newReader.setChapter(
+									(newReader.currentChapter.chapter ?? -70) +
+										1
 								)
-							}
-						>
-							Next
-						</Btn>
+							}}
+							name="skip-next"
+							size={32}
+							title="Next"
+							iconStyle={{
+								color: theme.reader.nextChapter.font,
+							}}
+							android_ripple={undefined}
+						/>
 					</View>
 				</ScrollView>
 			</Loaded>

@@ -39,6 +39,13 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 	const [currentChapter, setCurrentChapter] = useState(0)
 	const [currentProgress, setCurrentProgress] = useState(0)
 
+	useEffect(() => {
+		router.setParams({
+			chapterId: currentChapterRef.current.toString(),
+		})
+		// router.replace(`/work/${workId}/chapter/${currentChapterRef.current}`)
+	}, [currentChapter])
+
 	// when using state in startTracking and stopTraking it uses default values instead of updated, so I convert them to ref here
 	const currentChapterRef = useRef(0)
 	const currentProgressRef = useRef(0)
@@ -57,10 +64,12 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 	useEffect(() => {
 		if (noData(read.dataHandle)) return
 
-		if (read.dataHandle.data !== null) {
-			setCurrentChapter(read.dataHandle.data.currentChapter)
-			setCurrentProgress(read.dataHandle.data.currentChapterPosition)
-			setIsProgressFromLocal(true)
+		// console.log("chapterId", chapterId)
+
+		if (read.dataHandle.data !== null && chapterId === "first") {
+			// setCurrentChapter(read.dataHandle.data.currentChapter)
+			// setCurrentProgress(read.dataHandle.data.currentChapterPosition)
+			// setIsProgressFromLocal(true)
 		}
 	}, [read.dataHandle.status])
 
@@ -162,30 +171,43 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 			})
 		},
 		startTracking: () => {
+			// console.log(
+			// 	"startTracking",
+			// 	currentProgressRef.current,
+			// 	currentProgress
+			// )
 			read.startTracking(
 				currentChapterRef.current,
 				currentProgressRef.current
 			)
 		},
 		endTraking: () => {
+			// console.log("endTracking", currentProgressRef.current)
 			read.endTracking(currentProgressRef.current)
 		},
 		changeChapter: (chapter: number) => {
 			// startTraking fires before currentChapter updates, so it takes wrong chapter, with setting ref first it works
-			currentChapterRef.current = chapter
-			setCurrentChapter(chapter)
 
 			const progress = read.getChapterProgress(chapter)
+			// console.log("changeChapter progress", progress)
+			currentProgressRef.current = progress
 			setCurrentProgress(progress)
+
+			currentChapterRef.current = chapter
+			setCurrentChapter(chapter)
 
 			router.back()
 		},
 		setChapter: (chapter: number) => {
-			currentChapterRef.current = chapter
-			setCurrentChapter(chapter)
+			context.endTraking()
 
 			const progress = read.getChapterProgress(chapter)
+			// console.log("setChapter progress", chapter, progress)
+			currentProgressRef.current = progress
 			setCurrentProgress(progress)
+
+			currentChapterRef.current = chapter
+			setCurrentChapter(chapter)
 		},
 		setProgress: setCurrentProgress,
 		getProgress: currentProgress,
@@ -218,6 +240,6 @@ interface ReaderManagerContext {
 	getProgress: number
 }
 
-export function useReaderContext() {
+function useReaderContext() {
 	return useContext(ReaderContext) as ReaderManagerContext
 }

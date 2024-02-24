@@ -2,10 +2,12 @@ import { Link } from "expo-router"
 import * as WebBrowser from "expo-web-browser"
 import React from "react"
 import { Platform } from "react-native"
+import { useAppTheme } from "./ThemeManager"
 
 export function ExternalLink(
 	props: Omit<React.ComponentProps<typeof Link>, "href"> & { href: string }
 ) {
+	const theme = useAppTheme()
 	return (
 		<Link
 			hrefAttrs={{
@@ -23,7 +25,7 @@ export function ExternalLink(
 					// (v) => {
 					// Open the link in an in-app browser.
 					WebBrowser.openBrowserAsync(props.href as string, {
-						toolbarColor: "red",
+						toolbarColor: theme.header.background,
 					})
 					// }
 					// )

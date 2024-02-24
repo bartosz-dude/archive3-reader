@@ -1,126 +1,79 @@
-import { Link, Slot } from "expo-router"
+import { Slot } from "expo-router"
 import { Text, View } from "react-native"
-import Header from "../../../../components/common/Header"
-import IconBtn from "../../../../components/common/IconBtn"
+import { useAppTheme } from "../../../../components/ThemeManager"
+import AppHeader from "../../../../components/common/AppHeader"
 import Loaded from "../../../../components/common/Loaded"
-import { useReaderContext } from "../../../../components/reader/ReaderManager"
+import LoadingIndicator from "../../../../components/common/LoadingIndicator"
+import ReaderHeader from "../../../../components/reader/ReaderHeader"
+import { useReaderManager } from "../../../../components/reader/ReaderManagerNew"
 import ReaderTabs from "../../../../components/reader/ReaderTabs"
-import useStyle from "../../../../hooks/useStyle"
 
 export default function ChapterReaderLayout() {
-	const reader = useReaderContext()
-
-	const style = useStyle({
-		titleColumn: {
-			display: "flex",
-			flexDirection: "column",
-			// width: "80%",
-			flexShrink: 1,
-		},
-		titleText: {
-			color: "white",
-		},
-		chapterText: {
-			color: "white",
-		},
-	})
+	const theme = useAppTheme()
+	const readerNew = useReaderManager()
 
 	return (
 		<>
-			<Loaded
-				isLoading={reader.meta.status}
-				loading={
-					<>
-						<Header>
-							<View>
-								<Text style={style.titleText}></Text>
-								<Text style={style.titleText}></Text>
-							</View>
-						</Header>
-					</>
-				}
+			<View
+				style={{
+					display: "flex",
+					height: "100%",
+				}}
 			>
-				<Header>
-					<View style={style.titleColumn}>
-						{/* work title */}
-						<Text
-							style={style.titleText}
-							ellipsizeMode="tail"
-							numberOfLines={1}
-						>
-							{reader.meta.data?.title}
-						</Text>
-
-						<Link
-							href={"../chapterSelect"}
-							style={style.titleText}
-							ellipsizeMode="tail"
-							numberOfLines={1}
-							onPress={() => {
-								// work.endReadingSession()
+				<Loaded
+					isLoading={readerNew.metaStatus}
+					loading={
+						<>
+							<AppHeader>
+								<View>
+									<Text></Text>
+									<Text></Text>
+								</View>
+							</AppHeader>
+						</>
+					}
+				>
+					<ReaderHeader />
+				</Loaded>
+				{/* <View
+					style={{
+						height: "80%",
+						flexShrink: 1,
+						flexGrow: 1,
+						// maxHeight: "80%",
+					}}
+				> */}
+				<Loaded
+					isLoading={readerNew.workStatus}
+					loading={
+						<View style={{ flexGrow: 1 }}>
+							<LoadingIndicator />
+						</View>
+					}
+				>
+					<Slot />
+				</Loaded>
+				{/* </View> */}
+				<Loaded
+					isLoading={readerNew.metaStatus}
+					loading={
+						<View
+							style={{
+								backgroundColor: theme.header.background,
+								paddingHorizontal: 20,
+								paddingVertical: 10,
+								borderTopColor: theme.header.accent,
+								borderTopWidth: 1,
 							}}
-							disabled={(() => {
-								const maxChapters =
-									reader.meta.data?.stats.maxChapters
-
-								return maxChapters && maxChapters == 1
-									? true
-									: false
-							})()}
 						>
-							{(() => {
-								const chapter = reader.currentChapter
-								const maxChapters =
-									reader.meta.data?.stats.maxChapters
-
-								const title = chapter?.title ?? ""
-								// work.work.data?.chapters[0].title
-
-								if (title == `Chapter ${chapter.chapter + 1}`)
-									return title
-
-								if (
-									title &&
-									(maxChapters === null ||
-										(maxChapters && maxChapters > 1))
-								) {
-									return `Chapter ${
-										chapter.chapter + 1
-									}: ${title}`
-								}
-
-								if (
-									maxChapters === null ||
-									(maxChapters && maxChapters > 1)
-								) {
-									return `Chapter ${chapter.chapter + 1}`
-								}
-
-								if (chapter?.title) return `${title}`
-							})()}
-						</Link>
-					</View>
-					{/* save work btn */}
-					<View>
-						<IconBtn
-							name={
-								reader.local.data?.isSaved
-									? "bookmark"
-									: "bookmark-outline"
-							}
-							size={32}
-							iconStyle={{ color: "white" }}
-							onPress={() => {
-								reader.setSavedWork(!reader.local.data?.isSaved)
-							}}
-						/>
-					</View>
-				</Header>
-			</Loaded>
-			<Slot />
-			<Loaded isLoading={reader.status}>
-				<ReaderTabs />
-			</Loaded>
+							<View style={{ height: 24 }} />
+							<Text />
+						</View>
+					}
+				>
+					<ReaderTabs />
+				</Loaded>
+			</View>
 		</>
 	)
 }

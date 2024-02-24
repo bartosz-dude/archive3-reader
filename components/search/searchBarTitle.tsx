@@ -1,9 +1,9 @@
 import { Text, View } from "react-native"
 import useStyle from "../../hooks/useStyle"
-import { useTheme } from "../ThemeManager"
+import { useAppTheme } from "../ThemeManager"
 
 export default function SearchBarTitle({ title }: { title: string }) {
-	const theme = useTheme()
+	const theme = useAppTheme()
 
 	const style = useStyle({
 		searchBarTitleContainer: {

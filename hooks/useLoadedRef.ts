@@ -7,7 +7,10 @@ export default function useLoadedRef<T extends unknown>(
 	const ref = useRef<T | null>(null)
 
 	useEffect(() => {
-		if (handle.status == "success") ref.current = handle.data
+		if (handle.status == "success") {
+			ref.current = handle.data
+			// console.log("ref update")
+		}
 	}, [handle.status])
 
 	return ref

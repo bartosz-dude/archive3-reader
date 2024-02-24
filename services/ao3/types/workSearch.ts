@@ -1,13 +1,22 @@
-export type Lang = "en"
-export type Rating = "notRated" | "generalAudiences" | "teensAndUpAudiences" | "mature" | "explicit"
-export type NumberSearch = `${number}` | `<${number}` | `>${number}` | `${number}-${number}`
+export type Lang = "en" | ""
+export type Rating =
+	| "notRated"
+	| "generalAudiences"
+	| "teensAndUpAudiences"
+	| "mature"
+	| "explicit"
+export type NumberSearch =
+	| `${number}`
+	| `<${number}`
+	| `>${number}`
+	| `${number}-${number}`
 
 export enum RatingIds {
 	notRated = 9,
 	generalAudiences = 10,
 	teensAndUpAudiences = 11,
 	mature = 12,
-	explicit = 13
+	explicit = 13,
 }
 
 export const RatingIdsReversed = {
@@ -15,7 +24,7 @@ export const RatingIdsReversed = {
 	"10": "generalAudiences",
 	"11": "teensAndUpAudiences",
 	"12": "mature",
-	"13": "explicit"
+	"13": "explicit",
 }
 
 export enum SortByValues {
@@ -32,16 +41,16 @@ export enum SortByValues {
 }
 
 export const SortByValuesReversed = {
-	"_score": "bestMatch",
-	"authors_to_sort_on": "authors",
-	"title_to_sort_on": "title",
-	"created_at": "createdAt",
-	"revised_at": "revisedAt",
-	"word_count": "wordCount",
-	"hits": "hits",
-	"kudos_count": "kudosCount",
-	"comments_count": "commentsCount",
-	"bookmarks_count": "bookmarksCount",
+	_score: "bestMatch",
+	authors_to_sort_on: "authors",
+	title_to_sort_on: "title",
+	created_at: "createdAt",
+	revised_at: "revisedAt",
+	word_count: "wordCount",
+	hits: "hits",
+	kudos_count: "kudosCount",
+	comments_count: "commentsCount",
+	bookmarks_count: "bookmarksCount",
 }
 
 export enum WarningsIds {
@@ -50,7 +59,7 @@ export enum WarningsIds {
 	majorCharacterDeath = 18,
 	noArchiveWarningsApply = 16,
 	rapeNonCon = 19,
-	underage = 20
+	underage = 20,
 }
 
 export const WarningsIdsReversed = {
@@ -59,8 +68,7 @@ export const WarningsIdsReversed = {
 	"18": "majorCharacterDeath",
 	"16": "noArchiveWarningsApply",
 	"19": "rapeNonCon",
-	"20": "underage"
-
+	"20": "underage",
 }
 
 export enum CategoriesIds {
@@ -69,7 +77,7 @@ export enum CategoriesIds {
 	gen = 21,
 	mM = 23,
 	multi = 2246,
-	other = 24
+	other = 24,
 }
 
 export const CategoriesIdsReversed = {
@@ -78,57 +86,80 @@ export const CategoriesIdsReversed = {
 	"21": "gen",
 	"23": "mM",
 	"2246": "multi",
-	"24": "other"
+	"24": "other",
 }
 
-type requiredAO3WorkSearchFields = "sortBy" | "sortDirection" | "completionStatus" | "crossovers"
+type requiredAO3WorkSearchFields =
+	| "sortBy"
+	| "sortDirection"
+	| "completionStatus"
+	| "crossovers"
 
 export type AO3WorkSearchQuery = Partial<AO3WorkSearch>
-export type AO3WorkSearchFetch = Omit<AO3WorkSearchQuery, requiredAO3WorkSearchFields> & Pick<AO3WorkSearch, requiredAO3WorkSearchFields>
+export type AO3WorkSearchFetch = Omit<
+	AO3WorkSearchQuery,
+	requiredAO3WorkSearchFields
+> &
+	Pick<AO3WorkSearch, requiredAO3WorkSearchFields>
 
-export type AO3WorkSearchNumberSearchFields = "wordCount" | "hits" | "kudos" | "comments" | "bookmarks"
+export type AO3WorkSearchNumberSearchFields =
+	| "wordCount"
+	| "hits"
+	| "kudos"
+	| "comments"
+	| "bookmarks"
 
 export interface AO3WorkSearch {
-	anyField: string,
-	title: string,
-	authorArtist: string,
-	date: string,
-	completionStatus: "allWorks" | "completeWorksOnly" | "worksInProgressOnly",
-	crossovers: "includeCrossovers" | "excludeCrossovers" | "onlyCrossovers",
-	singleChapter: boolean,
-	wordCount: NumberSearch,
-	language: Lang,
-	fandoms: string[],
-	rating: Rating,
+	anyField: string
+	title: string
+	authorArtist: string
+	date: string
+	completionStatus: "allWorks" | "completeWorksOnly" | "worksInProgressOnly"
+	crossovers: "includeCrossovers" | "excludeCrossovers" | "onlyCrossovers"
+	singleChapter: boolean
+	wordCount: NumberSearch
+	language: Lang
+	fandoms: string[]
+	rating: Rating
 	warnings: {
-		creatorChoseNotToUseArchiveWarnings?: boolean,
-		gaphicDepictionsOfViolence?: boolean,
-		majorCharacterDeath?: boolean,
-		noArchiveWarningsApply?: boolean,
-		rapeNonCon?: boolean,
+		creatorChoseNotToUseArchiveWarnings?: boolean
+		gaphicDepictionsOfViolence?: boolean
+		majorCharacterDeath?: boolean
+		noArchiveWarningsApply?: boolean
+		rapeNonCon?: boolean
 		underage?: boolean
-	},
+	}
 	categories: {
-		fF?: boolean,
-		fM?: boolean,
-		gen?: boolean,
-		mM?: boolean,
-		multi?: boolean,
+		fF?: boolean
+		fM?: boolean
+		gen?: boolean
+		mM?: boolean
+		multi?: boolean
 		other?: boolean
-	},
-	characters: string[],
-	relationships: string[],
-	additionalTags: string[],
-	hits: NumberSearch,
-	kudos: NumberSearch,
-	comments: NumberSearch,
-	bookmarks: NumberSearch,
-	sortBy: "bestMatch" | "authors" | "title" | "createdAt" | "revisedAt" | "wordCount" | "hits" | "kudosCount" | "commentsCount" | "bookmarksCount",
+	}
+	characters: string[]
+	relationships: string[]
+	additionalTags: string[]
+	hits: NumberSearch
+	kudos: NumberSearch
+	comments: NumberSearch
+	bookmarks: NumberSearch
+	sortBy:
+		| "bestMatch"
+		| "authors"
+		| "title"
+		| "createdAt"
+		| "revisedAt"
+		| "wordCount"
+		| "hits"
+		| "kudosCount"
+		| "commentsCount"
+		| "bookmarksCount"
 	sortDirection: "asc" | "desc"
 }
 
 export interface AO3Query {
-	commit: "Search",
+	commit: "Search"
 	"work_search[bookmarks_count]": NumberSearch
 	"work_search[character_names]": string
 	"work_search[comments_count]": NumberSearch

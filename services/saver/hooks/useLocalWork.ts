@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import useLoading from "../../../hooks/useLoading"
 import useUpdater from "../../../hooks/useUpdater"
 import { LoadingHandle, DataHandle } from "../../../types/common"
@@ -18,6 +18,7 @@ import noData from "../../../tools/noData"
 export default function useLocalWork(workId: number) {
 	const localWork = useLoading(async () => getWork(workId), [])
 	const savedWork = useLoading(async () => getSavedWork(workId), [])
+	const localWorkSavedRef = useRef(false)
 
 	const [status, setStatus] = useStatus()
 
@@ -34,8 +35,9 @@ export default function useLocalWork(workId: number) {
 	} | null>(null)
 
 	function saveLocalWork(work: AO3Work) {
-		// updates data if it changed since last download if not the returns, skipped when no data saved
+		// updates data if it changed since last download if not then returns, skipped when no data saved
 		if (loaded(localWork) && localWork.data !== null) {
+			localWorkSavedRef.current = localWork.data.isSaved
 			if (
 				localWork.data.lastUpdate.getTime() <
 				Date.parse(work.meta.stats.updated)
@@ -120,7 +122,13 @@ export default function useLocalWork(workId: number) {
 		return () => {
 			if (!willUnmount.current) return
 
-			if (loaded(localWork) && localWork.data?.isSaved === false) {
+			console.log(localWork, localWorkSavedRef.current)
+			if (
+				loaded(localWork) &&
+				localWork.data !== null &&
+				!localWorkSavedRef.current
+			) {
+				console.log("delete savedWork")
 				deleteSavedWork(localWork.data.workId)
 			}
 		}
@@ -138,6 +146,8 @@ export default function useLocalWork(workId: number) {
 			)
 
 		if (localWork.data !== null) {
+			localWorkSavedRef.current =
+				data.isSaved ?? localWorkSavedRef.current
 			updateWork({
 				workId: localWork.data.workId,
 				isOffline: data.isOffline,
@@ -146,6 +156,18 @@ export default function useLocalWork(workId: number) {
 				localWork.reload()
 			})
 		}
+	}
+
+	function getChaptersList() {
+		return (
+			savedWork.data?.chaptersList.map((v, i) => {
+				return {
+					id: v.id,
+					title: v.title,
+					chapter: i,
+				}
+			}) ?? null
+		)
 	}
 
 	return {
@@ -158,5 +180,6 @@ export default function useLocalWork(workId: number) {
 		},
 		saveLocalWork,
 		updateLocalWork,
+		getChaptersList,
 	}
 }

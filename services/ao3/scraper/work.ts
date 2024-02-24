@@ -22,10 +22,7 @@ export enum WorkScraperError {
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
 // export function workScrapper(workId: number, chapter?: number): Promise<AO3Work>
 // export function workScrapper(workId: number, chapterId?: string): Promise<AO3Work>
-export function workScraper(
-	workId: number,
-	chapterId: string
-): Promise<AO3Work> {
+function workScraper(workId: number, chapterId: string): Promise<AO3Work> {
 	const asyncParsing = new Promise<AO3Work>(async (resolve, reject) => {
 		try {
 			// console.log("link", `https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`)
@@ -389,13 +386,32 @@ export async function workScraperNew(
 	chapterId: number | "first"
 ): Promise<AO3Work> {
 	// return new Promise<AO3Work>(async (resolve, reject) => {
-	const fetchedHtml = !(chapterId === "first")
-		? await fetch(
-				`https://archiveofourown.org/works/${workId}/chapters/${chapterId}?view_adult=true`
-		  )
-		: await fetch(
-				`https://archiveofourown.org/works/${workId}?view_adult=true`
-		  )
+	const fetchedHtml = await (async () => {
+		let tryCounter = 0
+		let htmlData = null
+		while (htmlData === null) {
+			const data = await fetch(
+				workUrl(
+					workId,
+					typeof chapterId == "number"
+						? chapterId.toString()
+						: chapterId
+				)
+			)
+			// if (data.status === 429)
+			if (data.ok) {
+				return data
+			}
+			tryCounter++
+
+			if (tryCounter >= 3)
+				throw new Error("Could not reach ao3; too many attempts")
+
+			await delay(5000)
+		}
+
+		return htmlData
+	})()
 
 	const htmlText = await fetchedHtml.text()
 	const prunedHtmlStr = htmlPruner(htmlText)
@@ -634,10 +650,33 @@ export async function workScraperNew(
 					if (!articleContainer)
 						throw new Error(WorkScraperError.noArticle)
 
-					const content = nCleaner(
+					// multi-chapter works have userstuff and article div the same
+					if (
+						(articleContainer?.attribs["class"] ?? "").includes(
+							"userstuff"
+						)
+					) {
+						const content = nCleaner(
+							articleContainer.children
+						) as Element[]
+						if (content.length > 1) content.shift()
+
+						return content.map((v) => cleanTextContent(v))
+					}
+
+					// single-chapter works for some reason have them separate
+					const userStuffContainer = findOneBy(
+						"class",
+						"userstuff",
 						articleContainer.children
+					)
+
+					if (!userStuffContainer)
+						throw new Error(WorkScraperError.noArticle)
+
+					const content = nCleaner(
+						userStuffContainer.children
 					) as Element[]
-					if (content.length > 1) content.shift()
 
 					return content.map((v) => cleanTextContent(v))
 				})(),

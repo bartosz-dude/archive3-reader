@@ -1,25 +1,8 @@
-import {
-	Slot,
-	Stack,
-	router,
-	useGlobalSearchParams,
-	useNavigation,
-} from "expo-router"
-import { useEffect, useState } from "react"
-import { Text, TextInput, TextInputProps, View } from "react-native"
-import workSearchURL from "../../../services/ao3/tools/workSearchUrl"
-import worksQuery from "../../../services/ao3/api/worksQuery"
-import workSearchResultsScraper from "../../../services/ao3/scraper/workSearchResults"
-import useAsyncMemo from "../../../hooks/useAsyncMemo"
+import { Stack } from "expo-router"
 import SearchBar from "../../../components/search/SearchBar"
 import { useSettings } from "../../../services/appSettings/components/settingsProvider"
 
 export default function SearchLayout() {
-	// const results = useAsyncMemo(() => workSearchResultsScraper(), () => {}, [])
-
-	// useEffect(() => {
-	// 	console.log("layoutResults", results)
-	// }, [ results ])
 	const { settings } = useSettings()
 
 	return (

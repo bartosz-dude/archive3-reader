@@ -34,6 +34,6 @@ export default function ThemeManager(props: {} & PropsWithChildren) {
 
 type ThemeManagerContext = ColorTheme
 
-export function useTheme() {
+export function useAppTheme() {
 	return useContext(ThemeContext) as ThemeManagerContext
 }

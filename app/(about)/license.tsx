@@ -1,15 +1,15 @@
 import { Text, View } from "react-native"
 import BackBtn from "../../components/common/BackBtn"
-import Header from "../../components/common/Header"
+import AppHeader from "../../components/common/AppHeader"
 
 export default function LicensePage() {
 	return (
 		<>
-			<Header>
+			<AppHeader>
 				<BackBtn />
 				<Text style={{ color: "white" }}>License</Text>
 				<View style={{ width: 32 }} />
-			</Header>
+			</AppHeader>
 			<View>
 				<Text>License</Text>
 			</View>

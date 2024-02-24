@@ -4,6 +4,7 @@ import { DomUtils, parseDocument } from "htmlparser2"
 import htmlPruner from "../tools/htmlPruner"
 import nCleaner from "../tools/nCleaner"
 import { AO3WorkResult, AO3WorkSearchResults } from "../types/workSearchResults"
+import findOneBy from "../tools/findOneBy"
 
 export enum WorkSearchResultsScraperError {
 	noResultsFound = "No results list found",
@@ -11,15 +12,19 @@ export enum WorkSearchResultsScraperError {
 
 export default async function workSearchResultsScraper(queryUrl: URL) {
 	// return new Promise<AO3WorkSearchResults>(async (resolve, reject) => {
+
 	const fetchedHtml = await (await fetch(queryUrl)).text()
 	const prunedHtmlStr = htmlPruner(fetchedHtml)
 
 	const dom = parseDocument(prunedHtmlStr)
 
-	const resultsContainer = DomUtils.findOne(
-		(elem) => elem.attribs["class"] == "work index group",
-		dom.children
-	)
+	// const resultsContainer = DomUtils.findOne(
+	// 	(elem) => elem.attribs["class"] == "work index group",
+	// 	dom.children
+	// )
+	const resultsContainer = findOneBy("role", "main", dom.children)
+
+	// console.log("list", resultsContainer)
 
 	if (!resultsContainer)
 		throw new Error(WorkSearchResultsScraperError.noResultsFound)
@@ -194,7 +199,7 @@ export default async function workSearchResultsScraper(queryUrl: URL) {
 						.replace(",", "")
 						.replace(" Found ?", "")
 			  )
-			: -1,
+			: 0,
 	}
 
 	return searchResults

@@ -17,7 +17,19 @@ type Tracker = {
 
 export default function useRead(workId: number, readthrough: number) {
 	const savedRead = useLoading(() => getReadthrough(workId, readthrough), [])
-	const savedReadRef = useLoadedRef(savedRead)
+	// const savedReadRef = useLoadedRef(savedRead)
+	const trackingStatusRef = useRef(false)
+
+	const savedReadRef = useRef(savedRead.data)
+
+	useEffect(() => {
+		// console.log("ref refresh", savedRead.status)
+		if (savedRead.status == "success") {
+			savedReadRef.current = savedRead.data
+			// console.log("ref update")
+		}
+	}, [savedRead.status])
+
 	const tracker = useRef<Tracker>({
 		chapter: 0,
 		endDate: null,
@@ -27,6 +39,7 @@ export default function useRead(workId: number, readthrough: number) {
 	})
 
 	function startTracking(chapter: number, progress: number) {
+		trackingStatusRef.current = true
 		tracker.current = {
 			chapter: chapter,
 			startDate: new Date(),
@@ -37,6 +50,8 @@ export default function useRead(workId: number, readthrough: number) {
 	}
 
 	function endTracking(progress: number) {
+		if (!trackingStatusRef.current) return
+		trackingStatusRef.current = false
 		tracker.current = {
 			...tracker.current,
 			endProgress: progress,
@@ -87,6 +102,11 @@ export default function useRead(workId: number, readthrough: number) {
 					startProgress: tracker.current.startProgress,
 				}),
 				readChapters: (() => {
+					// console.log(
+					// 	"readChapters",
+					// 	savedReadRef.current,
+					// 	savedReadRef.current?.readChapters
+					// )
 					if (tracker.current.endProgress === 1)
 						return (
 							savedReadRef.current?.readChapters ?? []
@@ -94,9 +114,15 @@ export default function useRead(workId: number, readthrough: number) {
 
 					return savedReadRef.current?.readChapters ?? []
 				})(),
+			}).then(() => {
+				savedRead.reload()
+				// console.log("saved read reload")
 			})
 	}
 
+	/**
+	 * Gets newest progress for a given chapter, if none found returns 0
+	 */
 	function getChapterProgress(chapter: number) {
 		if (savedRead.data?.currentChapter == chapter)
 			return savedRead.data.currentChapterPosition ?? 0
@@ -106,15 +132,22 @@ export default function useRead(workId: number, readthrough: number) {
 		)
 		// console.log("gettingProgress", chapterProgress)
 
-		if (chapterProgress === undefined) return 0
+		if (chapterProgress === undefined || chapterProgress.length == 0)
+			return 0
 
 		const latestEntry = chapterProgress?.reduce(
 			(prev, v) => {
+				// console.log(
+				// 	"latestEntry",
+				// 	prev.endDate.getTime(),
+				// 	v.endDate.getTime()
+				// )
 				if (prev.endDate.getTime() < v.endDate.getTime()) return v
 				return prev
 			},
 			{ endDate: new Date(0) } as DBReadthrough["datedProgress"][0]
 		)
+		// console.log("gettingProgress, latestEntry", latestEntry)
 		return latestEntry.endProgress ?? 0
 	}
 

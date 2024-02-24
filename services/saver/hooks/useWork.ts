@@ -1,15 +1,13 @@
 import { useEffect } from "react"
-import useLoadedEffect from "../../../hooks/useLoadedEffect"
 import useLoading from "../../../hooks/useLoading"
-import useUpdater from "../../../hooks/useUpdater"
 import { LoadingHandle } from "../../../types/common"
 import { AO3Work } from "../../ao3/types/work"
 import deleteSavedWork from "../database/deleteSavedWork"
+import deleteWork from "../database/deleteWork"
 import getSavedWork from "../database/getSavedWork"
 import getWork from "../database/getWork"
 import updateSavedWork from "../database/updateSavedWork"
 import updateWork, { UpdateWorkErrors } from "../database/updateWork"
-import deleteWork from "../database/deleteWork"
 
 export default function useWork(work: LoadingHandle<AO3Work>) {
 	const localWork = useLoading(async () => {
