@@ -47,9 +47,14 @@ export default function IconBtn({
 			}}
 			style={[styleLocal.pressable, style]}
 			// style=
+			hitSlop={8}
 			{...pressable}
 		>
-			<MaterialCommunityIcons style={iconStyle} name={name} size={size} />
+			<MaterialCommunityIcons
+				style={iconStyle}
+				name={name}
+				size={size}
+			/>
 		</Pressable>
 	)
 }

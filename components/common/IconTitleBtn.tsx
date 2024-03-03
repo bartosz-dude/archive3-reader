@@ -48,6 +48,7 @@ export default function IconTitleBtn({
 				borderless: true,
 			}}
 			style={[styleLocal.pressable, style]}
+			hitSlop={8}
 			{...pressable}
 		>
 			<MaterialCommunityIcons
