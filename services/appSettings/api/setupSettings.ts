@@ -22,9 +22,9 @@ export default async function setupSettings() {
 				wordSpacing: currentSettings?.readerFormat?.wordSpacing ?? 1,
 				lineSpacing: currentSettings?.readerFormat?.lineSpacing ?? 8,
 				paragraphSpacing:
-					currentSettings?.readerFormat?.paragraphSpacing ?? 10,
+					currentSettings?.readerFormat?.paragraphSpacing ?? 5,
 				horizontalSpacing:
-					currentSettings?.readerFormat?.horizontalSpacing ?? 20,
+					currentSettings?.readerFormat?.horizontalSpacing ?? 10,
 				background:
 					currentSettings?.readerFormat?.background ?? "white",
 				scrollDirection:
