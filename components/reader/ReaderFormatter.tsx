@@ -64,7 +64,19 @@ export default function ReaderFormatter(props: {} & PropsWithChildren) {
 	const { settings, update } = useSettings()
 	const willUnmount = useWillUnmount()
 
-	const [renderFormat, dispatch] = useReducer(reducer, settings.readerFormat)
+	const [renderFormat, dispatch] = useReducer(
+		reducer,
+		settings.readerFormat ?? {
+			fontFamily: "serif",
+			fontSize: 14,
+			fontWeight: 0,
+			wordSpacing: 1,
+			lineSpacing: 8,
+			paragraphSpacing: 10,
+			horizontalSpacing: 20,
+			background: "white",
+		}
+	)
 
 	useEffect(() => {
 		return () => {

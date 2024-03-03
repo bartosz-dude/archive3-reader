@@ -26,11 +26,13 @@ export default function ChapterSelect() {
 		chapterEntry: {
 			marginVertical: 5,
 			alignItems: "flex-start",
+			flexShrink: 1,
+			width: "100%",
 		},
 		chaptersList: {
 			// height: "auto",
 			paddingTop: 10,
-			paddingHorizontal: 20,
+			paddingHorizontal: 10,
 			paddingBottom: 30,
 			marginBottom: 100,
 		},
@@ -48,7 +50,6 @@ export default function ChapterSelect() {
 			if (willUnmount) {
 				newReader.startTracking()
 			}
-			// work.startReadingSession()
 		}
 	}, [])
 
@@ -105,6 +106,7 @@ export default function ChapterSelect() {
 											}}
 											style={style.chapterEntry}
 											numberOfLines={1}
+											ellipsizeMode="tail"
 										>
 											{(() => {
 												if (
@@ -124,7 +126,7 @@ export default function ChapterSelect() {
 												name="done"
 												size={24}
 												style={{
-													marginLeft: 10,
+													marginLeft: 5,
 												}}
 											/>
 										</Show>

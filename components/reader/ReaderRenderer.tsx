@@ -14,15 +14,14 @@ import { FontWeightString, useFormatter } from "./ReaderFormatter"
 import IconTitleBtn from "../common/IconTitleBtn"
 import { useReaderManager } from "./ReaderManagerNew"
 import { usePathname } from "expo-router"
+import Show from "../common/Show"
+import Curtain from "../common/Curtain"
 
 export default function ReaderRenderer() {
 	const theme = useAppTheme()
 	const newReader = useReaderManager()
 	const formatter = useFormatter()
 	const pathname = usePathname()
-
-	useEffect(() => {}, [])
-	// const [status, setStatus] = useStatus()
 
 	const willUnmount = useWillUnmount()
 
@@ -120,6 +119,16 @@ export default function ReaderRenderer() {
 
 	// scroll to saved position when opening a work
 	useEffect(() => {
+		// console.log(
+		// 	"scrollOld",
+		// 	workHeight,
+		// 	newReader.currentProgress,
+		// 	offsetY / workHeight,
+		// 	offsetY,
+		// 	workHeight * newReader.currentProgress,
+		// 	Math.round(fixed(offsetY, 5)),
+		// 	Math.round(fixed(workHeight * newReader.currentProgress, 5))
+		// )
 		if (
 			isNaN(newReader.currentProgress ?? NaN) ||
 			isNaN(offsetY / workHeight)
@@ -135,12 +144,13 @@ export default function ReaderRenderer() {
 		) {
 			scrollViewRef.current?.scrollTo({
 				y: workHeight * newReader.currentProgress,
+				animated: false,
 			})
 		}
 		if (
 			newReader.currentProgress >= 0 &&
-			fixed(offsetY / workHeight, 5) ==
-				fixed(newReader.currentProgress, 5) &&
+			Math.round(fixed(offsetY, 5)) ==
+				Math.round(fixed(workHeight * newReader.currentProgress, 5)) &&
 			// status != "success"
 			!canScroll
 		) {
@@ -177,6 +187,10 @@ export default function ReaderRenderer() {
 			: false
 	}
 
+	function hasManyChapters() {
+		return newReader.meta.stats?.maxChapters == 1 ? false : true
+	}
+
 	return (
 		<>
 			<Loaded
@@ -189,120 +203,142 @@ export default function ReaderRenderer() {
 					</>
 				}
 			>
-				<ScrollView
-					ref={scrollViewRef}
-					scrollEnabled={canScroll}
-					contentContainerStyle={{
-						display: "flex",
-						flexDirection: "column",
-						justifyContent: "space-between",
-					}}
-					scrollEventThrottle={1}
-					onScroll={(e) => {
-						setScrollViewOffsetY(e.nativeEvent.contentOffset.y)
-					}}
-					onLayout={(e) => {
-						setLayoutHeight(e.nativeEvent.layout.height)
-					}}
-					onContentSizeChange={(w, h) => {
-						setContentHeight(h)
-					}}
+				<Curtain
+					isLoading={canScroll}
+					loading={
+						<>
+							<LoadingIndicator />
+						</>
+					}
 				>
-					<View style={style.content}>
-						<Foreach
-							list={newReader.work?.chapters[0].content ?? []}
-							each={(item, i) => {
-								return (
-									<Text
-										key={i}
-										style={{
-											fontFamily:
-												formatter.format.fontFamily,
-											fontSize: formatter.format.fontSize,
-											paddingBottom:
-												formatter.format
-													.paragraphSpacing,
-											textAlign: "justify",
-											lineHeight:
-												formatter.format.fontSize +
-												formatter.format.lineSpacing,
-											fontWeight:
-												formatter.format.fontWeight ===
-												0
-													? "normal"
-													: (formatter.format.fontWeight.toString() as FontWeightString),
-											flexShrink: 1,
-										}}
-									>
-										{item}
-									</Text>
-								)
-							}}
-						/>
-					</View>
-					<View style={style.chapterNav}>
-						<IconTitleBtn
-							style={[
-								style.nextChapter,
-								{
-									backgroundColor: isPreviousChapter()
-										? theme.reader.previousChapter.is
-										: theme.reader.previousChapter.no,
-								},
-								{
-									flexDirection: "row",
-									justifyContent: "center",
-								},
-							]}
-							textStyle={{
-								color: theme.reader.previousChapter.font,
-							}}
-							disabled={!isPreviousChapter()}
-							onPress={() => {
-								newReader.setChapter(
-									(newReader.currentChapter.chapter ?? -68) -
-										1
-								)
-							}}
-							name="skip-previous"
-							size={32}
-							title="Previous"
-							iconStyle={{
-								color: theme.reader.previousChapter.font,
-							}}
-							android_ripple={undefined}
-						/>
-						<IconTitleBtn
-							style={[
-								style.nextChapter,
-								{
-									backgroundColor: isNextChapter()
-										? theme.reader.nextChapter.is
-										: theme.reader.nextChapter.no,
-								},
-								{
-									flexDirection: "row-reverse",
-									justifyContent: "center",
-								},
-							]}
-							textStyle={{ color: theme.reader.nextChapter.font }}
-							disabled={!isNextChapter()}
-							onPress={() => {
-								newReader.setChapter(
-									(newReader.currentChapter.chapter ?? -70) +
-										1
-								)
-							}}
-							name="skip-next"
-							size={32}
-							title="Next"
-							iconStyle={{
-								color: theme.reader.nextChapter.font,
-							}}
-							android_ripple={undefined}
-						/>
-					</View>
-				</ScrollView>
+					<ScrollView
+						ref={scrollViewRef}
+						scrollEnabled={canScroll}
+						persistentScrollbar={true}
+						contentContainerStyle={{
+							display: "flex",
+							flexDirection: "column",
+							justifyContent: "space-between",
+						}}
+						scrollEventThrottle={1}
+						onScroll={(e) => {
+							setScrollViewOffsetY(e.nativeEvent.contentOffset.y)
+						}}
+						onLayout={(e) => {
+							setLayoutHeight(e.nativeEvent.layout.height)
+						}}
+						onContentSizeChange={(w, h) => {
+							setContentHeight(h)
+						}}
+					>
+						<View style={style.content}>
+							<Foreach
+								list={newReader.work?.chapters[0].content ?? []}
+								each={(item, i) => {
+									return (
+										<Text
+											key={i}
+											textBreakStrategy="simple"
+											style={{
+												fontFamily:
+													formatter.format.fontFamily,
+												fontSize:
+													formatter.format.fontSize,
+												paddingBottom:
+													formatter.format
+														.paragraphSpacing,
+												textAlign: "justify",
+												lineHeight:
+													formatter.format.fontSize +
+													formatter.format
+														.lineSpacing,
+												fontWeight:
+													formatter.format
+														.fontWeight === 0
+														? "normal"
+														: (formatter.format.fontWeight.toString() as FontWeightString),
+												flexShrink: 1,
+											}}
+										>
+											{item}
+										</Text>
+									)
+								}}
+							/>
+						</View>
+
+						<Show when={hasManyChapters()}>
+							<View style={style.chapterNav}>
+								<IconTitleBtn
+									style={[
+										style.nextChapter,
+										{
+											backgroundColor: isPreviousChapter()
+												? theme.reader.previousChapter
+														.is
+												: theme.reader.previousChapter
+														.no,
+										},
+										{
+											flexDirection: "row",
+											justifyContent: "center",
+										},
+									]}
+									textStyle={{
+										color: theme.reader.previousChapter
+											.font,
+									}}
+									disabled={!isPreviousChapter()}
+									onPress={() => {
+										newReader.setChapter(
+											(newReader.currentChapter.chapter ??
+												-68) - 1
+										)
+									}}
+									name="skip-previous"
+									size={32}
+									title="Previous"
+									iconStyle={{
+										color: theme.reader.previousChapter
+											.font,
+									}}
+									android_ripple={undefined}
+								/>
+								<IconTitleBtn
+									style={[
+										style.nextChapter,
+										{
+											backgroundColor: isNextChapter()
+												? theme.reader.nextChapter.is
+												: theme.reader.nextChapter.no,
+										},
+										{
+											flexDirection: "row-reverse",
+											justifyContent: "center",
+										},
+									]}
+									textStyle={{
+										color: theme.reader.nextChapter.font,
+									}}
+									disabled={!isNextChapter()}
+									onPress={() => {
+										newReader.setChapter(
+											(newReader.currentChapter.chapter ??
+												-70) + 1
+										)
+									}}
+									name="skip-next"
+									size={32}
+									title="Next"
+									iconStyle={{
+										color: theme.reader.nextChapter.font,
+									}}
+									android_ripple={undefined}
+								/>
+							</View>
+						</Show>
+					</ScrollView>
+				</Curtain>
 			</Loaded>
 		</>
 	)

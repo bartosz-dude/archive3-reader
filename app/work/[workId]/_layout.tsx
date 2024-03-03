@@ -25,7 +25,12 @@ export default function WorkReaderLayoutNew() {
 							name="chapterSelect"
 							options={{
 								headerShown: false,
-								// presentation: "modal",
+							}}
+						/>
+						<Stack.Screen
+							name="options"
+							options={{
+								headerShown: false,
 							}}
 						/>
 					</Stack>

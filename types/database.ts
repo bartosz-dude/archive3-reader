@@ -7,6 +7,7 @@ export interface SQLReadthrough {
 	readthrough: number
 	current_chapter: number
 	current_chapter_position: number
+	latest_update_date: string
 	dated_progress: string
 	read_chapters: string
 }
@@ -16,6 +17,7 @@ export interface DBReadthrough {
 	readthrough: number
 	currentChapter: number
 	currentChapterPosition: number
+	latestUpdateDate: Date
 	datedProgress: {
 		chapter: number
 		startProgress: number

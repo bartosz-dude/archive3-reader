@@ -1,28 +1,14 @@
-import "react-native-url-polyfill/auto"
 import FontAwesome from "@expo/vector-icons/FontAwesome"
-import {
-	DarkTheme,
-	DefaultTheme,
-	ThemeProvider,
-} from "@react-navigation/native"
 import { useFonts } from "expo-font"
-import { Link, Slot, SplashScreen, Stack, Tabs } from "expo-router"
-import { useEffect, useMemo, useState } from "react"
-import {
-	DevSettings,
-	ScrollView,
-	Text,
-	View,
-	useColorScheme,
-} from "react-native"
+import { Slot, SplashScreen, Stack } from "expo-router"
+import { useEffect, useState } from "react"
+import "react-native-url-polyfill/auto"
+import useLoadingHandler from "../hooks/useLoadingHandler"
 import { MenuProvider } from "react-native-popup-menu"
-import setupDB from "../services/saver/api/setupDB"
-import getDB from "../services/database/getDB"
-import * as Dev from "expo-dev-client"
-import { SettingsProvider } from "../services/appSettings/components/settingsProvider"
-import TabBar from "../components/TabBar"
 import ThemeManager from "../components/ThemeManager"
+import { SettingsProvider } from "../services/appSettings/components/settingsProvider"
 import setupSettings from "../services/appSettings/api/setupSettings"
+import setupDB from "../services/saver/api/setupDB"
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -35,13 +21,17 @@ export const unstable_settings = {
 }
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
+console.log("app prestart")
 SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
-	const [loaded, error] = useFonts({
+	const [backendLoaded, setBackendLoaded] = useState(false)
+	const [loadedFont, error] = useFonts({
 		SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
 		...FontAwesome.font,
 	})
+
+	const loaded = useLoadingHandler([backendLoaded, loadedFont])
 
 	// Expo Router uses Error Boundaries to catch errors in the navigation tree.
 	useEffect(() => {
@@ -49,17 +39,23 @@ export default function RootLayout() {
 	}, [error])
 
 	useEffect(() => {
-		if (loaded) {
+		if (backendLoaded) {
 			SplashScreen.hideAsync()
 		}
-	}, [loaded])
+	}, [backendLoaded])
 
 	useEffect(() => {
-		setupSettings()
-		setupDB()
+		const initSetup = async () => {
+			console.log("app init")
+			await setupSettings()
+			await setupDB()
+			setBackendLoaded(true)
+			console.log("app init complete")
+		}
+		initSetup()
 	}, [])
 
-	if (!loaded) {
+	if (!backendLoaded) {
 		return null
 	}
 
@@ -68,6 +64,7 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
 	return (
+		// <Slot />
 		<SettingsProvider>
 			<ThemeManager>
 				<MenuProvider>

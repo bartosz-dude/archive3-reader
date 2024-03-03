@@ -8,6 +8,7 @@ export default async function clearReadingData() {
 		await tx.executeSqlAsync(`DROP TABLE IF EXISTS 'works'`)
 		await tx.executeSqlAsync(`DROP TABLE IF EXISTS 'saved_works'`)
 		await tx.executeSqlAsync(`DROP TABLE IF EXISTS 'readthroughs'`)
+		await tx.executeSqlAsync(`PRAGMA user_version = 0`)
 	})
 
 	await setupDB()

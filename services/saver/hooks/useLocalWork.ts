@@ -18,15 +18,27 @@ import noData from "../../../tools/noData"
 export default function useLocalWork(workId: number) {
 	const localWork = useLoading(async () => getWork(workId), [])
 	const savedWork = useLoading(async () => getSavedWork(workId), [])
-	const localWorkSavedRef = useRef(false)
+	const localWorkSavedRef = useRef<boolean | null>(null)
 
 	const [status, setStatus] = useStatus()
 
 	const willUnmount = useWillUnmount()
 
+	const [localWorkData, setLocalWorkData] = useState<DBWork | null>(null)
+	const [savedWorkData, setSavedWorkData] = useState<DBSavedWork | null>(null)
+
 	useEffect(() => {
-		// console.log("localWork", localWork)
-		if (loaded(localWork) && loaded(savedWork)) setStatus("success")
+		// console.log(
+		// 	"localWork updater",
+		// 	localWork,
+		// 	localWork.data?.lastUpdate.toISOString(),
+		// 	savedWork
+		// )
+		if (loaded(localWork) && loaded(savedWork)) {
+			setLocalWorkData(localWork.data)
+			setSavedWorkData(savedWork.data)
+			setStatus("success")
+		}
 	}, [localWork.status, savedWork.status])
 
 	const [updated, setUpdated] = useState<{
@@ -68,7 +80,7 @@ export default function useLocalWork(workId: number) {
 				return
 			}
 
-			if (noData(savedWork))
+			if (noData(savedWork)) {
 				// temp saved data when local data exists
 				updateSavedWork({
 					workId: work.meta.id,
@@ -80,11 +92,12 @@ export default function useLocalWork(workId: number) {
 					language: work.meta.language,
 					authors: work.meta.authors,
 				}).then(() => savedWork.reload())
-
+			}
 			return
 		}
 
 		// saves data of new opened work
+		localWorkSavedRef.current = false
 		updateWork({
 			workId: work.meta.id,
 			availableChapters: work.meta.stats.chapters,
@@ -98,10 +111,9 @@ export default function useLocalWork(workId: number) {
 			.then(() => localWork.reload())
 			.catch((r) => {
 				// for some reason it tries to insert data twice generating this error, so I just ignore it
-				if (r == UpdateWorkErrors.alreadyExistsWhenCreating)
-					console.warn("failed unique")
+				if (r == UpdateWorkErrors.alreadyExistsWhenCreating) return
 
-				return r
+				console.error(r)
 			})
 
 		// temp saved data
@@ -122,13 +134,13 @@ export default function useLocalWork(workId: number) {
 		return () => {
 			if (!willUnmount.current) return
 
-			console.log(localWork, localWorkSavedRef.current)
+			// console.log("localDelete", localWork, localWorkSavedRef.current)
 			if (
 				loaded(localWork) &&
 				localWork.data !== null &&
-				!localWorkSavedRef.current
+				!(localWorkSavedRef.current ?? true)
 			) {
-				console.log("delete savedWork")
+				// console.log("delete savedWork")
 				deleteSavedWork(localWork.data.workId)
 			}
 		}
@@ -172,6 +184,10 @@ export default function useLocalWork(workId: number) {
 
 	return {
 		status: status,
+		data: {
+			localWork: localWorkData,
+			savedWork: savedWorkData,
+		},
 		dataHandle: parseDataHandle(localWork),
 		savedWorkDataHandle: parseDataHandle(savedWork),
 		updated: {

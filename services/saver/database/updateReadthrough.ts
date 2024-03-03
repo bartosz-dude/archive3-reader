@@ -16,8 +16,10 @@ interface DBReadthroughA {
 	readChapters: number[]
 }
 
-type DBReadthroughUpdate = Partial<DBReadthrough> &
-	Pick<DBReadthrough, "workId" | "readthrough">
+type DBReadthroughUpdate = Omit<
+	Partial<DBReadthrough> & Pick<DBReadthrough, "workId" | "readthrough">,
+	"latestUpdateDate"
+>
 
 export default async function updateReadthrough(data: DBReadthroughUpdate) {
 	const db = SQLite.openDatabase("archive3storage.db")
@@ -27,7 +29,6 @@ export default async function updateReadthrough(data: DBReadthroughUpdate) {
 			`SELECT work_id, readthrough from 'readthroughs' WHERE work_id = ? AND readthrough = ?`,
 			[data.workId, data.readthrough]
 		)
-		// console.log("found entries", work)
 		if (work.rows.length > 0) {
 			await tx.executeSqlAsync(
 				updateSQLQuery(
@@ -40,6 +41,7 @@ export default async function updateReadthrough(data: DBReadthroughUpdate) {
 						],
 						["read_chapters", JSON.stringify(data.readChapters)],
 						["dated_progress", JSON.stringify(data.datedProgress)],
+						["latest_update_date", JSON.stringify(new Date())],
 					],
 					[
 						["work_id", data.workId],
@@ -50,8 +52,10 @@ export default async function updateReadthrough(data: DBReadthroughUpdate) {
 			return
 		}
 
+		const b = await tx.executeSqlAsync(`Select * From 'readthroughs'`)
+
 		await tx.executeSqlAsync(
-			`INSERT INTO 'readthroughs' VALUES (?, ?, ?, ?, ?, ?, ?)`,
+			`INSERT INTO 'readthroughs' VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
 			[
 				// @ts-ignore
 				null,
@@ -63,6 +67,7 @@ export default async function updateReadthrough(data: DBReadthroughUpdate) {
 				data.currentChapterPosition,
 				JSON.stringify(data.readChapters),
 				JSON.stringify(data.datedProgress),
+				JSON.stringify(new Date()),
 			]
 		)
 

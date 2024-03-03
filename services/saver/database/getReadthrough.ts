@@ -17,11 +17,14 @@ export default async function getReadthrough(
 			)
 			readthroughContent = (entry.rows[0] as SQLReadthrough) ?? null
 
-			if (readthroughContent)
+			if (readthroughContent) {
 				readthroughContent = {
 					currentChapter: readthroughContent.current_chapter,
 					currentChapterPosition:
 						readthroughContent.current_chapter_position,
+					latestUpdateDate: new Date(
+						readthroughContent.latest_update_date
+					),
 					datedProgress: (() => {
 						const progress = JSON.parse(
 							readthroughContent.dated_progress
@@ -37,6 +40,7 @@ export default async function getReadthrough(
 					readthrough: readthroughContent.readthrough,
 					workId: readthroughContent.work_id,
 				} as DBReadthrough
+			}
 		} catch (error) {
 			console.error(error)
 			readthroughContent = null

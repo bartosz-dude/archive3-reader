@@ -12,6 +12,7 @@ import SettingsEntry from "../components/settings/settingsEntry"
 import BtnWithAlert from "../components/common/BtnWithAlert"
 import clearReadingData from "../services/saver/api/clearReadingData"
 import { useAppTheme } from "../components/ThemeManager"
+import * as app from "../app.json"
 
 export default function SettingsPage() {
 	const theme = useAppTheme()
@@ -68,7 +69,7 @@ export default function SettingsPage() {
 							<Link href={`/credits`}>Credits</Link>
 						</SettingsEntry>
 						<SettingsEntry>
-							<Text>version: 0.3.0</Text>
+							<Text>version: {app.expo.version}</Text>
 						</SettingsEntry>
 					</View>
 				</View>

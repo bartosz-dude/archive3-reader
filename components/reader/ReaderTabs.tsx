@@ -120,6 +120,10 @@ export default function ReaderTabs(props: {}) {
 			: false
 	}
 
+	function hasManyChapters() {
+		return newReader.meta.stats?.maxChapters == 1 ? false : true
+	}
+
 	return (
 		<>
 			<FormatPanel isOpened={formatEditorOpened} />
@@ -145,7 +149,10 @@ export default function ReaderTabs(props: {}) {
 								: theme.reader.previousChapter.no,
 						},
 					]}
-					disabled={!isPreviousChapter()}
+					disabled={
+						!isPreviousChapter() ||
+						newReader.workStatus !== "success"
+					}
 					onPress={() => {
 						// reader.endTraking()
 						newReader.setChapter(
@@ -163,17 +170,28 @@ export default function ReaderTabs(props: {}) {
 				/> */}
 				<IconTitleBtn
 					// href={"../chapterSelect"}
-					disabled={(() => {
-						const maxChapters = newReader.meta.stats?.maxChapters
-
-						return maxChapters && maxChapters == 1 ? true : false
-					})()}
+					disabled={!hasManyChapters()}
 					name="format-list-numbered"
 					size={24}
 					title="Chapters"
 					style={style.buttonStyle}
-					iconStyle={style.iconStyle}
-					textStyle={style.textStyle}
+					iconStyle={[
+						style.iconStyle,
+						{
+							color: hasManyChapters()
+								? theme.header.font
+								: theme.reader.previousChapter.no,
+						},
+					]}
+					textStyle={[
+						style.textStyle,
+
+						{
+							color: hasManyChapters()
+								? theme.header.font
+								: theme.reader.previousChapter.no,
+						},
+					]}
 					onPress={() => {
 						router.push("../chapterSelect")
 					}}
@@ -209,9 +227,13 @@ export default function ReaderTabs(props: {}) {
 						WebBrowser.openBrowserAsync(
 							workUrl(
 								newReader.meta.workId ?? -1,
-								newReader.currentChapter.id
-									? newReader.currentChapter.id.toString()
-									: "first"
+								(() => {
+									const currentChapter =
+										newReader.currentChapter
+									return currentChapter.id
+										? currentChapter.id.toString()
+										: "first"
+								})()
 							).href,
 							{
 								toolbarColor: theme.header.background,
@@ -240,7 +262,9 @@ export default function ReaderTabs(props: {}) {
 								: theme.reader.nextChapter.no,
 						},
 					]}
-					disabled={!isNextChapter()}
+					disabled={
+						!isNextChapter() || newReader.workStatus !== "success"
+					}
 					onPress={() => {
 						// reader.endTraking()
 						newReader.setChapter(

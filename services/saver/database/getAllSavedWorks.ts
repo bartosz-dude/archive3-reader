@@ -32,7 +32,5 @@ export default async function getAllSavedWork() {
 		}
 	})
 
-	console.log("savedWorks", savedWorkContent)
-
 	return savedWorkContent
 }

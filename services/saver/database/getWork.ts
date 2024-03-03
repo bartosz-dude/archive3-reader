@@ -12,10 +12,8 @@ export default async function getWork(workId: number) {
 				`SELECT * FROM 'works' WHERE work_id = ?`,
 				[workId]
 			)
-			// console.log("entry", entry)
 			workContent = (entry.rows[0] as SQLWork) ?? null
 			if (workContent) {
-				// console.log("workContent", workContent)
 				workContent = {
 					availableChapters: workContent.available_chapters,
 					isOffline: workContent.is_offline == 1,

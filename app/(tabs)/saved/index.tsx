@@ -1,18 +1,29 @@
-import { FlatList, ScrollView, Text, View } from "react-native"
+import { FlatList, ScrollView, Text, TextInput, View } from "react-native"
 import { useSettings } from "../../../services/appSettings/components/settingsProvider"
 import Foreach from "../../../components/common/Foreach"
 import useLoading from "../../../hooks/useLoading"
 import getAllWorks from "../../../services/saver/database/getAllWorks"
 import Loaded from "../../../components/common/Loaded"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import useCleanup from "../../../hooks/useCleanup"
 import getAllSavedWork from "../../../services/saver/database/getAllSavedWorks"
-import { Link, useNavigation, usePathname } from "expo-router"
+import { Link, router, useNavigation, usePathname } from "expo-router"
 import useStyle from "../../../hooks/useStyle"
 import AppHeader from "../../../components/common/AppHeader"
+import Constants from "expo-constants"
+import { useAppTheme } from "../../../components/ThemeManager"
+import SearchBarTitle from "../../../components/search/searchBarTitle"
+import {
+	Menu,
+	MenuOption,
+	MenuOptions,
+	MenuTrigger,
+} from "react-native-popup-menu"
+import IconBtn from "../../../components/common/IconBtn"
 
 export default function SavedPage() {
-	// const { settings } = useSettings()
+	const { settings, update } = useSettings()
+	const theme = useAppTheme()
 	const path = usePathname()
 	const savedWorks = useLoading(() => getAllSavedWork())
 
@@ -57,16 +68,102 @@ export default function SavedPage() {
 			marginRight: 5,
 			color: "grey",
 		},
+		searchBar: {
+			paddingTop: Constants.statusBarHeight + 10,
+			paddingBottom: 10,
+			paddingHorizontal: 15,
+			backgroundColor: theme.header.background,
+			display: "flex",
+			flexDirection: "row",
+			gap: 10,
+			alignItems: "center",
+		},
+		searchBarText: {
+			color: theme.header.font,
+		},
+		searchInput: {
+			borderStyle: "solid",
+			borderWidth: 2,
+			borderColor: theme.header.accent,
+			borderRadius: 50,
+			paddingHorizontal: 15,
+			color: theme.header.font,
+			flexGrow: 1,
+		},
+		searchBarBtn: {
+			color: theme.header.accent,
+		},
 	})
+
+	const [filterTitle, setFilterTitle] = useState("")
 
 	return (
 		<>
-			<AppHeader style={{ justifyContent: "center" }}>
-				<Text style={{ color: "white" }}>Saved Works</Text>
+			<AppHeader>
+				<TextInput
+					style={style.searchInput}
+					onChangeText={setFilterTitle}
+					value={filterTitle}
+					// onSubmitEditing={submitHander}
+					cursorColor={"white"}
+					placeholder="Search titles..."
+					placeholderTextColor={"lightgrey"}
+				/>
+				<Menu
+					// ref={menu}
+					name="saved-works-options"
+				>
+					<MenuTrigger
+						customStyles={{
+							TriggerTouchableComponent: IconBtn,
+							triggerTouchable: {
+								name: "dots-vertical",
+								size: 32,
+								iconStyle: { color: theme.header.font },
+							},
+						}}
+					></MenuTrigger>
+					<MenuOptions>
+						<MenuOption
+							text={
+								settings.saved.filters.order == "latestAdded"
+									? "Sorting by latest added"
+									: "Sorting by oldest added"
+							}
+							onSelect={() => {
+								update({
+									saved: {
+										filters: {
+											order:
+												settings.saved.filters.order ==
+												"latestAdded"
+													? "oldestAdded"
+													: "latestAdded",
+										},
+									},
+								})
+							}}
+						/>
+					</MenuOptions>
+				</Menu>
 			</AppHeader>
+			<SearchBarTitle title="Saved Works" />
 			<Loaded isLoading={savedWorks.status}>
 				<FlatList
-					data={savedWorks.data ?? []}
+					data={(() => {
+						const filteredByTitles = (savedWorks.data ?? []).filter(
+							(v) =>
+								v.title
+									.toLowerCase()
+									.includes(filterTitle.toLowerCase())
+						)
+
+						if (settings.saved.filters.order == "oldestAdded")
+							return filteredByTitles
+
+						if (settings.saved.filters.order == "latestAdded")
+							return filteredByTitles.slice().reverse()
+					})()}
 					renderItem={(item) => (
 						<View
 							style={style.entry}
@@ -103,6 +200,7 @@ export default function SavedPage() {
 								style={style.summary}
 								numberOfLines={6}
 								ellipsizeMode="tail"
+								textBreakStrategy="simple"
 							>
 								{item.item.summary}
 							</Text>

@@ -22,6 +22,7 @@ import fastHashCode from "fast-hash-code"
 import useLoading from "../../../hooks/useLoading"
 import Show from "../../../components/common/Show"
 import { WorkSearchResultsScraperError } from "../../../services/ao3/scraper/workSearchResults"
+import useStatus from "../../../hooks/useStatus"
 
 export default function SearchPage() {
 	const { ao3Query } = useGlobalSearchParams() as { ao3Query: string }
@@ -29,7 +30,7 @@ export default function SearchPage() {
 	const [cachedQuery, setCachedQuery] = useState<string>()
 	const [page, setPage] = useState(1)
 	const [fetchedPages, setFetchedPages] = useState<AO3WorkSearchResults[]>([])
-	// const []
+	const [status, setStatus] = useStatus()
 
 	const data = useLoading(() => {
 		if (ao3Query !== cachedQuery) {
@@ -45,6 +46,7 @@ export default function SearchPage() {
 
 	useEffect(() => {
 		if (data.status == "success") {
+			setStatus("success")
 			setFetchedPages((prev) => {
 				const newPages = [...prev]
 				if (data.data) newPages[data.data.currentPage - 1] = data.data
@@ -76,7 +78,7 @@ export default function SearchPage() {
 			{/* <SearchBar /> */}
 			{/* <Link href={"/search/savedSearches"}>Saved Searches</Link> */}
 			<Loaded
-				isLoading={data.status}
+				isLoading={status}
 				loading={<LoadingIndicator />}
 				// options={{ immediatelyShowLoading: true }}
 				fallback={

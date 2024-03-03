@@ -106,6 +106,7 @@ export default function SearchResultItem({
 						style={style.summary}
 						numberOfLines={6}
 						ellipsizeMode="tail"
+						textBreakStrategy="simple"
 						onTextLayout={(e) => {
 							// console.log()
 							if (e.nativeEvent.lines.length > 6)

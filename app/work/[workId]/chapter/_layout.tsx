@@ -7,10 +7,22 @@ import LoadingIndicator from "../../../../components/common/LoadingIndicator"
 import ReaderHeader from "../../../../components/reader/ReaderHeader"
 import { useReaderManager } from "../../../../components/reader/ReaderManagerNew"
 import ReaderTabs from "../../../../components/reader/ReaderTabs"
+import useLoadingHandler from "../../../../hooks/useLoadingHandler"
+import { LoadingStatusText } from "../../../../types/common"
 
 export default function ChapterReaderLayout() {
 	const theme = useAppTheme()
 	const readerNew = useReaderManager()
+
+	const readerUILoading = useLoadingHandler([
+		readerNew.metaStatus,
+		readerNew.localWorkStatus,
+	])
+
+	const workLoading = useLoadingHandler([
+		readerUILoading as LoadingStatusText,
+		readerNew.workStatus,
+	])
 
 	return (
 		<>
@@ -21,7 +33,7 @@ export default function ChapterReaderLayout() {
 				}}
 			>
 				<Loaded
-					isLoading={readerNew.metaStatus}
+					isLoading={readerUILoading}
 					loading={
 						<>
 							<AppHeader>
@@ -44,7 +56,7 @@ export default function ChapterReaderLayout() {
 					}}
 				> */}
 				<Loaded
-					isLoading={readerNew.workStatus}
+					isLoading={workLoading}
 					loading={
 						<View style={{ flexGrow: 1 }}>
 							<LoadingIndicator />
@@ -55,7 +67,7 @@ export default function ChapterReaderLayout() {
 				</Loaded>
 				{/* </View> */}
 				<Loaded
-					isLoading={readerNew.metaStatus}
+					isLoading={readerUILoading}
 					loading={
 						<View
 							style={{

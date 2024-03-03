@@ -34,3 +34,9 @@ export type LoadingHandle<T> = DataHandle<T> & {
 }
 
 export type Handle<T> = LoadingHandle<T> | DataHandle<T>
+
+export type DeepPartial<T> = T extends object
+	? {
+			[P in keyof T]?: DeepPartial<T[P]>
+	  }
+	: T

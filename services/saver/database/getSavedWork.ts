@@ -2,14 +2,17 @@ import * as SQLite from "expo-sqlite"
 import { DBSavedWork, SQLSavedWork } from "../../../types/database"
 
 export default async function getSavedWork(workId: number) {
-	const db = SQLite.openDatabase('archive3storage.db')
+	const db = SQLite.openDatabase("archive3storage.db")
 
 	let savedWorkContent
 
-	await db.transactionAsync(async tx => {
+	await db.transactionAsync(async (tx) => {
 		try {
-			const entry = await tx.executeSqlAsync(`SELECT * FROM 'saved_works' WHERE work_id = ?`, [ workId ])
-			savedWorkContent = entry.rows[ 0 ] as SQLSavedWork ?? null
+			const entry = await tx.executeSqlAsync(
+				`SELECT * FROM 'saved_works' WHERE work_id = ?`,
+				[workId]
+			)
+			savedWorkContent = (entry.rows[0] as SQLSavedWork) ?? null
 
 			if (savedWorkContent) {
 				savedWorkContent = {
@@ -20,7 +23,7 @@ export default async function getSavedWork(workId: number) {
 					authors: JSON.parse(savedWorkContent.authors),
 					tags: JSON.parse(savedWorkContent.tags),
 					stats: JSON.parse(savedWorkContent.stats),
-					chaptersList: JSON.parse(savedWorkContent.chapters_list)
+					chaptersList: JSON.parse(savedWorkContent.chapters_list),
 				} as DBSavedWork
 			}
 		} catch (error) {
@@ -28,5 +31,5 @@ export default async function getSavedWork(workId: number) {
 		}
 	})
 
-	return savedWorkContent as unknown as (DBSavedWork | null)
+	return savedWorkContent as unknown as DBSavedWork | null
 }

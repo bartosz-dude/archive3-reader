@@ -1,4 +1,4 @@
-import { Link } from "expo-router"
+import { Link, router } from "expo-router"
 import { Share, Text, View } from "react-native"
 import useStyle from "../../hooks/useStyle"
 import { useAppTheme } from "../ThemeManager"
@@ -13,6 +13,8 @@ import {
 	MenuTrigger,
 } from "react-native-popup-menu"
 import workUrl from "../../services/ao3/tools/workUrl"
+import Show from "../common/Show"
+import { MaterialIcons } from "@expo/vector-icons"
 
 export default function ReaderHeader() {
 	const theme = useAppTheme()
@@ -21,15 +23,20 @@ export default function ReaderHeader() {
 		titleColumn: {
 			display: "flex",
 			flexDirection: "column",
-			// width: "80%",
+			width: "80%",
 			flexShrink: 1,
 		},
 		titleText: {
 			color: theme.header.font,
 		},
-		chapterText: {
-			color: theme.header.font,
+		chapterContainer: {
+			display: "flex",
+			flexDirection: "row",
+			alignItems: "center",
+			maxWidth: "100%",
+			marginRight: 10,
 		},
+		chapterText: {},
 	})
 
 	return (
@@ -44,58 +51,80 @@ export default function ReaderHeader() {
 					>
 						{readerNew.meta?.title}
 					</Text>
+					<View style={style.chapterContainer}>
+						<Link
+							style={style.chapterText}
+							href={"../chapterSelect"}
+							numberOfLines={1}
+							disabled={(() => {
+								const maxChapters =
+									readerNew.meta?.stats?.maxChapters
 
-					<Link
-						href={"../chapterSelect"}
-						style={style.titleText}
-						ellipsizeMode="tail"
-						numberOfLines={1}
-						onPress={() => {
-							// work.endReadingSession()
-						}}
-						disabled={(() => {
-							const maxChapters =
-								readerNew.meta?.stats?.maxChapters
+								return maxChapters && maxChapters == 1
+									? true
+									: false
+							})()}
+						>
+							{/* <View style={style.chapterText}> */}
+							<Text
+								ellipsizeMode="tail"
+								numberOfLines={1}
+								style={{
+									color: theme.header.font,
+								}}
+							>
+								{(() => {
+									const chapter = readerNew.currentChapter
+									const maxChapters =
+										readerNew.meta?.stats?.maxChapters
 
-							return maxChapters && maxChapters == 1
-								? true
-								: false
-						})()}
-					>
-						{(() => {
-							const chapter = readerNew.currentChapter
-							const maxChapters =
-								readerNew.meta?.stats?.maxChapters
+									const title = readerNew.currentChapter.title
+									// work.work.data?.chapters[0].title
 
-							const title = readerNew.currentChapter.title
-							// work.work.data?.chapters[0].title
+									if (
+										title ==
+										`Chapter ${
+											(chapter.chapter ?? -70) + 1
+										}`
+									)
+										return title
 
-							if (
-								title ==
-								`Chapter ${(chapter.chapter ?? -70) + 1}`
-							)
-								return title
+									if (
+										title &&
+										(maxChapters === null ||
+											(maxChapters && maxChapters > 1))
+									) {
+										return `Chapter ${
+											(chapter.chapter ?? -70) + 1
+										}: ${title}`
+									}
 
-							if (
-								title &&
-								(maxChapters === null ||
-									(maxChapters && maxChapters > 1))
-							) {
-								return `Chapter ${
-									(chapter.chapter ?? -70) + 1
-								}: ${title}`
-							}
+									if (
+										maxChapters === null ||
+										(maxChapters && maxChapters > 1)
+									) {
+										return `Chapter ${
+											(chapter.chapter ?? -70) + 1
+										}`
+									}
 
-							if (
-								maxChapters === null ||
-								(maxChapters && maxChapters > 1)
-							) {
-								return `Chapter ${(chapter.chapter ?? -70) + 1}`
-							}
+									if (chapter?.title) return `${title}`
+								})()}
+							</Text>
 
-							if (chapter?.title) return `${title}`
-						})()}
-					</Link>
+							{/* </View> */}
+						</Link>
+						<Show when={readerNew.isChapterCompleted}>
+							<MaterialIcons
+								name="done"
+								size={16}
+								style={{
+									marginLeft: 5,
+									color: theme.header.font,
+								}}
+							/>
+						</Show>
+					</View>
 				</View>
 				<View
 					style={{
@@ -104,73 +133,82 @@ export default function ReaderHeader() {
 						gap: 10,
 					}}
 				>
-					<Loaded isLoading={readerNew.workStatus}>
-						{/* save work btn */}
-						<View>
-							<IconBtn
-								name={
-									readerNew.isWorkSaved
-										? "bookmark"
-										: "bookmark-outline"
-								}
-								size={32}
-								iconStyle={{ color: "white" }}
-								onPress={() => {
-									readerNew.saveWork()
-								}}
-							/>
-						</View>
+					{/* save work btn */}
+					<View>
+						<IconBtn
+							name={
+								readerNew.isWorkSaved
+									? "bookmark"
+									: "bookmark-outline"
+							}
+							size={32}
+							iconStyle={{ color: "white" }}
+							onPress={() => {
+								readerNew.saveWork()
+							}}
+						/>
+					</View>
 
-						{/* <IconBtn
+					{/* <IconBtn
 						name="dots-vertical"
 						size={32}
 						iconStyle={{
 							color: theme.header.font,
 						}}
 					/> */}
-						<Menu
-							// ref={menu}
-							name="work-options"
-						>
-							<MenuTrigger
-								customStyles={{
-									TriggerTouchableComponent: IconBtn,
-									triggerTouchable: {
-										name: "dots-vertical",
-										size: 32,
-										iconStyle: { color: theme.header.font },
-									},
+					<Menu
+						// ref={menu}
+						name="work-options"
+					>
+						<MenuTrigger
+							customStyles={{
+								TriggerTouchableComponent: IconBtn,
+								triggerTouchable: {
+									name: "dots-vertical",
+									size: 32,
+									iconStyle: { color: theme.header.font },
+								},
+							}}
+						></MenuTrigger>
+						<MenuOptions>
+							<MenuOption
+								text="Share"
+								onSelect={() => {
+									if (readerNew.work?.meta.id === undefined)
+										return
+
+									Share.share({
+										message: workUrl(
+											readerNew.work?.meta.id,
+											(() => {
+												const currentChapter =
+													readerNew.currentChapter
+												return currentChapter.id
+													? currentChapter.id.toString()
+													: "first"
+											})()
+										).href,
+										url: workUrl(
+											readerNew.work?.meta.id,
+											(() => {
+												const currentChapter =
+													readerNew.currentChapter
+												return currentChapter.id
+													? currentChapter.id.toString()
+													: "first"
+											})()
+										).href,
+									})
 								}}
-							></MenuTrigger>
-							<MenuOptions>
-								<MenuOption
-									text="Share"
-									onSelect={() => {
-										if (
-											readerNew.work?.meta.id ===
-											undefined
-										)
-											return
-										if (
-											readerNew.currentChapter.id ===
-											undefined
-										)
-											return
-										Share.share({
-											message: workUrl(
-												readerNew.work?.meta.id,
-												readerNew.currentChapter.id.toString()
-											).href,
-											url: workUrl(
-												readerNew.work?.meta.id,
-												readerNew.currentChapter.id.toString()
-											).href,
-										})
-									}}
-								/>
-							</MenuOptions>
-						</Menu>
-					</Loaded>
+							/>
+							<MenuOption
+								text="Options"
+								onSelect={() => {
+									router.push("../options")
+								}}
+							/>
+						</MenuOptions>
+					</Menu>
 				</View>
 			</AppHeader>
 		</>

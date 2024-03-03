@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import useLoading from "../../../hooks/useLoading"
 import parseDataHandle from "../../../tools/parseDataHandle"
 import { DataHandle } from "../../../types/common"
@@ -6,6 +6,7 @@ import { DBReadthrough } from "../../../types/database"
 import getReadthrough from "../database/getReadthrough"
 import updateReadthrough from "../database/updateReadthrough"
 import useLoadedRef from "../../../hooks/useLoadedRef"
+import useStatus from "../../../hooks/useStatus"
 
 type Tracker = {
 	chapter: number
@@ -18,6 +19,10 @@ type Tracker = {
 export default function useRead(workId: number, readthrough: number) {
 	const savedRead = useLoading(() => getReadthrough(workId, readthrough), [])
 	// const savedReadRef = useLoadedRef(savedRead)
+	const [savedReadDataStatus, setSavedReadDataStatus] = useStatus()
+	const [savedReadData, setSavedReadData] = useState<DBReadthrough | null>(
+		null
+	)
 	const trackingStatusRef = useRef(false)
 
 	const savedReadRef = useRef(savedRead.data)
@@ -26,7 +31,8 @@ export default function useRead(workId: number, readthrough: number) {
 		// console.log("ref refresh", savedRead.status)
 		if (savedRead.status == "success") {
 			savedReadRef.current = savedRead.data
-			// console.log("ref update")
+			setSavedReadData(savedRead.data)
+			setSavedReadDataStatus("success")
 		}
 	}, [savedRead.status])
 
@@ -101,12 +107,7 @@ export default function useRead(workId: number, readthrough: number) {
 					startDate: tracker.current.startDate,
 					startProgress: tracker.current.startProgress,
 				}),
-				readChapters: (() => {
-					// console.log(
-					// 	"readChapters",
-					// 	savedReadRef.current,
-					// 	savedReadRef.current?.readChapters
-					// )
+				readChapters: ((): number[] => {
 					if (tracker.current.endProgress === 1)
 						return (
 							savedReadRef.current?.readChapters ?? []
@@ -116,7 +117,6 @@ export default function useRead(workId: number, readthrough: number) {
 				})(),
 			}).then(() => {
 				savedRead.reload()
-				// console.log("saved read reload")
 			})
 	}
 
@@ -130,31 +130,69 @@ export default function useRead(workId: number, readthrough: number) {
 		const chapterProgress = savedRead.data?.datedProgress.filter(
 			(v) => v.chapter == chapter
 		)
-		// console.log("gettingProgress", chapterProgress)
 
 		if (chapterProgress === undefined || chapterProgress.length == 0)
 			return 0
 
 		const latestEntry = chapterProgress?.reduce(
 			(prev, v) => {
-				// console.log(
-				// 	"latestEntry",
-				// 	prev.endDate.getTime(),
-				// 	v.endDate.getTime()
-				// )
 				if (prev.endDate.getTime() < v.endDate.getTime()) return v
 				return prev
 			},
 			{ endDate: new Date(0) } as DBReadthrough["datedProgress"][0]
 		)
-		// console.log("gettingProgress, latestEntry", latestEntry)
+
 		return latestEntry.endProgress ?? 0
 	}
 
+	function addReadChapter() {
+		updateReadthrough({
+			readthrough: readthrough,
+			workId: workId,
+			currentChapter: tracker.current.chapter,
+			currentChapterPosition: tracker.current.endProgress ?? 1,
+			datedProgress: savedReadRef.current?.datedProgress ?? [],
+			readChapters: ((): number[] => {
+				if (tracker.current.endProgress === 1)
+					return (savedReadRef.current?.readChapters ?? []).concat(
+						tracker.current.chapter
+					)
+
+				return savedReadRef.current?.readChapters ?? []
+			})(),
+		}).then(() => {
+			savedRead.reload()
+		})
+	}
+
+	function clearChapterProgress(chapter: number) {
+		updateReadthrough({
+			readthrough: readthrough,
+			workId: workId,
+			currentChapter: savedRead.data?.currentChapter,
+			currentChapterPosition:
+				savedRead.data?.currentChapter == chapter
+					? 0
+					: savedRead.data?.currentChapter,
+			datedProgress: savedRead.data?.datedProgress.filter(
+				(v) => v.chapter != chapter
+			),
+			readChapters: savedRead.data?.readChapters.filter(
+				(v) => v != chapter
+			),
+		}).then(() => {
+			savedRead.reload()
+		})
+	}
+
 	return {
+		data: savedReadData,
+		status: savedReadDataStatus,
 		dataHandle: parseDataHandle(savedRead),
 		startTracking,
 		endTracking,
 		getChapterProgress,
+		addReadChapter,
+		clearChapterProgress,
 	}
 }

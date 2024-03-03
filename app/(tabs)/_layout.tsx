@@ -1,11 +1,16 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { Tabs, router, useNavigation } from "expo-router"
+import { SplashScreen, Tabs, router, useNavigation } from "expo-router"
 import { Text, View } from "react-native"
 import { useSettings } from "../../services/appSettings/components/settingsProvider"
 import { useAppTheme } from "../../components/ThemeManager"
+import { useEffect } from "react"
 
 export default function TabsLayout() {
 	const theme = useAppTheme()
+
+	// useEffect(() => {
+	// 	SplashScreen.hideAsync()
+	// }, [])
 
 	return (
 		<>

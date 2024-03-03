@@ -1,9 +1,9 @@
-import { FlatList, Text, View } from "react-native"
+import { FlatList, Text, TextInput, View } from "react-native"
 import useLoading from "../../../hooks/useLoading"
 import getSavedQueries from "../../../services/saver/api/getSavedQueries"
 import Loaded from "../../../components/common/Loaded"
 import Foreach from "../../../components/common/Foreach"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import LoadingIndicator from "../../../components/common/LoadingIndicator"
 import worksQuery from "../../../services/ao3/api/worksQuery"
 import workSearchObj from "../../../services/ao3/tools/workSearchObj"
@@ -11,9 +11,13 @@ import SaveSearchItem from "../../../components/search/savedSearchItem"
 import SearchBarTitle from "../../../components/search/searchBarTitle"
 import useStyle from "../../../hooks/useStyle"
 import { useNavigation } from "expo-router"
+import AppHeader from "../../../components/common/AppHeader"
+import Constants from "expo-constants"
+import { useAppTheme } from "../../../components/ThemeManager"
 
 export default function SavedSearches() {
 	const savedQueries = useLoading(getSavedQueries, [])
+	const theme = useAppTheme()
 
 	const style = useStyle({
 		// noSavedContainer: {

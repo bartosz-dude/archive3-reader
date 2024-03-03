@@ -27,7 +27,7 @@ export default async function updateWork(data: DBWorkUpdate) {
 					[
 						["total_chapters", data.totalChapters],
 						["available_chapters", data.availableChapters],
-						["last_update", data.lastUpdate],
+						["last_update", data.lastUpdate?.toUTCString()],
 						["is_saved", data.isSaved],
 						["is_offline", data.isOffline],
 						["has_new_chapters", data.hasNewChapters],
