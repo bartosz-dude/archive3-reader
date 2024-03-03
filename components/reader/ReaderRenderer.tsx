@@ -74,48 +74,51 @@ export default function ReaderRenderer() {
 		newReader.setProgress(newProgress)
 	}, [scrollViewOffsetY])
 
-	const style = useStyle({
-		titleColumn: {
-			display: "flex",
-			flexDirection: "column",
-			flexShrink: 1,
+	const style = useStyle(
+		{
+			titleColumn: {
+				display: "flex",
+				flexDirection: "column",
+				flexShrink: 1,
+			},
+			titleText: {
+				color: "white",
+			},
+			chapterText: {
+				color: "white",
+			},
+			content: {
+				display: "flex",
+				paddingVertical: 40,
+				paddingHorizontal: formatter.format.horizontalSpacing * 2,
+			},
+			paragraph: {
+				fontFamily: formatter.format.fontFamily,
+				fontSize: formatter.format.fontSize,
+				paddingBottom: formatter.format.paragraphSpacing,
+				textAlign: "justify",
+				lineHeight:
+					formatter.format.fontSize + formatter.format.lineSpacing,
+				fontWeight:
+					formatter.format.fontWeight === 0
+						? "normal"
+						: (formatter.format.fontWeight.toString() as FontWeightString),
+			},
+			nextChapter: {
+				height: 80,
+				backgroundColor: "red",
+				flexGrow: 1,
+			},
+			chapterNav: {
+				display: "flex",
+				flexDirection: "row",
+				alignItems: "stretch",
+				backgroundColor: "red",
+				flexBasis: 1,
+			},
 		},
-		titleText: {
-			color: "white",
-		},
-		chapterText: {
-			color: "white",
-		},
-		content: {
-			display: "flex",
-			paddingVertical: 40,
-			paddingHorizontal: formatter.format.horizontalSpacing,
-		},
-		paragraph: {
-			fontFamily: formatter.format.fontFamily,
-			fontSize: formatter.format.fontSize,
-			paddingBottom: formatter.format.paragraphSpacing,
-			textAlign: "justify",
-			lineHeight:
-				formatter.format.fontSize + formatter.format.lineSpacing,
-			fontWeight:
-				formatter.format.fontWeight === 0
-					? "normal"
-					: (formatter.format.fontWeight.toString() as FontWeightString),
-		},
-		nextChapter: {
-			height: 80,
-			backgroundColor: "red",
-			flexGrow: 1,
-		},
-		chapterNav: {
-			display: "flex",
-			flexDirection: "row",
-			alignItems: "stretch",
-			backgroundColor: "red",
-			flexBasis: 1,
-		},
-	})
+		[formatter.format]
+	)
 
 	// scroll to saved position when opening a work
 	useEffect(() => {
@@ -246,8 +249,13 @@ export default function ReaderRenderer() {
 													formatter.format.fontSize,
 												paddingBottom:
 													formatter.format
-														.paragraphSpacing,
+														.paragraphSpacing *
+														1.5 -
+													1.5,
 												textAlign: "justify",
+												letterSpacing:
+													formatter.format
+														.wordSpacing - 1,
 												lineHeight:
 													formatter.format.fontSize +
 													formatter.format
