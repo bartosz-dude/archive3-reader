@@ -236,6 +236,8 @@ export default function ReaderManagerNew(props: {} & PropsWithChildren) {
 		currentProgress: currentProgress,
 		isWorkSaved: localWork.dataHandle.data?.isSaved,
 		isChapterCompleted: isChapterCompleted,
+		isSingleChapter: () =>
+			(localWork.data?.savedWork?.stats?.maxChapters ?? 2) === 1,
 		saveWork: () => {
 			localWork.updateLocalWork({
 				isSaved: !localWork.dataHandle.data?.isSaved,
@@ -291,6 +293,7 @@ interface ReaderManagerContext {
 	currentProgress: number
 	isWorkSaved: boolean | undefined
 	isChapterCompleted: boolean
+	isSingleChapter: () => boolean
 	clearChapterProgress: (chapter: number) => void
 	saveWork: () => void
 	setChapter: (chapter: number) => void

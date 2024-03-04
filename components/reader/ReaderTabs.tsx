@@ -170,7 +170,7 @@ export default function ReaderTabs(props: {}) {
 				/> */}
 				<IconTitleBtn
 					// href={"../chapterSelect"}
-					disabled={!hasManyChapters()}
+					disabled={newReader.isSingleChapter()}
 					name="format-list-numbered"
 					size={24}
 					title="Chapters"
@@ -178,7 +178,7 @@ export default function ReaderTabs(props: {}) {
 					iconStyle={[
 						style.iconStyle,
 						{
-							color: hasManyChapters()
+							color: !newReader.isSingleChapter()
 								? theme.header.font
 								: theme.reader.previousChapter.no,
 						},
@@ -187,7 +187,7 @@ export default function ReaderTabs(props: {}) {
 						style.textStyle,
 
 						{
-							color: hasManyChapters()
+							color: !newReader.isSingleChapter()
 								? theme.header.font
 								: theme.reader.previousChapter.no,
 						},
