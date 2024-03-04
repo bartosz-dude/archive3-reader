@@ -50,3 +50,8 @@
 - disabled navigation via next and previous button until chapter is loaded to fix chapter not loading when fast navigation via these buttons
 - fixed search reloading when fetching new works
 - fixed ui moving around when loading work
+
+## version 0.4
+
+- reader opens now last opened chapter even if not started reading it
+- added spacing options to reader format
