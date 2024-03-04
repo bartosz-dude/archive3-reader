@@ -9,6 +9,7 @@ import { useReaderManager } from "../../../../components/reader/ReaderManagerNew
 import ReaderTabs from "../../../../components/reader/ReaderTabs"
 import useLoadingHandler from "../../../../hooks/useLoadingHandler"
 import { LoadingStatusText } from "../../../../types/common"
+import ReaderActionSection from "../../../../components/reader/actionSection/ReaderActionSection"
 
 export default function ChapterReaderLayout() {
 	const theme = useAppTheme()
@@ -66,7 +67,7 @@ export default function ChapterReaderLayout() {
 					<Slot />
 				</Loaded>
 				{/* </View> */}
-				<Loaded
+				{/* <Loaded
 					isLoading={readerUILoading}
 					loading={
 						<View
@@ -82,9 +83,10 @@ export default function ChapterReaderLayout() {
 							<Text />
 						</View>
 					}
-				>
-					<ReaderTabs />
-				</Loaded>
+				> */}
+				{/* <ReaderTabs /> */}
+				<ReaderActionSection />
+				{/* </Loaded> */}
 			</View>
 		</>
 	)
