@@ -8,6 +8,7 @@ import {
 	TextStyle,
 	ViewStyle,
 } from "react-native"
+import Show from "./Show"
 
 export default function IconTitleBtn({
 	name,
@@ -19,8 +20,8 @@ export default function IconTitleBtn({
 	...pressable
 }: {
 	name: React.ComponentProps<typeof MaterialCommunityIcons>["name"]
-	title: string
 	size: number
+	title?: string
 	iconStyle?: StyleProp<TextStyle>
 	textStyle?: StyleProp<TextStyle>
 	style?: StyleProp<ViewStyle>
@@ -37,6 +38,7 @@ export default function IconTitleBtn({
 			display: "flex",
 			// justifyContent: "center",
 			alignItems: "center",
+			// justifyContent: "space-evenly",
 		},
 	})
 
@@ -56,7 +58,9 @@ export default function IconTitleBtn({
 				name={name}
 				size={size}
 			/>
-			<Text style={[styleLocal.text, textStyle]}>{title}</Text>
+			<Show when={title ? true : false}>
+				<Text style={[styleLocal.text, textStyle]}>{title}</Text>
+			</Show>
 		</Pressable>
 	)
 }
