@@ -1,0 +1,45 @@
+import { useAppTheme } from "../../../ThemeManager"
+import IconTitleBtn from "../../../common/IconTitleBtn"
+import { useReaderManager } from "../../ReaderManagerNew"
+import { ActionProps } from "../types"
+
+export default function PreviousAction(props: ActionProps) {
+	const theme = useAppTheme()
+	const reader = useReaderManager()
+
+	function isPreviousChapter() {
+		return (reader.chapters() ?? [])[
+			(reader.currentChapter.chapter ?? 0) - 1
+		]
+			? true
+			: false
+	}
+
+	return (
+		<IconTitleBtn
+			name="skip-previous"
+			size={props.style.iconSize}
+			onLayout={props.onLayout}
+			title={props.showTitle ? "Previous" : undefined}
+			style={props.style.view}
+			iconStyle={[
+				{
+					color: isPreviousChapter()
+						? theme.header.font
+						: theme.reader.previousChapter.no,
+				},
+			]}
+			textStyle={[
+				{
+					color: isPreviousChapter()
+						? theme.header.font
+						: theme.reader.previousChapter.no,
+				},
+			]}
+			disabled={!isPreviousChapter() || reader.workStatus !== "success"}
+			onPress={() => {
+				reader.setChapter((reader.currentChapter.chapter ?? -68) - 1)
+			}}
+		/>
+	)
+}
