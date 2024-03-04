@@ -84,14 +84,23 @@ export default function useRead(workId: number, readthrough: number) {
 	}
 
 	function updateDB() {
-		// console.log(
-		// 	"beforeUpdate",
-		// 	savedReadRef.current,
-		// 	tracker.current,
-		// 	savedRead,
-		// 	savedRead.data?.datedProgress,
-		// 	savedRead.data?.readChapters
-		// )
+		if (
+			(tracker.current.endProgress ?? -1) >= 0 &&
+			(tracker.current.endProgress ?? -1) == tracker.current.startProgress
+		) {
+			updateReadthrough({
+				readthrough: readthrough,
+				workId: workId,
+				currentChapter: tracker.current.chapter,
+				currentChapterPosition: tracker.current.startProgress,
+				datedProgress: savedReadRef.current?.datedProgress ?? [],
+				readChapters: savedReadRef.current?.readChapters ?? [],
+			}).then(() => {
+				savedRead.reload()
+			})
+			return
+		}
+
 		if (tracker.current.endProgress && tracker.current.endDate)
 			updateReadthrough({
 				readthrough: readthrough,
