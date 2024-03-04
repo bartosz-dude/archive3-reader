@@ -56,6 +56,49 @@ export default function SettingsPage() {
 				</View>
 				<View style={style.aboutView}>
 					<SettingsCategoryTitle>
+						<Text>Reader</Text>
+					</SettingsCategoryTitle>
+					<View style={style.aboutList}>
+						<SettingsEntry>
+							<SettingsSwitch
+								text="Always hide actions titles"
+								value={
+									settings.readerFormat.actionBarLayout
+										.alwaysHideTitles
+								}
+								onValueChange={() =>
+									update({
+										readerFormat: {
+											...settings.readerFormat,
+											actionBarLayout: {
+												alwaysHideTitles:
+													!settings.readerFormat
+														.actionBarLayout
+														.alwaysHideTitles,
+												actions:
+													settings.readerFormat
+														.actionBarLayout
+														.actions,
+											},
+										},
+									})
+								}
+							/>
+							{/* <Link href={`/packages`}>Packages</Link> */}
+						</SettingsEntry>
+						{/* <SettingsEntry>
+							<Link href={`/license`}>License</Link>
+						</SettingsEntry> */}
+						{/* <SettingsEntry>
+							<Link href={`/credits`}>Credits</Link>
+						</SettingsEntry>
+						<SettingsEntry>
+							<Text>version: {app.expo.version}</Text>
+						</SettingsEntry> */}
+					</View>
+				</View>
+				<View style={style.aboutView}>
+					<SettingsCategoryTitle>
 						<Text>About</Text>
 					</SettingsCategoryTitle>
 					<View style={style.aboutList}>

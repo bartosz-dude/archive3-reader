@@ -35,13 +35,16 @@ export default async function setupSettings() {
 				actionBarLayout: {
 					actions: currentSettings?.readerFormat?.actionBarLayout
 						?.actions ?? [
-						"previousChapter",
+						"previous",
 						"about",
-						"chaptersList",
-						"formatMenu",
+						"chapters",
+						"format",
 						"original",
-						"nextChapter",
+						"next",
 					],
+					alwaysHideTitles:
+						currentSettings?.readerFormat?.actionBarLayout
+							?.alwaysHideTitles ?? false,
 				},
 			},
 			search: {},

@@ -1,3 +1,5 @@
+import { Actions } from "../../../components/reader/actionSection/types"
+
 type ReaderAction =
 	| "previousChapter"
 	| "nextChapter"
@@ -25,7 +27,9 @@ export interface Settings {
 		scrollDirection: "vertical" | "horizontal"
 		scrollType: "smooth" | "paginated"
 		actionBarLayout: {
-			actions: ReaderAction[]
+			actions: Actions[]
+			// hasTitleHidden:
+			alwaysHideTitles: boolean
 		}
 	}
 	search: {}
