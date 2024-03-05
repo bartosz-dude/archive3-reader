@@ -5,7 +5,7 @@ import useStyle from "../../../hooks/useStyle"
 import workUrl from "../../../services/ao3/tools/workUrl"
 import { useAppTheme } from "../../ThemeManager"
 import IconTitleBtn from "../../common/IconTitleBtn"
-import FormatPanel from "../FormatPanel"
+import FormatPanel from "./panels/FormatPanel"
 import { useFormatter } from "../ReaderFormatter"
 import { useReaderManager } from "../ReaderManagerNew"
 import * as WebBrowser from "expo-web-browser"
@@ -14,11 +14,14 @@ import NextAction from "./actions/NextAction"
 import OriginalAction from "./actions/OriginalAction"
 import ChaptersAction from "./actions/ChaptersAction"
 import FormatAction from "./actions/FormatAction"
-import AboutAction from "./actions/aboutAction"
-import NotesAction from "./actions/notesAction"
-import TtsAction from "./actions/ttsAction"
+import AboutAction from "./actions/AboutAction"
+import NotesAction from "./actions/NotesAction"
+import TtsAction from "./actions/TtsAction"
 import Action from "./Action"
 import { useSettings } from "../../../services/appSettings/components/settingsProvider"
+import Show from "../../common/Show"
+import { useActionSection } from "./ActionPanelStateProvider"
+import ActionsDrawer from "./ActionsDrawer"
 
 type FormatterReducerState = {
 	fontFamily: string
@@ -56,12 +59,14 @@ function reducer<T extends unknown, E extends any>(
 }
 
 export default function ActionBar() {
+	const reader = useReaderManager()
 	const theme = useAppTheme()
+	const actionSection = useActionSection()
 	const { settings } = useSettings()
 
 	const style = useStyle({
 		content: {
-			// backgroundColor: theme.header.background,
+			backgroundColor: theme.header.background,
 			display: "flex",
 			flexDirection: "row",
 			justifyContent: "space-evenly",
@@ -78,20 +83,31 @@ export default function ActionBar() {
 	return (
 		<>
 			<View style={style.content}>
-				{/* {settings.readerFormat.actionBarLayout.actions.map((v, i) => (
-					<Action
-						key={i}
-						name={v}
-					/>
-				))} */}
-				<Action name={"previous"} />
-				<Action name={"about"} />
-				<Action name="chapters" />
-				<Action name={"format"} />
-				<Action name={"original"} />
-				{/* <Action name={"tts"} /> */}
-				<Action name={"next"} />
+				<Show when={reader.isSingleChapter()}>
+					{settings.readerFormat.actionBarLayout.singleChapter.actions.map(
+						(v, i) => (
+							<Action
+								key={i}
+								name={v}
+							/>
+						)
+					)}
+				</Show>
+				<Show when={!reader.isSingleChapter()}>
+					<Action name="previous" />
+					<Action name="about" />
+					<Action name="chapters" />
+					<Action name="format" />
+					{/* <Action name="original" /> */}
+					{/* <Action name="tts" /> */}
+					{/* <Action name="notes" /> */}
+					<Action name="drawer" />
+					<Action name="next" />
+				</Show>
 			</View>
+			<Show when={actionSection.openedPanel == "actionsDrawer"}>
+				<ActionsDrawer />
+			</Show>
 		</>
 	)
 }

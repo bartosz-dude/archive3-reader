@@ -174,6 +174,38 @@ export default function useRead(workId: number, readthrough: number) {
 		})
 	}
 
+	function markChapterAsRead() {
+		updateReadthrough({
+			readthrough: readthrough,
+			workId: workId,
+			currentChapter: tracker.current.chapter,
+			currentChapterPosition:
+				tracker.current.endProgress ?? tracker.current.startProgress,
+			datedProgress: savedReadRef.current?.datedProgress ?? [],
+			readChapters: (savedReadRef.current?.readChapters ?? []).concat(
+				tracker.current.chapter
+			),
+		}).then(() => {
+			savedRead.reload()
+		})
+	}
+
+	function markChapterAsUnread() {
+		updateReadthrough({
+			readthrough: readthrough,
+			workId: workId,
+			currentChapter: tracker.current.chapter,
+			currentChapterPosition:
+				tracker.current.endProgress ?? tracker.current.startProgress,
+			datedProgress: savedReadRef.current?.datedProgress ?? [],
+			readChapters: (savedReadRef.current?.readChapters ?? []).filter(
+				(v) => v !== tracker.current.chapter
+			),
+		}).then(() => {
+			savedRead.reload()
+		})
+	}
+
 	function clearChapterProgress(chapter: number) {
 		updateReadthrough({
 			readthrough: readthrough,
@@ -203,5 +235,7 @@ export default function useRead(workId: number, readthrough: number) {
 		getChapterProgress,
 		addReadChapter,
 		clearChapterProgress,
+		markChapterAsRead,
+		markChapterAsUnread,
 	}
 }

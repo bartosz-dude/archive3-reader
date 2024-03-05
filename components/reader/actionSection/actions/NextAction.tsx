@@ -23,18 +23,24 @@ export default function NextAction(props: ActionProps) {
 			title={props.showTitle ? "Next" : undefined}
 			style={props.style.view}
 			iconStyle={[
-				{
-					color: isNextChapter()
-						? theme.header.font
-						: theme.reader.nextChapter.no,
-				},
+				isNextChapter() ? props.style.icon : props.style.disabled.icon,
+				!props.forceStyle
+					? {
+							color: isNextChapter()
+								? theme.header.font
+								: theme.reader.previousChapter.no,
+					  }
+					: {},
 			]}
 			textStyle={[
-				{
-					color: isNextChapter()
-						? theme.header.font
-						: theme.reader.nextChapter.no,
-				},
+				isNextChapter() ? props.style.text : props.style.disabled.text,
+				!props.forceStyle
+					? {
+							color: isNextChapter()
+								? theme.header.font
+								: theme.reader.previousChapter.no,
+					  }
+					: {},
 			]}
 			disabled={!isNextChapter() || reader.workStatus !== "success"}
 			onPress={() => {

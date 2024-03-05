@@ -256,6 +256,14 @@ export default function ReaderManagerNew(props: {} & PropsWithChildren) {
 			setIsChapterCompleted(false)
 			workUpdate()
 		},
+		markChapterAsRead: () => {
+			read.markChapterAsRead()
+			setIsChapterCompleted(true)
+		},
+		markChapterAsUnread: () => {
+			read.markChapterAsUnread()
+			setIsChapterCompleted(false)
+		},
 		setProgress,
 		startTracking,
 		endTracking,
@@ -300,6 +308,8 @@ interface ReaderManagerContext {
 	setProgress: (progress: number) => void
 	startTracking: () => void
 	endTracking: () => void
+	markChapterAsRead: () => void
+	markChapterAsUnread: () => void
 }
 
 export function useReaderManager() {

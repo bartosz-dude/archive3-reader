@@ -1,14 +1,16 @@
 import { createContext, useContext, useReducer } from "react"
-import ActionBar from "./actionsBar"
-import ActionPanel from "./actionsPanel"
-import { ActionsPanels } from "./types"
 import { View } from "react-native"
-import { useAppTheme } from "../../ThemeManager"
 import useLoadingHandler from "../../../hooks/useLoadingHandler"
-import { useReaderManager } from "../ReaderManagerNew"
+import { useAppTheme } from "../../ThemeManager"
 import Loaded from "../../common/Loaded"
-
-const ActionSectionContext = createContext<unknown>(null)
+import Show from "../../common/Show"
+import { useReaderManager } from "../ReaderManagerNew"
+import ActionBar from "./ActionsBar"
+import ActionsDrawer from "./ActionsDrawer"
+import ActionsPanel from "./ActionsPanel"
+import { ActionsPanels } from "./types"
+import ActionDrawerWrapper from "./wrappers/ActionsDrawerWrapper"
+import ActionPanelStateProvider from "./ActionPanelStateProvider"
 
 export default function ReaderActionSection() {
 	const theme = useAppTheme()
@@ -19,58 +21,38 @@ export default function ReaderActionSection() {
 		reader.localWorkStatus,
 	])
 
-	const [openedPanel, setOpenedPanel] = useReducer(
-		(state: ActionsPanels | null, action: ActionsPanels) => {
-			if (state === action) {
-				return null
-			}
-
-			return action
-		},
-		null
-	)
-
-	const context = {
-		openPanel: (panel: ActionsPanels) => {
-			setOpenedPanel(panel)
-		},
-		openedPanel: openedPanel,
-	}
-
 	return (
 		<>
-			<ActionSectionContext.Provider value={context}>
-				<Loaded
-					isLoading={readerUILoading}
-					loading={
-						<View
-							style={{
-								minHeight: 60,
-								backgroundColor: theme.header.background,
-							}}
-						></View>
-					}
-				>
-					<ActionPanel />
+			<Loaded
+				isLoading={readerUILoading}
+				loading={
 					<View
 						style={{
 							minHeight: 60,
 							backgroundColor: theme.header.background,
 						}}
-					>
+					></View>
+				}
+			>
+				<ActionsPanel />
+				<View
+					style={{
+						minHeight: 60,
+					}}
+				>
+					<ActionDrawerWrapper>
 						<ActionBar />
-					</View>
-				</Loaded>
-			</ActionSectionContext.Provider>
+					</ActionDrawerWrapper>
+					{/* <Show when={openedPanel != "actionsDrawer"}> */}
+					{/* </Show> */}
+					{/* <Show when={openedPanel == "actionsDrawer"}>
+							<ActionDrawerWrapper> */}
+					{/* <ActionBar /> */}
+					{/* <ActionsDrawer />
+							</ActionDrawerWrapper>
+						</Show> */}
+				</View>
+			</Loaded>
 		</>
 	)
-}
-
-interface ActionSectionContext {
-	openPanel: (panel: ActionsPanels) => void
-	openedPanel: ActionsPanels | null
-}
-
-export function useActionSection() {
-	return useContext(ActionSectionContext) as ActionSectionContext
 }

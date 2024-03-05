@@ -1,9 +1,9 @@
 import { Text, View } from "react-native"
-import useStyle from "../../hooks/useStyle"
+import useStyle from "../../../../../hooks/useStyle"
 import Slider from "@react-native-community/slider"
-import { useAppTheme } from "../ThemeManager"
+import { useAppTheme } from "../../../../ThemeManager"
 import { useEffect, useReducer, useState } from "react"
-import IconBtn from "../common/IconBtn"
+import IconBtn from "../../../../common/IconBtn"
 
 type ValueReducerAction =
 	| {

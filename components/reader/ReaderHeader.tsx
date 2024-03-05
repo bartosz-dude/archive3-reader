@@ -15,10 +15,12 @@ import {
 import workUrl from "../../services/ao3/tools/workUrl"
 import Show from "../common/Show"
 import { MaterialIcons } from "@expo/vector-icons"
+import { useActionSection } from "./actionSection/ActionPanelStateProvider"
 
 export default function ReaderHeader() {
 	const theme = useAppTheme()
 	const readerNew = useReaderManager()
+	const actionSection = useActionSection()
 	const style = useStyle({
 		titleColumn: {
 			display: "flex",
@@ -200,6 +202,30 @@ export default function ReaderHeader() {
 										).href,
 									})
 								}}
+							/>
+							<MenuOption
+								text={
+									readerNew.isChapterCompleted
+										? "Mark as unread"
+										: "Mark as read"
+								}
+								onSelect={() => {
+									if (readerNew.isChapterCompleted) {
+										readerNew.markChapterAsUnread()
+									} else {
+										readerNew.markChapterAsRead()
+									}
+								}}
+							/>
+							<MenuOption
+								text={
+									actionSection.openedPanel == "actionsDrawer"
+										? "Close actions drawer"
+										: "Open actions drawer"
+								}
+								onSelect={() =>
+									actionSection.openPanel("actionsDrawer")
+								}
 							/>
 							<MenuOption
 								text="Options"

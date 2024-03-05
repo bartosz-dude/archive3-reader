@@ -33,14 +33,39 @@ export default async function setupSettings() {
 				scrollType:
 					currentSettings?.readerFormat?.scrollType ?? "smooth",
 				actionBarLayout: {
-					actions: currentSettings?.readerFormat?.actionBarLayout
-						?.actions ?? [
+					multiChapter: {
+						actions: currentSettings?.readerFormat?.actionBarLayout
+							?.multiChapter?.actions ?? [
+							"previous",
+							"about",
+							"chapters",
+							"format",
+							"original",
+							"next",
+						],
+					},
+					singleChapter: {
+						actions: currentSettings?.readerFormat?.actionBarLayout
+							?.singleChapter?.actions ?? [
+							"previous",
+							"about",
+							"chapters",
+							"format",
+							"original",
+							"next",
+						],
+					},
+					actionsDrawer: currentSettings?.readerFormat
+						?.actionBarLayout?.actionsDrawer ?? [
 						"previous",
+						"next",
 						"about",
 						"chapters",
 						"format",
 						"original",
-						"next",
+						"drawer",
+						"tts",
+						"notes",
 					],
 					alwaysHideTitles:
 						currentSettings?.readerFormat?.actionBarLayout

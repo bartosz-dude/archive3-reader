@@ -4,10 +4,12 @@ import IconTitleBtn from "../../../common/IconTitleBtn"
 import { useReaderManager } from "../../ReaderManagerNew"
 import { useState } from "react"
 import { ActionProps } from "../types"
+import { useActionSection } from "../ActionPanelStateProvider"
 
 export default function ChaptersAction(props: ActionProps) {
 	const theme = useAppTheme()
 	const reader = useReaderManager()
+	const actionSection = useActionSection()
 
 	return (
 		<IconTitleBtn
@@ -18,21 +20,32 @@ export default function ChaptersAction(props: ActionProps) {
 			title={props.showTitle ? "Chapters" : undefined}
 			style={props.style.view}
 			iconStyle={[
-				{
-					color: !reader.isSingleChapter()
-						? theme.header.font
-						: theme.reader.previousChapter.no,
-				},
+				!reader.isSingleChapter()
+					? props.style.icon
+					: props.style.disabled.icon,
+				!props.forceStyle
+					? {
+							color: !reader.isSingleChapter()
+								? theme.header.font
+								: theme.reader.previousChapter.no,
+					  }
+					: {},
 			]}
 			textStyle={[
-				{
-					color: !reader.isSingleChapter()
-						? theme.header.font
-						: theme.reader.previousChapter.no,
-				},
+				!reader.isSingleChapter()
+					? props.style.text
+					: props.style.disabled.text,
+				!props.forceStyle
+					? {
+							color: !reader.isSingleChapter()
+								? theme.header.font
+								: theme.reader.previousChapter.no,
+					  }
+					: {},
 			]}
 			onPress={() => {
 				router.push("../chapterSelect")
+				actionSection.closePanel()
 			}}
 		/>
 	)

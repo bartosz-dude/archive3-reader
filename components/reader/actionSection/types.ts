@@ -5,7 +5,7 @@ import {
 	TextStyle,
 } from "react-native"
 
-export type ActionsPanels = "format" | "ttsControls"
+export type ActionsPanels = "format" | "ttsControls" | "actionsDrawer"
 
 export type Actions =
 	| "previous"
@@ -16,6 +16,7 @@ export type Actions =
 	| "tts"
 	| "notes"
 	| "chapters"
+	| "drawer"
 
 export type ActionProps = {
 	showTitle: boolean
@@ -24,6 +25,11 @@ export type ActionProps = {
 		view: StyleProp<ViewStyle>
 		icon: StyleProp<TextStyle>
 		text: StyleProp<TextStyle>
+		disabled: {
+			icon: StyleProp<TextStyle>
+			text: StyleProp<TextStyle>
+		}
 		iconSize: number
 	}
+	forceStyle: boolean
 }

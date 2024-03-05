@@ -23,18 +23,28 @@ export default function PreviousAction(props: ActionProps) {
 			title={props.showTitle ? "Previous" : undefined}
 			style={props.style.view}
 			iconStyle={[
-				{
-					color: isPreviousChapter()
-						? theme.header.font
-						: theme.reader.previousChapter.no,
-				},
+				isPreviousChapter()
+					? props.style.icon
+					: props.style.disabled.icon,
+				!props.forceStyle
+					? {
+							color: isPreviousChapter()
+								? theme.header.font
+								: theme.reader.previousChapter.no,
+					  }
+					: {},
 			]}
 			textStyle={[
-				{
-					color: isPreviousChapter()
-						? theme.header.font
-						: theme.reader.previousChapter.no,
-				},
+				isPreviousChapter()
+					? props.style.text
+					: props.style.disabled.text,
+				!props.forceStyle
+					? {
+							color: isPreviousChapter()
+								? theme.header.font
+								: theme.reader.previousChapter.no,
+					  }
+					: {},
 			]}
 			disabled={!isPreviousChapter() || reader.workStatus !== "success"}
 			onPress={() => {

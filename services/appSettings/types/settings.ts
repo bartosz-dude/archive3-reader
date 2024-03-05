@@ -27,8 +27,13 @@ export interface Settings {
 		scrollDirection: "vertical" | "horizontal"
 		scrollType: "smooth" | "paginated"
 		actionBarLayout: {
-			actions: Actions[]
-			// hasTitleHidden:
+			singleChapter: {
+				actions: Actions[]
+			}
+			multiChapter: {
+				actions: Actions[]
+			}
+			actionsDrawer: Actions[]
 			alwaysHideTitles: boolean
 		}
 	}

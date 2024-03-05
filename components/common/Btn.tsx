@@ -42,7 +42,7 @@ export default function Btn({
 			style={[styleLocal.view, style]}
 			onPress={onPress}
 			disabled={disabled}
-			hitSlop={8}
+			hitSlop={12}
 		>
 			<Text
 				style={[styleLocal.text, textStyle]}
