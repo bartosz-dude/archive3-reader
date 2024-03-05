@@ -13,6 +13,7 @@ import BtnWithAlert from "../components/common/BtnWithAlert"
 import clearReadingData from "../services/saver/api/clearReadingData"
 import { useAppTheme } from "../components/ThemeManager"
 import * as app from "../app.json"
+import resetSettings from "../services/appSettings/api/resetSettings"
 
 export default function SettingsPage() {
 	const theme = useAppTheme()
@@ -75,10 +76,6 @@ export default function SettingsPage() {
 													!settings.readerFormat
 														.actionBarLayout
 														.alwaysHideTitles,
-												actions:
-													settings.readerFormat
-														.actionBarLayout
-														.actions,
 											},
 										},
 									})
@@ -136,6 +133,28 @@ export default function SettingsPage() {
 									style: "destructive",
 									onPress: () => {
 										clearReadingData()
+									},
+								},
+								cancel: {
+									onPress: () => {},
+								},
+							}}
+						/>
+					</SettingsEntry>
+					<SettingsEntry>
+						<BtnWithAlert
+							type="text"
+							text="Reset settings"
+							textStyle={{ color: theme.common.danger }}
+							alert={{
+								title: "Are you sure?",
+								message:
+									"You are attempting to reset app settings. This action is permament and unrecoverable. Are you sure you want to continue?",
+								ok: {
+									text: "Yes",
+									style: "destructive",
+									onPress: () => {
+										resetSettings()
 									},
 								},
 								cancel: {
