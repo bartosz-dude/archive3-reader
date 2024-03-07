@@ -20,6 +20,7 @@ import {
 	MenuTrigger,
 } from "react-native-popup-menu"
 import IconBtn from "../../../components/common/IconBtn"
+import SearchInput from "../../../components/common/SearchInput"
 
 export default function SavedPage() {
 	const { settings, update } = useSettings()
@@ -81,7 +82,7 @@ export default function SavedPage() {
 		searchBarText: {
 			color: theme.header.font,
 		},
-		searchInput: {
+		searchInputBar: {
 			borderStyle: "solid",
 			borderWidth: 2,
 			borderColor: theme.header.accent,
@@ -89,6 +90,14 @@ export default function SavedPage() {
 			paddingHorizontal: 15,
 			color: theme.header.font,
 			flexGrow: 1,
+			display: "flex",
+			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "space-between",
+			paddingRight: 5,
+		},
+		searchInput: {
+			color: theme.header.font,
 		},
 		searchBarBtn: {
 			color: theme.header.accent,
@@ -100,14 +109,16 @@ export default function SavedPage() {
 	return (
 		<>
 			<AppHeader>
-				<TextInput
-					style={style.searchInput}
-					onChangeText={setFilterTitle}
+				<SearchInput
+					// onSubmit={submitHander}
 					value={filterTitle}
-					// onSubmitEditing={submitHander}
-					cursorColor={"white"}
+					setValue={setFilterTitle}
 					placeholder="Search titles..."
-					placeholderTextColor={"lightgrey"}
+					style={{
+						icon: { color: theme.header.font },
+						input: style.searchInput,
+						view: style.searchInputBar,
+					}}
 				/>
 				<Menu
 					// ref={menu}

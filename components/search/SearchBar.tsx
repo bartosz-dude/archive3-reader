@@ -11,6 +11,7 @@ import {
 	TextInput,
 	Text,
 	ToastAndroid,
+	Pressable,
 	// ToastAndroid,
 } from "react-native"
 import {
@@ -25,11 +26,13 @@ import IconBtn from "../common/IconBtn"
 import Constants from "expo-constants"
 import saveQuery, { SaveQueryErrors } from "../../services/saver/api/saveQuery"
 import getSavedQueries from "../../services/saver/api/getSavedQueries"
-import { MaterialCommunityIcons } from "@expo/vector-icons"
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
 import saveSettings from "../../services/appSettings/api/saveSettings"
 import { useSettings } from "../../services/appSettings/components/settingsProvider"
 import AppHeader from "../common/AppHeader"
 import { useAppTheme } from "../ThemeManager"
+import Show from "../common/Show"
+import SearchInput from "../common/SearchInput"
 
 export default function SearchBar() {
 	const theme = useAppTheme()
@@ -76,7 +79,7 @@ export default function SearchBar() {
 		searchBarText: {
 			color: theme.header.font,
 		},
-		searchInput: {
+		searchInputBar: {
 			borderStyle: "solid",
 			borderWidth: 2,
 			borderColor: theme.header.accent,
@@ -84,6 +87,14 @@ export default function SearchBar() {
 			paddingHorizontal: 15,
 			color: theme.header.font,
 			flexGrow: 1,
+			display: "flex",
+			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "space-between",
+			paddingRight: 5,
+		},
+		searchInput: {
+			color: theme.header.font,
 		},
 		searchBarBtn: {
 			color: theme.header.accent,
@@ -92,19 +103,30 @@ export default function SearchBar() {
 
 	const pathname = usePathname()
 
+	const textInputRef = useRef<TextInput>(null)
+	const [textInputFocused, setTextInputFocused] = useState(false)
+
 	return (
 		<>
 			<AppHeader>
-				<TextInput
-					style={style.searchInput}
-					onChangeText={setSearchAnyText}
+				<SearchInput
+					onSubmit={submitHander}
 					value={searchAnyText}
-					onSubmitEditing={submitHander}
-					cursorColor={"white"}
+					setValue={setSearchAnyText}
 					placeholder="Search for works..."
-					placeholderTextColor={"lightgrey"}
+					style={{
+						icon: { color: theme.header.font },
+						input: style.searchInput,
+						view: style.searchInputBar,
+					}}
 				/>
-				{/* <IconBtn style={style.searchBarBtn} iconStyle={{ color: "grey" }} name="filter-outline" size={32} disabled /> */}
+				<IconBtn
+					style={style.searchBarBtn}
+					iconStyle={{ color: "grey" }}
+					name="filter-outline"
+					size={32}
+					disabled
+				/>
 
 				<Menu
 					ref={menu}
