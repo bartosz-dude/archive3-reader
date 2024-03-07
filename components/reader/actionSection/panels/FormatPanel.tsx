@@ -3,11 +3,11 @@ import { ScrollView, View } from "react-native"
 import useStyle from "../../../../hooks/useStyle"
 import { useAppTheme } from "../../../ThemeManager"
 import Show from "../../../common/Show"
-import { usePanelMemory } from "../ActionsPanel"
 import FormatCategory from "./formatPanelHelpers/FormatCategory"
 import DisplayView from "./formatPanelViews/DisplayView"
 import FontsView from "./formatPanelViews/FontsView"
 import SpacingView from "./formatPanelViews/SpacingView"
+import { usePanelMemory } from "../ActionsPanelMemoryProvider"
 
 export type FormatPanelViews = "fonts" | "spacing" | "display"
 
