@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from "@expo/vector-icons"
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
 import {
 	Pressable,
 	PressableProps,
@@ -8,16 +8,26 @@ import {
 	TextStyle,
 	ViewStyle,
 } from "react-native"
+import Show from "./Show"
 
-export default function IconBtn({
+type IconType = "materialIcons" | "communityMaterialIcons"
+
+export default function IconBtn<T extends IconType>({
 	name,
 	size,
 	iconStyle,
 	style,
+	// @ts-ignore
+	type = "communityMaterialIcons",
 	...pressable
 }: {
-	name: React.ComponentProps<typeof MaterialCommunityIcons>["name"]
+	name: React.ComponentProps<
+		T extends "communityMaterialIcons"
+			? typeof MaterialCommunityIcons
+			: typeof MaterialIcons
+	>["name"]
 	size: number
+	type?: T
 	iconStyle?: StyleProp<TextStyle>
 	style?: StyleProp<ViewStyle>
 } & Omit<PressableProps, "style">) {
@@ -50,11 +60,28 @@ export default function IconBtn({
 			hitSlop={8}
 			{...pressable}
 		>
-			<MaterialCommunityIcons
-				style={iconStyle}
-				name={name}
-				size={size}
-			/>
+			<Show when={type == "communityMaterialIcons"}>
+				<MaterialCommunityIcons
+					style={iconStyle}
+					name={
+						name as React.ComponentProps<
+							typeof MaterialCommunityIcons
+						>["name"]
+					}
+					size={size}
+				/>
+			</Show>
+			<Show when={type == "materialIcons"}>
+				<MaterialIcons
+					style={iconStyle}
+					name={
+						name as React.ComponentProps<
+							typeof MaterialIcons
+						>["name"]
+					}
+					size={size}
+				/>
+			</Show>
 		</Pressable>
 	)
 }
