@@ -228,6 +228,12 @@ export default function ReaderHeader() {
 								}
 							/>
 							<MenuOption
+								text="Reload chapter"
+								onSelect={() => {
+									readerNew.refetch()
+								}}
+							/>
+							<MenuOption
 								text="Options"
 								onSelect={() => {
 									router.push("../options")
