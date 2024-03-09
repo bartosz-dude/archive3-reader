@@ -1,34 +1,39 @@
-import * as SQLite from "expo-sqlite"
-import { DevSettings } from "react-native"
+// import * as SQLite from "expo-sqlite"
+import dbOperationAsync from "./dbOperationAsync"
+import dbTransactionAsync from "./dbTrasactionAsync"
 
 export default async function setupDB() {
 	console.log("setting up db")
-	const db = SQLite.openDatabase("archive3storage.db")
-
-	// on app setup there should be no app tables, so the user_version is set to newest as the tables will be created with newest schema
-	await db.transactionAsync(async (tx) => {
-		const tables = await tx.executeSqlAsync(
-			`SELECT name FROM sqlite_master WHERE type='table'`
-		)
-
-		const appTables = tables.rows.filter((v) =>
-			["query_storage", "works", "saved_works", "readthroughs"].includes(
-				v.name
+	await dbTransactionAsync(async (db) => {
+		// on app setup there should be no app tables, so the user_version is set to newest as the tables will be created with newest schema
+		await db.withExclusiveTransactionAsync(async () => {
+			const tables = await db.getAllAsync<{ name: string }>(
+				`SELECT name FROM sqlite_master WHERE type='table'`
 			)
-		)
 
-		if (appTables.length < 4)
-			// When adding version in updater that's lower here, update the value here too
-			tx.executeSqlAsync(`PRAGMA user_version = 1`)
-	})
+			console.log("tables", tables)
 
-	await db.transactionAsync(async (tx) => {
-		await tx.executeSqlAsync(`CREATE TABLE IF NOT EXISTS 'query_storage' (
+			const appTables = tables.filter((v) =>
+				[
+					"query_storage",
+					"works",
+					"saved_works",
+					"readthroughs",
+				].includes(v.name)
+			)
+
+			if (appTables.length < 4)
+				// When adding version in updater that's lower here, update the value here too
+				await db.runAsync(`PRAGMA user_version = 1`)
+		})
+
+		await db.withExclusiveTransactionAsync(async () => {
+			await db.runAsync(`CREATE TABLE IF NOT EXISTS 'query_storage' (
 			hash INTEGER PRIMARY KEY NOT NULL,
 			query_json TEXT NOT NULL
 			)`)
 
-		await tx.executeSqlAsync(`CREATE TABLE IF NOT EXISTS 'works' (
+			await db.runAsync(`CREATE TABLE IF NOT EXISTS 'works' (
 			work_id INTEGER PRIMARY KEY NOT NULL,
 			total_chapters INTEGER,
 			available_chapters INTEGER NOT NULL,
@@ -39,7 +44,7 @@ export default async function setupDB() {
 			new_chapters TEXT
 			)`)
 
-		await tx.executeSqlAsync(`CREATE TABLE IF NOT EXISTS 'saved_works' (
+			await db.runAsync(`CREATE TABLE IF NOT EXISTS 'saved_works' (
 			work_id INTEGER PRIMARY KEY NOT NULL,
 			title TEXT NOT NULL,
 			summary TEXT NOT NULL,
@@ -50,7 +55,7 @@ export default async function setupDB() {
 			chapters_list TEXT NOT NULL
 			)`)
 
-		await tx.executeSqlAsync(`CREATE TABLE IF NOT EXISTS 'readthroughs' (
+			await db.runAsync(`CREATE TABLE IF NOT EXISTS 'readthroughs' (
 			id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 			work_id INTEGER NOT NULL,
 			readthrough INTEGER NOT NULL,
@@ -61,34 +66,39 @@ export default async function setupDB() {
 			latest_update_date TEXT NOT NULL,
 			FOREIGN KEY (work_id) REFERENCES 'works'(work_id)
 			)`)
+		})
+
+		// tables updater
+		// rember to update user_version higher in the file to the newest here
+		await db.withExclusiveTransactionAsync(async () => {
+			async function getVersion() {
+				const dbVersion =
+					(
+						await db.getFirstAsync<{ user_version: number }>(
+							`PRAGMA user_version`
+						)
+					)?.user_version ?? 0
+
+				return dbVersion
+			}
+
+			// 0.3.4
+			if ((await getVersion()) <= 0) {
+				await db.runAsync(
+					`ALTER TABLE 'readthroughs' ADD COLUMN latest_update_date TEXT NOT NULL DEFAULT ${JSON.stringify(
+						new Date()
+					)}`
+				)
+				await db.runAsync(
+					`ALTER TABLE 'works' ADD COLUMN has_new_chapters BOOLEAN NOT NULL DEFAULT 0`
+				)
+				await db.runAsync(
+					`ALTER TABLE 'works' ADD COLUMN new_chapters TEXT DEFAULT NULL`
+				)
+
+				await db.runAsync(`PRAGMA user_version = 1`)
+			}
+		})
+		console.log("setting up db completed")
 	})
-
-	// tables updater
-	// rember to update user_version higher in the file to the newest here
-	await db.transactionAsync(async (tx) => {
-		async function getVersion() {
-			const dbVersion = (await tx.executeSqlAsync(`PRAGMA user_version`))
-				.rows[0].user_version
-
-			return dbVersion
-		}
-
-		// 0.3.4
-		if ((await getVersion()) <= 0) {
-			await tx.executeSqlAsync(
-				`ALTER TABLE 'readthroughs' ADD COLUMN latest_update_date TEXT NOT NULL DEFAULT ${JSON.stringify(
-					new Date()
-				)}`
-			)
-			await tx.executeSqlAsync(
-				`ALTER TABLE 'works' ADD COLUMN has_new_chapters BOOLEAN NOT NULL DEFAULT 0`
-			)
-			await tx.executeSqlAsync(
-				`ALTER TABLE 'works' ADD COLUMN new_chapters TEXT DEFAULT NULL`
-			)
-
-			await tx.executeSqlAsync(`PRAGMA user_version = 1`)
-		}
-	})
-	console.log("setting up db completed")
 }

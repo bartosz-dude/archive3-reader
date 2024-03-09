@@ -1,35 +1,30 @@
-import * as SQLite from "expo-sqlite"
-import { DBReadthrough, DBWork, SQLWork } from "../../../types/database"
+import { DBWork, SQLWork } from "../../../types/database"
+import dbOperationAsync from "../api/dbOperationAsync"
+import dbTransactionAsync from "../api/dbTrasactionAsync"
 
 export default async function getWork(workId: number) {
-	const db = SQLite.openDatabase("archive3storage.db")
-
-	let workContent
-
-	await db.transactionAsync(async (tx) => {
-		try {
-			const entry = await tx.executeSqlAsync(
-				`SELECT * FROM 'works' WHERE work_id = ?`,
-				[workId]
-			)
-			workContent = (entry.rows[0] as SQLWork) ?? null
-			if (workContent) {
-				workContent = {
-					availableChapters: workContent.available_chapters,
-					isOffline: workContent.is_offline == 1,
-					isSaved: workContent.is_saved == 1,
-					lastUpdate: new Date(workContent.last_update),
-					totalChapters: workContent.total_chapters,
-					workId: workContent.work_id,
-					hasNewChapters: workContent.has_new_chapters,
-					newChapters: workContent.new_chapters,
-				} as DBWork
-			}
-		} catch (error) {
-			console.error(error)
-			workContent = null
-		}
+	console.log("getWork")
+	let workContent: DBWork | null = null
+	const entry = await dbTransactionAsync(async (db) => {
+		// try {
+		return await db.getFirstAsync<SQLWork>(
+			`SELECT * FROM 'works' WHERE work_id = ?`,
+			[workId]
+		)
 	})
+
+	if (entry) {
+		workContent = {
+			availableChapters: entry.available_chapters,
+			isOffline: entry.is_offline == 1,
+			isSaved: entry.is_saved == 1,
+			lastUpdate: new Date(entry.last_update),
+			totalChapters: entry.total_chapters,
+			workId: entry.work_id,
+			hasNewChapters: entry.has_new_chapters,
+			newChapters: entry.new_chapters,
+		} as DBWork
+	}
 
 	return workContent as unknown as DBWork | null
 }

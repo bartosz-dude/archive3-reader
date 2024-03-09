@@ -1,22 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import useWillUnmount from "../../../hooks/useWillUnmount"
 import useLoading from "../../../libs/react-native-loaded/hooks/useLoading"
-import useUpdater from "../../../hooks/useUpdater"
-import {
-	LoadingHandle,
-	DataHandle,
-} from "../../../libs/react-native-loaded/types/loadedTypes"
+import useStatus from "../../../libs/react-native-loaded/hooks/useStatus"
+import dataLoaded from "../../../libs/react-native-loaded/tools/dataLoaded"
+import noData from "../../../libs/react-native-loaded/tools/noData"
+import parseDataHandle from "../../../libs/react-native-loaded/tools/parseDataHandle"
 import { DBSavedWork, DBWork } from "../../../types/database"
 import { AO3Work } from "../../ao3/types/work"
+import deleteSavedWork from "../database/deleteSavedWork"
 import getSavedWork from "../database/getSavedWork"
 import getWork from "../database/getWork"
 import updateSavedWork from "../database/updateSavedWork"
 import updateWork, { UpdateWorkErrors } from "../database/updateWork"
-import dataLoaded from "../../../libs/react-native-loaded/tools/dataLoaded"
-import deleteSavedWork from "../database/deleteSavedWork"
-import useWillUnmount from "../../../hooks/useWillUnmount"
-import parseDataHandle from "../../../libs/react-native-loaded/tools/parseDataHandle"
-import useStatus from "../../../libs/react-native-loaded/hooks/useStatus"
-import noData from "../../../libs/react-native-loaded/tools/noData"
 
 export default function useLocalWork(workId: number) {
 	const localWork = useLoading(async () => getWork(workId), [])

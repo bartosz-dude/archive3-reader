@@ -1,9 +1,8 @@
-import * as SQLite from "expo-sqlite"
+import dbOperationAsync from "../api/dbOperationAsync"
+import dbTransactionAsync from "../api/dbTrasactionAsync"
 
 export default async function deleteWork(workId: number) {
-	const db = SQLite.openDatabase('archive3storage.db')
-
-	await db.transactionAsync(async tx => {
-		await tx.executeSqlAsync(`DELETE FROM 'works' WHERE work_id = ?`, [ workId ])
+	await dbTransactionAsync(async (db) => {
+		await db.runAsync(`DELETE FROM 'works' WHERE work_id = ?`, [workId])
 	})
 }

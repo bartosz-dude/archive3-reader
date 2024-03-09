@@ -16,7 +16,7 @@ import Constants from "expo-constants"
 import { useAppTheme } from "../../../components/ThemeManager"
 
 export default function SavedSearches() {
-	const savedQueries = useLoading(getSavedQueries, [])
+	const savedQueries = useLoading(() => getSavedQueries(), [])
 	const theme = useAppTheme()
 
 	const style = useStyle({

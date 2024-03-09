@@ -1,4 +1,5 @@
 import { AO3Work } from "../services/ao3/types/work"
+import { AO3WorkSearchQuery } from "../services/ao3/types/workSearch"
 
 export type SQLValue = string | number | boolean | null
 export interface SQLReadthrough {
@@ -70,4 +71,14 @@ export interface DBWork {
 	isOffline: boolean
 	hasNewChapters: boolean | null
 	newChapters: number[] | null
+}
+
+export interface SQLSearchQuery {
+	hash: string
+	query_json: string
+}
+
+export interface DBSearchQuery {
+	hash: string
+	queryJson: AO3WorkSearchQuery
 }

@@ -20,6 +20,7 @@ import ActionsDrawer from "./ActionsDrawer"
 import { useAppTheme } from "../../../components/ThemeManager"
 import Show from "../../../components/common/Show"
 import { useReaderManager } from "../../../components/reader/ReaderManagerNew"
+import Dragable from "../../../libs/react-native-drag-and-drop/components/Dragable"
 
 type FormatterReducerState = {
 	fontFamily: string
@@ -96,9 +97,9 @@ export default function ActionBar() {
 					<Action name="about" />
 					<Action name="chapters" />
 					<Action name="format" />
+					{/* <Action name="notes" /> */}
 					{/* <Action name="original" /> */}
 					{/* <Action name="tts" /> */}
-					{/* <Action name="notes" /> */}
 					<Action name="drawer" />
 					<Action name="next" />
 				</Show>

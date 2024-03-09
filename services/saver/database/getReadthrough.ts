@@ -1,51 +1,47 @@
-import * as SQLite from "expo-sqlite"
 import { DBReadthrough, SQLReadthrough } from "../../../types/database"
+import dbOperationAsync from "../api/dbOperationAsync"
+import dbTransactionAsync from "../api/dbTrasactionAsync"
 
 export default async function getReadthrough(
 	workId: number,
 	readthrough: number
 ) {
-	const db = SQLite.openDatabase("archive3storage.db")
+	console.log("getReadthrough")
+	let readthroughContent: DBReadthrough | null = null
 
-	let readthroughContent
-
-	await db.transactionAsync(async (tx) => {
-		try {
-			const entry = await tx.executeSqlAsync(
-				`SELECT * FROM 'readthroughs' WHERE work_id = ? AND readthrough = ?`,
-				[workId, readthrough]
-			)
-			readthroughContent = (entry.rows[0] as SQLReadthrough) ?? null
-
-			if (readthroughContent) {
-				readthroughContent = {
-					currentChapter: readthroughContent.current_chapter,
-					currentChapterPosition:
-						readthroughContent.current_chapter_position,
-					latestUpdateDate: new Date(
-						readthroughContent.latest_update_date
-					),
-					datedProgress: (() => {
-						const progress = JSON.parse(
-							readthroughContent.dated_progress
-						) as DBReadthrough["datedProgress"]
-						return progress.map((v) => {
-							const datesParser = v
-							datesParser.startDate = new Date(v.startDate)
-							datesParser.endDate = new Date(v.endDate)
-							return datesParser
-						})
-					})(),
-					readChapters: JSON.parse(readthroughContent.read_chapters),
-					readthrough: readthroughContent.readthrough,
-					workId: readthroughContent.work_id,
-				} as DBReadthrough
-			}
-		} catch (error) {
-			console.error(error)
-			readthroughContent = null
-		}
+	const entry = await dbTransactionAsync(async (db) => {
+		// await db.withExclusiveTransactionAsync(async () => {
+		console.log("1")
+		return await db.getFirstAsync<SQLReadthrough>(
+			`SELECT * FROM 'readthroughs' WHERE work_id = ? AND readthrough = ?`,
+			[workId, readthrough]
+		)
+		console.log("2", entry)
+		// readthroughContent = entry ?? null
 	})
+
+	if (entry) {
+		readthroughContent = {
+			currentChapter: entry.current_chapter,
+			currentChapterPosition: entry.current_chapter_position,
+			latestUpdateDate: new Date(entry.latest_update_date),
+			datedProgress: (() => {
+				const progress = JSON.parse(
+					entry.dated_progress
+				) as DBReadthrough["datedProgress"]
+				return progress.map((v) => {
+					const datesParser = v
+					datesParser.startDate = new Date(v.startDate)
+					datesParser.endDate = new Date(v.endDate)
+					return datesParser
+				})
+			})(),
+			readChapters: JSON.parse(entry.read_chapters),
+			readthrough: entry.readthrough,
+			workId: entry.work_id,
+		}
+	}
+	// })
 
 	return readthroughContent as unknown as DBReadthrough | null
 }

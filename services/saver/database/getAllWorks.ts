@@ -1,18 +1,18 @@
-import * as SQLite from "expo-sqlite"
-import { DBReadthrough, DBWork, SQLWork } from "../../../types/database"
+import { DBWork, SQLWork } from "../../../types/database"
+import dbOperationAsync from "../api/dbOperationAsync"
+import dbTransactionAsync from "../api/dbTrasactionAsync"
 
 export default async function getAllWorks(saved = true) {
-	const db = SQLite.openDatabase("archive3storage.db")
+	console.log("getAllWorks")
+	return await dbTransactionAsync(async (db) => {
+		let worksContent: DBWork[] = []
 
-	let worksContent: DBWork[] = []
-
-	await db.transactionAsync(async (tx) => {
 		try {
-			const entries = await tx.executeSqlAsync(
+			const entries = await db.getAllAsync<SQLWork>(
 				`SELECT * FROM 'works' WHERE is_saved = ?`,
 				[saved ? 1 : 0]
 			)
-			const worksContentFetched = (entries.rows as SQLWork[]) ?? null
+			const worksContentFetched = entries ?? null
 			if (worksContentFetched) {
 				// console.log("workContent", worksContent)
 				worksContent = worksContentFetched.map((v) => ({
@@ -28,7 +28,7 @@ export default async function getAllWorks(saved = true) {
 			// console.error(error)
 			// worksContent =[]
 		}
-	})
 
-	return worksContent
+		return worksContent
+	})
 }

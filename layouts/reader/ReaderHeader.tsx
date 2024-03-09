@@ -236,7 +236,7 @@ export default function ReaderHeader() {
 							<MenuOption
 								text="Options"
 								onSelect={() => {
-									router.push("../options")
+									router.navigate("../options")
 								}}
 							/>
 						</MenuOptions>

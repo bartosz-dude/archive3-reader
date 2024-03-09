@@ -1,6 +1,8 @@
 import * as SQLite from "expo-sqlite"
 import { DBWork, SQLValue } from "../../../types/database"
 import updateSQLQuery from "./updateSQLQuery"
+import dbOperationAsync from "../api/dbOperationAsync"
+import dbTransactionAsync from "../api/dbTrasactionAsync"
 
 type DBWorkUpdate = Partial<DBWork> & Pick<DBWork, "workId">
 
@@ -10,18 +12,17 @@ export enum UpdateWorkErrors {
 }
 
 export default async function updateWork(data: DBWorkUpdate) {
-	const db = SQLite.openDatabase("archive3storage.db")
-
-	await db.transactionAsync(async (tx) => {
+	console.log("updateWork")
+	return await dbTransactionAsync(async (db) => {
 		// @ts-ignore
-		const work = await tx.executeSqlAsync(
+		const work = await db.getAllAsync(
 			`SELECT work_id from 'works' WHERE work_id = ?`,
 			[data.workId]
 		)
 
-		if (work.rows.length > 0) {
+		if (work.length > 0) {
 			// console.log("updateWork data update", data)
-			await tx.executeSqlAsync(
+			await db.runAsync(
 				updateSQLQuery(
 					"works",
 					[
@@ -52,19 +53,15 @@ export default async function updateWork(data: DBWorkUpdate) {
 			)
 				throw Error("missing data")
 
-			const a = await tx.executeSqlAsync(
+			await db.runAsync(
 				`INSERT INTO 'works' VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
 				[
 					data.workId,
-					// @ts-expect-error
 					data.totalChapters,
 					data.availableChapters,
 					data.lastUpdate.toUTCString(),
-					// @ts-expect-error
 					data.isSaved,
-					// @ts-expect-error
 					data.isOffline,
-					// @ts-expect-error
 					data.hasNewChapters,
 					JSON.stringify(data.newChapters),
 				]

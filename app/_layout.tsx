@@ -9,6 +9,7 @@ import ThemeManager from "../components/ThemeManager"
 import { SettingsProvider } from "../services/appSettings/components/settingsProvider"
 import setupSettings from "../services/appSettings/api/setupSettings"
 import setupDB from "../services/saver/api/setupDB"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 
 export {
 	// Catch any errors thrown by the Layout component.
@@ -67,24 +68,28 @@ function RootLayoutNav() {
 		// <Slot />
 		<SettingsProvider>
 			<ThemeManager>
-				<MenuProvider>
-					<Stack
-						screenOptions={{
-							headerShown: false,
-							animation: "none",
-						}}
-						initialRouteName="(tabs)"
-					>
-						<Stack.Screen
-							name="index"
-							// redirect
-						/>
-						<Stack.Screen
-							name="(tabs)"
-							// options={{}}
-						/>
-					</Stack>
-				</MenuProvider>
+				<GestureHandlerRootView
+					style={{ height: "100%", width: "100%" }}
+				>
+					<MenuProvider>
+						<Stack
+							screenOptions={{
+								headerShown: false,
+								animation: "none",
+							}}
+							initialRouteName="(tabs)"
+						>
+							<Stack.Screen
+								name="index"
+								// redirect
+							/>
+							<Stack.Screen
+								name="(tabs)"
+								// options={{}}
+							/>
+						</Stack>
+					</MenuProvider>
+				</GestureHandlerRootView>
 			</ThemeManager>
 		</SettingsProvider>
 	)

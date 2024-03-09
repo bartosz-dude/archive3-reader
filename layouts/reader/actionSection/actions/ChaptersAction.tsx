@@ -44,7 +44,7 @@ export default function ChaptersAction(props: ActionProps) {
 					: {},
 			]}
 			onPress={() => {
-				router.push("../chapterSelect")
+				router.navigate("../chapterSelect")
 				actionSection.closePanel()
 			}}
 		/>

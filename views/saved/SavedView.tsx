@@ -146,7 +146,7 @@ export default function SavedView() {
 						>
 							<Link
 								style={style.title}
-								href={`/work/${item.item.workId}/chapter/first`}
+								href={`/work/${item.item.workId}/chapter`}
 							>
 								{item.item.title}
 							</Link>

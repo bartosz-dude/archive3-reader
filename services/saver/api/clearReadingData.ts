@@ -1,14 +1,14 @@
-import * as SQLite from "expo-sqlite"
 import { ToastAndroid } from "react-native"
+import dbOperationAsync from "./dbOperationAsync"
 import setupDB from "./setupDB"
-export default async function clearReadingData() {
-	const db = SQLite.openDatabase("archive3storage.db")
+import dbTransactionAsync from "./dbTrasactionAsync"
 
-	await db.transactionAsync(async (tx) => {
-		await tx.executeSqlAsync(`DROP TABLE IF EXISTS 'works'`)
-		await tx.executeSqlAsync(`DROP TABLE IF EXISTS 'saved_works'`)
-		await tx.executeSqlAsync(`DROP TABLE IF EXISTS 'readthroughs'`)
-		await tx.executeSqlAsync(`PRAGMA user_version = 0`)
+export default async function clearReadingData() {
+	await dbTransactionAsync(async (db) => {
+		await db.runAsync(`DROP TABLE IF EXISTS 'works'`)
+		await db.runAsync(`DROP TABLE IF EXISTS 'saved_works'`)
+		await db.runAsync(`DROP TABLE IF EXISTS 'readthroughs'`)
+		await db.runAsync(`PRAGMA user_version = 0`)
 	})
 
 	await setupDB()

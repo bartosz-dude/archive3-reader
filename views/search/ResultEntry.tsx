@@ -56,7 +56,7 @@ export default function ResultEntry(props: { item: AO3WorkResult }) {
 	return (
 		<>
 			<View style={style.itemContainer}>
-				<Link href={`/work/${result.meta.id}/chapter/first`}>
+				<Link href={`/work/${result.meta.id}/chapter`}>
 					<Text style={style.title}>{result.meta.title}</Text>
 				</Link>
 				<View style={style.authorsContainer}>

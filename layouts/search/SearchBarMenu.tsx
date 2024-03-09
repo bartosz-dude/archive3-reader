@@ -61,7 +61,7 @@ export default function SearchBarMenu(props: { ao3Query: string }) {
 				)}
 				<MenuOption
 					text="Saved searches"
-					onSelect={() => router.push("/search/savedSearches")}
+					onSelect={() => router.navigate("/search/savedSearches")}
 				/>
 				{/* <MenuOption
 							text="History"
@@ -70,7 +70,7 @@ export default function SearchBarMenu(props: { ao3Query: string }) {
 				<MenuOption
 					text="Settings"
 					onSelect={() => {
-						router.push("/settings")
+						router.navigate("/settings")
 						// update({ savedSearchesAsDefault: !settings.savedSearchesAsDefault })
 					}}
 				/>

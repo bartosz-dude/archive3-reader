@@ -1,19 +1,18 @@
-import * as SQLite from "expo-sqlite"
 import { DBSavedWork, SQLSavedWork } from "../../../types/database"
+import dbOperationAsync from "../api/dbOperationAsync"
+import dbTransactionAsync from "../api/dbTrasactionAsync"
 
 export default async function getAllSavedWork() {
-	const db = SQLite.openDatabase("archive3storage.db")
+	console.log("getAllSaved")
+	return await dbTransactionAsync(async (db) => {
+		let savedWorkContent: DBSavedWork[] = []
 
-	let savedWorkContent: DBSavedWork[] = []
-
-	await db.transactionAsync(async (tx) => {
+		console.log("a")
 		try {
-			const entry = await tx.executeSqlAsync(
-				`SELECT * FROM 'saved_works'`,
-				[]
+			const entries = await db.getAllAsync<SQLSavedWork>(
+				`SELECT * FROM 'saved_works'`
 			)
-			const savedWorkContentFetched =
-				(entry.rows as SQLSavedWork[]) ?? null
+			const savedWorkContentFetched = entries ?? null
 
 			if (savedWorkContentFetched) {
 				savedWorkContent = savedWorkContentFetched.map((v) => ({
@@ -28,9 +27,15 @@ export default async function getAllSavedWork() {
 				})) as DBSavedWork[]
 			}
 		} catch (error) {
+			console.error(error)
 			// savedWorkContent = []
 		}
-	})
+		// } catch (error) {
+		// 	console.error(error)
+		// }
 
-	return savedWorkContent
+		console.log("getAllSaved complete", savedWorkContent)
+
+		return savedWorkContent
+	})
 }

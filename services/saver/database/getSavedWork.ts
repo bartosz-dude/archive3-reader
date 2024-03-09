@@ -1,35 +1,35 @@
-import * as SQLite from "expo-sqlite"
 import { DBSavedWork, SQLSavedWork } from "../../../types/database"
+import dbOperationAsync from "../api/dbOperationAsync"
+import dbTransactionAsync from "../api/dbTrasactionAsync"
 
 export default async function getSavedWork(workId: number) {
-	const db = SQLite.openDatabase("archive3storage.db")
+	console.log("getSavedWork")
+	let savedWorkContent: DBSavedWork | null = null
 
-	let savedWorkContent
+	const entry = await dbTransactionAsync(async (db) => {
+		// try {
+		return await db.getFirstAsync<SQLSavedWork>(
+			`SELECT * FROM 'saved_works' WHERE work_id = ?`,
+			[workId]
+		)
+		// savedWorkContent = entry ?? null
 
-	await db.transactionAsync(async (tx) => {
-		try {
-			const entry = await tx.executeSqlAsync(
-				`SELECT * FROM 'saved_works' WHERE work_id = ?`,
-				[workId]
-			)
-			savedWorkContent = (entry.rows[0] as SQLSavedWork) ?? null
-
-			if (savedWorkContent) {
-				savedWorkContent = {
-					workId: savedWorkContent.work_id,
-					title: savedWorkContent.title,
-					summary: savedWorkContent.summary,
-					language: savedWorkContent.language,
-					authors: JSON.parse(savedWorkContent.authors),
-					tags: JSON.parse(savedWorkContent.tags),
-					stats: JSON.parse(savedWorkContent.stats),
-					chaptersList: JSON.parse(savedWorkContent.chapters_list),
-				} as DBSavedWork
-			}
-		} catch (error) {
-			savedWorkContent = null
-		}
+		// } catch (error) {
+		// 	savedWorkContent = null
+		// }
 	})
+	if (entry) {
+		savedWorkContent = {
+			workId: entry.work_id,
+			title: entry.title,
+			summary: entry.summary,
+			language: entry.language,
+			authors: JSON.parse(entry.authors),
+			tags: JSON.parse(entry.tags),
+			stats: JSON.parse(entry.stats),
+			chaptersList: JSON.parse(entry.chapters_list),
+		} as DBSavedWork
+	}
 
 	return savedWorkContent as unknown as DBSavedWork | null
 }

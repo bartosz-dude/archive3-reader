@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 import useLoading from "../../../libs/react-native-loaded/hooks/useLoading"
+import useStatus from "../../../libs/react-native-loaded/hooks/useStatus"
 import parseDataHandle from "../../../libs/react-native-loaded/tools/parseDataHandle"
-import { DataHandle } from "../../../libs/react-native-loaded/types/loadedTypes"
 import { DBReadthrough } from "../../../types/database"
 import getReadthrough from "../database/getReadthrough"
 import updateReadthrough from "../database/updateReadthrough"
-import useLoadedRef from "../../../libs/react-native-loaded/hooks/useLoadedRef"
-import useStatus from "../../../libs/react-native-loaded/hooks/useStatus"
 
 type Tracker = {
 	chapter: number
@@ -26,6 +24,11 @@ export default function useRead(workId: number, readthrough: number) {
 	const trackingStatusRef = useRef(false)
 
 	const savedReadRef = useRef(savedRead.data)
+
+	useEffect(() => {
+		// if (savedRead.status === "failed") console.error(savedRead.error)
+		console.log("read", savedRead)
+	}, [savedRead.status])
 
 	useEffect(() => {
 		// console.log("ref refresh", savedRead.status)

@@ -1,17 +1,18 @@
 import * as SQLite from "expo-sqlite"
 import { DBSavedWork } from "../../../types/database"
 import updateSQLQuery from "./updateSQLQuery"
+import dbOperationAsync from "../api/dbOperationAsync"
+import dbTransactionAsync from "../api/dbTrasactionAsync"
 
 export default async function updateSavedWork(data: DBSavedWork) {
-	const db = SQLite.openDatabase("archive3storage.db")
-
-	await db.transactionAsync(async (tx) => {
-		const work = await tx.executeSqlAsync(
+	console.log("updateSavedWork")
+	return await dbTransactionAsync(async (db) => {
+		const work = await db.getAllAsync(
 			`SELECT work_id from 'saved_works' WHERE work_id = ?`,
 			[data.workId]
 		)
-		if (work.rows.length > 0) {
-			await tx.executeSqlAsync(
+		if (work.length > 0) {
+			await db.runAsync(
 				updateSQLQuery(
 					"saved_works",
 					[
@@ -29,9 +30,8 @@ export default async function updateSavedWork(data: DBSavedWork) {
 			return
 		}
 
-		await tx.executeSqlAsync(
+		await db.runAsync(
 			`INSERT INTO 'saved_works' VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-			// @ts-ignore
 			[
 				data.workId,
 				data.title,
@@ -43,6 +43,5 @@ export default async function updateSavedWork(data: DBSavedWork) {
 				JSON.stringify(data.chaptersList),
 			]
 		)
-		return
 	})
 }
