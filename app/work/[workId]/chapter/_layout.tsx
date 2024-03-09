@@ -4,12 +4,13 @@ import { useAppTheme } from "../../../../components/ThemeManager"
 import AppHeader from "../../../../components/common/AppHeader"
 import Loaded from "../../../../components/common/Loaded"
 import LoadingIndicator from "../../../../components/common/LoadingIndicator"
-import ReaderHeader from "../../../../components/reader/ReaderHeader"
+import ReaderHeader from "../../../../layouts/reader/ReaderHeader"
 import { useReaderManager } from "../../../../components/reader/ReaderManagerNew"
 import useLoadingHandler from "../../../../hooks/useLoadingHandler"
 import { LoadingStatusText } from "../../../../types/common"
-import ReaderActionSection from "../../../../components/reader/actionSection/ReaderActionSection"
-import ActionPanelStateProvider from "../../../../components/reader/actionSection/ActionPanelStateProvider"
+import ActionPanelStateProvider from "../../../../layouts/reader/actionSection/ActionPanelStateProvider"
+import ReaderActionSection from "../../../../layouts/reader/actionSection/ReaderActionSection"
+import ReaderRenderer from "../../../../components/reader/ReaderRenderer"
 
 export default function ChapterReaderLayout() {
 	const theme = useAppTheme()
@@ -49,14 +50,6 @@ export default function ChapterReaderLayout() {
 					>
 						<ReaderHeader />
 					</Loaded>
-					{/* <View
-					style={{
-						height: "80%",
-						flexShrink: 1,
-						flexGrow: 1,
-						// maxHeight: "80%",
-					}}
-				> */}
 					<Loaded
 						isLoading={workLoading}
 						loading={

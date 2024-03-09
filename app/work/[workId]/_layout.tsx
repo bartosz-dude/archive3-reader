@@ -1,8 +1,4 @@
-import { ErrorBoundaryProps, Stack } from "expo-router"
-import ReaderManager from "../../../components/reader/ReaderManager"
-import { Text, View } from "react-native"
-import AppHeader from "../../../components/common/AppHeader"
-import StandardHeader from "../../../components/common/StandardHeader"
+import { Stack } from "expo-router"
 import ReaderFormatter from "../../../components/reader/ReaderFormatter"
 import ReaderManagerNew from "../../../components/reader/ReaderManagerNew"
 

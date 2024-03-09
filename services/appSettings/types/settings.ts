@@ -1,4 +1,4 @@
-import { Actions } from "../../../components/reader/actionSection/types"
+import { Actions } from "../../../layouts/reader/actionSection/types"
 
 type ReaderAction =
 	| "previousChapter"

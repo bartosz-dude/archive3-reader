@@ -1,9 +1,9 @@
-import ChaptersList from "../../../components/reader/chapterSelect/ChaptersList"
+import ChapterSelectView from "../../../views/reader/chapterSelect/ChapterSelectView"
 
 export default function ChapterSelect() {
 	return (
 		<>
-			<ChaptersList />
+			<ChapterSelectView />
 		</>
 	)
 }

@@ -9,24 +9,44 @@ import {
 import { TextInput } from "react-native-gesture-handler"
 import IconBtn from "./IconBtn"
 import Show from "./Show"
+import useStyle from "../../hooks/useStyle"
+import { useAppTheme } from "../ThemeManager"
 
 export default function SearchInput(props: {
 	placeholder: string
 	value: string
 	setValue: (value: string) => void
-	style: {
-		view: StyleProp<ViewStyle>
-		input: StyleProp<TextStyle>
-		icon: StyleProp<TextStyle>
+	style?: {
+		view?: StyleProp<ViewStyle>
+		input?: StyleProp<TextStyle>
+		icon?: StyleProp<TextStyle>
 	}
 	onSubmit?: TextInputProps["onSubmitEditing"]
 }) {
+	const theme = useAppTheme()
 	const textInputRef = useRef<TextInput>(null)
 	const [textInputFocused, setTextInputFocused] = useState(false)
 
+	const style = useStyle({
+		view: {
+			borderStyle: "solid",
+			borderWidth: 2,
+			borderColor: theme.header.accent,
+			borderRadius: 50,
+			paddingHorizontal: 15,
+			color: theme.header.font,
+			flexGrow: 1,
+			display: "flex",
+			flexDirection: "row",
+			alignItems: "center",
+			justifyContent: "space-between",
+			paddingRight: 5,
+		},
+	})
+
 	return (
 		<Pressable
-			style={[props.style.view]}
+			style={[style.view, props.style?.view]}
 			onPress={() => {
 				console.log("press")
 				if (textInputRef.current?.isFocused()) {
@@ -38,7 +58,12 @@ export default function SearchInput(props: {
 		>
 			<TextInput
 				ref={textInputRef}
-				style={props.style.input}
+				style={[
+					{
+						color: theme.header.font,
+					},
+					props.style?.input,
+				]}
 				onChangeText={props.setValue}
 				value={props.value}
 				onSubmitEditing={props.onSubmit}
@@ -53,7 +78,10 @@ export default function SearchInput(props: {
 					type="materialIcons"
 					name="clear"
 					size={24}
-					iconStyle={props.style.icon}
+					iconStyle={[
+						{ color: theme.header.font },
+						props.style?.icon,
+					]}
 					onPress={(e) => {
 						e.preventDefault()
 						props.setValue("")

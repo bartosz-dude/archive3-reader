@@ -1,5 +1,5 @@
 import { Stack } from "expo-router"
-import SearchBar from "../../../components/search/SearchBar"
+import SearchBar from "../../../layouts/search/SearchBar"
 import { useSettings } from "../../../services/appSettings/components/settingsProvider"
 
 export default function SearchLayout() {

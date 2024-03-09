@@ -14,7 +14,7 @@ import { workScraperNew } from "../../services/ao3/scraper/work"
 import { AO3Work } from "../../services/ao3/types/work"
 import useLocalWork from "../../services/saver/hooks/useLocalWork"
 import useRead from "../../services/saver/hooks/useRead"
-import loaded from "../../tools/loaded"
+import dataLoaded from "../../tools/loaded"
 import noData from "../../tools/noData"
 import parseDataHandle from "../../tools/parseDataHandle"
 import { DataHandle, LoadingStatusText } from "../../types/common"
@@ -140,7 +140,7 @@ export default function ReaderManager(props: {} & PropsWithChildren) {
 
 	useEffect(() => {
 		if (work.status == "failed") throw work.error
-		if (loaded(work) && work.data !== null) {
+		if (dataLoaded(work) && work.data !== null) {
 			localWork.saveLocalWork(work.data)
 		}
 	}, [work.status, managerLoading])

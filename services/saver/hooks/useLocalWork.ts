@@ -8,7 +8,7 @@ import getSavedWork from "../database/getSavedWork"
 import getWork from "../database/getWork"
 import updateSavedWork from "../database/updateSavedWork"
 import updateWork, { UpdateWorkErrors } from "../database/updateWork"
-import loaded from "../../../tools/loaded"
+import dataLoaded from "../../../tools/loaded"
 import deleteSavedWork from "../database/deleteSavedWork"
 import useWillUnmount from "../../../hooks/useWillUnmount"
 import parseDataHandle from "../../../tools/parseDataHandle"
@@ -34,7 +34,7 @@ export default function useLocalWork(workId: number) {
 		// 	localWork.data?.lastUpdate.toISOString(),
 		// 	savedWork
 		// )
-		if (loaded(localWork) && loaded(savedWork)) {
+		if (dataLoaded(localWork) && dataLoaded(savedWork)) {
 			setLocalWorkData(localWork.data)
 			setSavedWorkData(savedWork.data)
 			setStatus("success")
@@ -48,7 +48,7 @@ export default function useLocalWork(workId: number) {
 
 	function saveLocalWork(work: AO3Work) {
 		// updates data if it changed since last download if not then returns, skipped when no data saved
-		if (loaded(localWork) && localWork.data !== null) {
+		if (dataLoaded(localWork) && localWork.data !== null) {
 			localWorkSavedRef.current = localWork.data.isSaved
 			if (
 				localWork.data.lastUpdate.getTime() <
@@ -136,7 +136,7 @@ export default function useLocalWork(workId: number) {
 
 			// console.log("localDelete", localWork, localWorkSavedRef.current)
 			if (
-				loaded(localWork) &&
+				dataLoaded(localWork) &&
 				localWork.data !== null &&
 				!(localWorkSavedRef.current ?? true)
 			) {
