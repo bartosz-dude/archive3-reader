@@ -1,4 +1,4 @@
-import Loaded from "../../../components/common/Loaded"
+import Loaded from "../../../libs/react-native-loaded/components/Loaded"
 import StandardHeader from "../../../components/common/StandardHeader"
 import { useReaderManager } from "../../../components/reader/ReaderManagerNew"
 import ChaptersList from "./ChaptersList"

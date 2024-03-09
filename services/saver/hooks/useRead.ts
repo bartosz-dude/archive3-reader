@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react"
-import useLoading from "../../../hooks/useLoading"
-import parseDataHandle from "../../../tools/parseDataHandle"
-import { DataHandle } from "../../../types/common"
+import useLoading from "../../../libs/react-native-loaded/hooks/useLoading"
+import parseDataHandle from "../../../libs/react-native-loaded/tools/parseDataHandle"
+import { DataHandle } from "../../../libs/react-native-loaded/types/loadedTypes"
 import { DBReadthrough } from "../../../types/database"
 import getReadthrough from "../database/getReadthrough"
 import updateReadthrough from "../database/updateReadthrough"
-import useLoadedRef from "../../../hooks/useLoadedRef"
-import useStatus from "../../../hooks/useStatus"
+import useLoadedRef from "../../../libs/react-native-loaded/hooks/useLoadedRef"
+import useStatus from "../../../libs/react-native-loaded/hooks/useStatus"
 
 type Tracker = {
 	chapter: number

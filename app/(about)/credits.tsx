@@ -1,5 +1,5 @@
 import { Text, View } from "react-native"
-import BackBtn from "../../components/common/BackBtn"
+import BackBtn from "../../components/common/btns/BackBtn"
 import AppHeader from "../../components/common/AppHeader"
 import useStyle from "../../hooks/useStyle"
 import { ExternalLink } from "../../components/ExternalLink"

@@ -1,6 +1,6 @@
-import { PropsWithChildren, ReactNode, useEffect, useState } from "react"
-import { LoadingStatus, LoadingStatusText } from "../../types/common"
-import useLoadingHandler from "../../hooks/useLoadingHandler"
+import { PropsWithChildren } from "react"
+import { LoadingStatus } from "../types/loadedTypes"
+import useLoadingHandler from "../hooks/useLoadingHandler"
 
 // type LoadingStatus = "loading" | "loaded" | "failed"
 

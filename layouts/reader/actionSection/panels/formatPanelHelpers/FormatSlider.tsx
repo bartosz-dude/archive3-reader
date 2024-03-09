@@ -3,7 +3,7 @@ import useStyle from "../../../../../hooks/useStyle"
 import Slider from "@react-native-community/slider"
 import { useEffect, useReducer, useState } from "react"
 import { useAppTheme } from "../../../../../components/ThemeManager"
-import IconBtn from "../../../../../components/common/IconBtn"
+import IconBtn from "../../../../../components/common/btns/IconBtn"
 
 type ValueReducerAction =
 	| {

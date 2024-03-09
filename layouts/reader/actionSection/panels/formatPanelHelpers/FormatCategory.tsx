@@ -1,5 +1,5 @@
 import { useAppTheme } from "../../../../../components/ThemeManager"
-import Btn from "../../../../../components/common/Btn"
+import Btn from "../../../../../components/common/btns/Btn"
 import { FormatPanelViews } from "../FormatPanel"
 
 export default function FormatCategory(props: {

@@ -1,7 +1,7 @@
 import { useGlobalSearchParams } from "expo-router"
 import { useState, useEffect } from "react"
-import useLoading from "../../hooks/useLoading"
-import useStatus from "../../hooks/useStatus"
+import useLoading from "../../libs/react-native-loaded/hooks/useLoading"
+import useStatus from "../../libs/react-native-loaded/hooks/useStatus"
 import useStyle from "../../hooks/useStyle"
 import worksQuery from "../../services/ao3/api/worksQuery"
 import worksSearch from "../../services/ao3/api/worksSearch"
@@ -9,7 +9,7 @@ import {
 	AO3WorkResult,
 	AO3WorkSearchResults,
 } from "../../services/ao3/types/workSearchResults"
-import Loaded from "../../components/common/Loaded"
+import Loaded from "../../libs/react-native-loaded/components/Loaded"
 import LoadingIndicator from "../../components/common/LoadingIndicator"
 import ResultList from "./ResultList"
 import { Text, View } from "react-native"

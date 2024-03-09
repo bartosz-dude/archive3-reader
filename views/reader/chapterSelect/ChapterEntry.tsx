@@ -2,7 +2,7 @@ import { StyleProp, View, ViewStyle } from "react-native"
 import { useReaderManager } from "../../../components/reader/ReaderManagerNew"
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons"
 import { router } from "expo-router"
-import Btn from "../../../components/common/Btn"
+import Btn from "../../../components/common/btns/Btn"
 import Show from "../../../components/common/Show"
 
 export default function ChapterEntry(props: {

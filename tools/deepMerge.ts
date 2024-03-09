@@ -1,4 +1,4 @@
-import { DeepPartial } from "../types/common"
+import { DeepPartial } from "../libs/react-native-loaded/types/loadedTypes"
 
 /**
  * Simple object check.

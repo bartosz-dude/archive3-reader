@@ -1,5 +1,5 @@
 import { useAppTheme } from "../../../../components/ThemeManager"
-import IconTitleBtn from "../../../../components/common/IconTitleBtn"
+import IconTitleBtn from "../../../../components/common/btns/IconTitleBtn"
 import { ActionProps } from "../types"
 
 export default function NotesAction(props: ActionProps) {

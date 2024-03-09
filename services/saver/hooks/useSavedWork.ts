@@ -1,6 +1,9 @@
 import { useEffect } from "react"
-import useLoading from "../../../hooks/useLoading"
-import { DataHandle, LoadingHandle } from "../../../types/common"
+import useLoading from "../../../libs/react-native-loaded/hooks/useLoading"
+import {
+	DataHandle,
+	LoadingHandle,
+} from "../../../libs/react-native-loaded/types/loadedTypes"
 import { DBSavedWork, DBWork } from "../../../types/database"
 import { AO3Work } from "../../ao3/types/work"
 import getSavedWork from "../database/getSavedWork"

@@ -1,4 +1,4 @@
-import { LoadingStatus, LoadingStatusText } from "../types/common"
+import { LoadingStatus, LoadingStatusText } from "../types/loadedTypes"
 
 export default function parseStatus(status: boolean): LoadingStatusText
 export default function parseStatus(status: LoadingStatusText): boolean

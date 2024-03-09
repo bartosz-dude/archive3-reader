@@ -22,7 +22,7 @@ import {
 } from "react-native-popup-menu"
 import useStyle from "../../hooks/useStyle"
 import worksQuery from "../../services/ao3/api/worksQuery"
-import IconBtn from "../../components/common/IconBtn"
+import IconBtn from "../../components/common/btns/IconBtn"
 import Constants from "expo-constants"
 import saveQuery, { SaveQueryErrors } from "../../services/saver/api/saveQuery"
 import getSavedQueries from "../../services/saver/api/getSavedQueries"

@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useAppTheme } from "../../../components/ThemeManager"
-import BtnWithAlert from "../../../components/common/BtnWithAlert"
+import BtnWithAlert from "../../../components/common/btns/BtnWithAlert"
 import StandardHeader from "../../../components/common/StandardHeader"
 import { useReaderManager } from "../../../components/reader/ReaderManagerNew"
 import useWillUnmount from "../../../hooks/useWillUnmount"

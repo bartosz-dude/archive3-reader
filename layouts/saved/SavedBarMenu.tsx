@@ -5,7 +5,7 @@ import {
 	MenuOption,
 } from "react-native-popup-menu"
 import settings from "../../app/settings"
-import IconBtn from "../../components/common/IconBtn"
+import IconBtn from "../../components/common/btns/IconBtn"
 import { useAppTheme } from "../../components/ThemeManager"
 import { useSettings } from "../../services/appSettings/components/settingsProvider"
 

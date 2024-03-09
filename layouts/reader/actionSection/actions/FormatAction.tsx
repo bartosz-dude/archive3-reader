@@ -1,4 +1,4 @@
-import IconTitleBtn from "../../../../components/common/IconTitleBtn"
+import IconTitleBtn from "../../../../components/common/btns/IconTitleBtn"
 import { useActionSection } from "../ActionPanelStateProvider"
 import { ActionProps } from "../types"
 

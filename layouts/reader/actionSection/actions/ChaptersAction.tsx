@@ -3,7 +3,7 @@ import { useState } from "react"
 import { ActionProps } from "../types"
 import { useActionSection } from "../ActionPanelStateProvider"
 import { useAppTheme } from "../../../../components/ThemeManager"
-import IconTitleBtn from "../../../../components/common/IconTitleBtn"
+import IconTitleBtn from "../../../../components/common/btns/IconTitleBtn"
 import { useReaderManager } from "../../../../components/reader/ReaderManagerNew"
 
 export default function ChaptersAction(props: ActionProps) {

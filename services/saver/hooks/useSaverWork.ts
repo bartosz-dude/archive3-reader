@@ -1,6 +1,6 @@
-import { useState } from "react";
-import useLoading from "../../../hooks/useLoading";
-import getReadthrough from "../database/getReadthrough";
+import { useState } from "react"
+import useLoading from "../../../libs/react-native-loaded/hooks/useLoading"
+import getReadthrough from "../database/getReadthrough"
 
 export default function useSaverWork(workId: number) {
 	// const [read, setRead] = useState(0)
@@ -8,10 +8,8 @@ export default function useSaverWork(workId: number) {
 
 	return {
 		readthrough: {
-			get: (readthrough: number) => {
-
-			},
-			update: () => {}
-		}
+			get: (readthrough: number) => {},
+			update: () => {},
+		},
 	}
 }

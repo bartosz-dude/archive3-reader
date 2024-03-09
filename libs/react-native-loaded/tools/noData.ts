@@ -1,4 +1,4 @@
-import { LoadingHandle, DataHandle } from "../types/common"
+import { LoadingHandle, DataHandle } from "../types/loadedTypes"
 
 /**
  * Determines if the loading was a success and data is null of a LoadingHandle

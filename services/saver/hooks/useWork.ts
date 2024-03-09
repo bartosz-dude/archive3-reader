@@ -1,6 +1,6 @@
 import { useEffect } from "react"
-import useLoading from "../../../hooks/useLoading"
-import { LoadingHandle } from "../../../types/common"
+import useLoading from "../../../libs/react-native-loaded/hooks/useLoading"
+import { LoadingHandle } from "../../../libs/react-native-loaded/types/loadedTypes"
 import { AO3Work } from "../../ao3/types/work"
 import deleteSavedWork from "../database/deleteSavedWork"
 import deleteWork from "../database/deleteWork"

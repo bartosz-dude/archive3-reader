@@ -7,7 +7,7 @@ import {
 	ViewStyle,
 } from "react-native"
 import { TextInput } from "react-native-gesture-handler"
-import IconBtn from "./IconBtn"
+import IconBtn from "./btns/IconBtn"
 import Show from "./Show"
 import useStyle from "../../hooks/useStyle"
 import { useAppTheme } from "../ThemeManager"

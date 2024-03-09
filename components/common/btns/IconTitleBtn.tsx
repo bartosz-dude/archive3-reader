@@ -1,5 +1,4 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { Link, LinkProps } from "expo-router"
 import {
 	Pressable,
 	PressableProps,
@@ -7,29 +6,26 @@ import {
 	StyleSheet,
 	Text,
 	TextStyle,
-	View,
 	ViewStyle,
 } from "react-native"
-import { ExternalLink } from "../ExternalLink"
+import Show from "../Show"
 
-export default function IconTitleExternalLink({
+export default function IconTitleBtn({
 	name,
 	title,
 	size,
 	iconStyle,
 	textStyle,
 	style,
-	...linkProps
-}: // ...pressable
-{
-	href: string
+	...pressable
+}: {
 	name: React.ComponentProps<typeof MaterialCommunityIcons>["name"]
-	title: string
 	size: number
+	title?: string
 	iconStyle?: StyleProp<TextStyle>
 	textStyle?: StyleProp<TextStyle>
 	style?: StyleProp<ViewStyle>
-} & LinkProps<any>) {
+} & Omit<PressableProps, "style">) {
 	const styleLocal = StyleSheet.create({
 		view: {
 			display: "flex",
@@ -38,27 +34,33 @@ export default function IconTitleExternalLink({
 			alignSelf: "stretch",
 		},
 		text: {},
-		link: {
+		pressable: {
 			display: "flex",
-			// flexDirection: "column",
-			justifyContent: "center",
+			// justifyContent: "center",
 			alignItems: "center",
+			// justifyContent: "space-evenly",
 		},
 	})
 
 	return (
-		<ExternalLink
-			// // @ts-expect-error
-			{...linkProps}
+		<Pressable
+			android_ripple={{
+				color: "lightgrey",
+				radius: 24,
+				borderless: true,
+			}}
+			style={[styleLocal.pressable, style]}
+			hitSlop={8}
+			{...pressable}
 		>
-			<View style={[styleLocal.link, style]}>
-				<MaterialCommunityIcons
-					style={iconStyle}
-					name={name}
-					size={size}
-				/>
+			<MaterialCommunityIcons
+				style={iconStyle}
+				name={name}
+				size={size}
+			/>
+			<Show when={title ? true : false}>
 				<Text style={[styleLocal.text, textStyle]}>{title}</Text>
-			</View>
-		</ExternalLink>
+			</Show>
+		</Pressable>
 	)
 }

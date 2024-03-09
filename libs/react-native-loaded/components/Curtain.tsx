@@ -5,10 +5,10 @@ import {
 	useEffect,
 	useState,
 } from "react"
-import { LoadingStatus } from "../../types/common"
-import useLoadingHandler from "../../hooks/useLoadingHandler"
+import { LoadingStatus } from "../types/loadedTypes"
+import useLoadingHandler from "../hooks/useLoadingHandler"
 import { View, ViewProps } from "react-native"
-import Show from "./Show"
+import Show from "../../../components/common/Show"
 import Loaded from "./Loaded"
 
 /**

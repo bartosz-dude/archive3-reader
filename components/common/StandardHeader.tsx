@@ -1,6 +1,6 @@
 import { Text, View } from "react-native"
 import { useAppTheme } from "../ThemeManager"
-import BackBtn from "./BackBtn"
+import BackBtn from "./btns/BackBtn"
 import AppHeader from "./AppHeader"
 
 export default function StandardHeader(props: { title: string }) {

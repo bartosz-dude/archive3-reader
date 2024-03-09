@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { LoadingStatus, NormalizedLoadingStatus } from "../types/common"
+import { LoadingStatus, NormalizedLoadingStatus } from "../types/loadedTypes"
 
 /**
  * combines multiple loading statuses into one for easier loading status handling

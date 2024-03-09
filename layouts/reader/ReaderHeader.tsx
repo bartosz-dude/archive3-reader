@@ -3,8 +3,8 @@ import { Share, Text, View } from "react-native"
 import useStyle from "../../hooks/useStyle"
 import { useAppTheme } from "../../components/ThemeManager"
 import AppHeader from "../../components/common/AppHeader"
-import IconBtn from "../../components/common/IconBtn"
-import Loaded from "../../components/common/Loaded"
+import IconBtn from "../../components/common/btns/IconBtn"
+import Loaded from "../../libs/react-native-loaded/components/Loaded"
 import { useReaderManager } from "../../components/reader/ReaderManagerNew"
 import {
 	Menu,

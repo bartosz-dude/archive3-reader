@@ -8,7 +8,7 @@ import {
 	TextStyle,
 	ViewStyle,
 } from "react-native"
-import Show from "./Show"
+import Show from "../Show"
 
 type IconType = "materialIcons" | "communityMaterialIcons"
 

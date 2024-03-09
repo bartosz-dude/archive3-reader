@@ -2,7 +2,7 @@ import * as WebBrowser from "expo-web-browser"
 import workUrl from "../../../../services/ao3/tools/workUrl"
 import { ActionProps } from "../types"
 import { useAppTheme } from "../../../../components/ThemeManager"
-import IconTitleBtn from "../../../../components/common/IconTitleBtn"
+import IconTitleBtn from "../../../../components/common/btns/IconTitleBtn"
 import { useReaderManager } from "../../../../components/reader/ReaderManagerNew"
 
 export default function OriginalAction(props: ActionProps) {

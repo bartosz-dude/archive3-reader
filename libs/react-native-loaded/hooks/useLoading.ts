@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useReducer, useState } from "react"
-import { LoadingHandle, DataHandle, LoadingStatusText } from "../types/common"
+import { useMemo, useReducer, useState } from "react"
+import { LoadingHandle } from "../types/loadedTypes"
 
 type LoadingReducerState<T extends unknown, E extends any> =
 	| {

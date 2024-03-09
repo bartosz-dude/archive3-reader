@@ -1,4 +1,4 @@
-import { DataHandle, LoadingHandle } from "../types/common"
+import { DataHandle, LoadingHandle } from "../types/loadedTypes"
 
 export default function parseDataHandle<T extends unknown>(
 	handle: LoadingHandle<T>

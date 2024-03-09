@@ -1,10 +1,13 @@
 import { useEffect, useReducer, useState } from "react"
-import useLoading from "../../../hooks/useLoading"
+import useLoading from "../../../libs/react-native-loaded/hooks/useLoading"
 import getReadthrough from "../database/getReadthrough"
 import getWork from "../database/getWork"
 import updateReadthrough from "../database/updateReadthrough"
-import useLoadingHandler from "../../../hooks/useLoadingHandler"
-import { LoadingHandle, LoadingStatusText } from "../../../types/common"
+import useLoadingHandler from "../../../libs/react-native-loaded/hooks/useLoadingHandler"
+import {
+	LoadingHandle,
+	LoadingStatusText,
+} from "../../../libs/react-native-loaded/types/loadedTypes"
 import { AO3Work } from "../../ao3/types/work"
 import { DBReadthrough } from "../../../types/database"
 

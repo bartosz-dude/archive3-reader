@@ -6,7 +6,7 @@ import {
 	MenuOptions,
 	MenuOption,
 } from "react-native-popup-menu"
-import IconBtn from "../../components/common/IconBtn"
+import IconBtn from "../../components/common/btns/IconBtn"
 import worksQuery from "../../services/ao3/api/worksQuery"
 import saveQuery, { SaveQueryErrors } from "../../services/saver/api/saveQuery"
 

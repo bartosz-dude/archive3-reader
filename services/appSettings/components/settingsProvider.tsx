@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import { Settings } from "../types/settings"
-import useLoading from "../../../hooks/useLoading"
+import useLoading from "../../../libs/react-native-loaded/hooks/useLoading"
 import getSettings from "../api/getSettings"
 import saveSettings from "../api/saveSettings"
-import { DeepPartial } from "../../../types/common"
+import { DeepPartial } from "../../../libs/react-native-loaded/types/loadedTypes"
 
 interface SettingsContextData {
 	settings: Settings

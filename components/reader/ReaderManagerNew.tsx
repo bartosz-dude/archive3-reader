@@ -9,12 +9,15 @@ import {
 import useRead from "../../services/saver/hooks/useRead"
 import { useGlobalSearchParams, useNavigation, usePathname } from "expo-router"
 import useLocalWork from "../../services/saver/hooks/useLocalWork"
-import useLoading from "../../hooks/useLoading"
-import useLoadingHandler from "../../hooks/useLoadingHandler"
+import useLoading from "../../libs/react-native-loaded/hooks/useLoading"
+import useLoadingHandler from "../../libs/react-native-loaded/hooks/useLoadingHandler"
 import { workScraperNew } from "../../services/ao3/scraper/work"
 import useUpdater from "../../hooks/useUpdater"
-import useStatus from "../../hooks/useStatus"
-import { LoadingStatusText, DataHandle } from "../../types/common"
+import useStatus from "../../libs/react-native-loaded/hooks/useStatus"
+import {
+	LoadingStatusText,
+	DataHandle,
+} from "../../libs/react-native-loaded/types/loadedTypes"
 import { AO3Work } from "../../services/ao3/types/work"
 import { DBSavedWork } from "../../types/database"
 import { AppState, AppStateStatus } from "react-native"

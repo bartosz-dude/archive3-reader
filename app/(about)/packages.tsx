@@ -5,7 +5,7 @@ import { Text, View } from "react-native"
 import { Link } from "expo-router"
 import { ExternalLink } from "../../components/ExternalLink"
 import AppHeader from "../../components/common/AppHeader"
-import BackBtn from "../../components/common/BackBtn"
+import BackBtn from "../../components/common/btns/BackBtn"
 import useStyle from "../../hooks/useStyle"
 import * as licenses from "../../licenses.json"
 
