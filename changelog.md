@@ -55,3 +55,5 @@
 
 - reader opens now last opened chapter even if not started reading it
 - added spacing options to reader format
+- added clear button to search bars
+- added refreshing to work search
