@@ -9,6 +9,8 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+storybook-static
+.expo-shared
 
 # macOS
 .DS_Store

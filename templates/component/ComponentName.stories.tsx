@@ -1,14 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import React from "react"
 import { View } from "react-native"
-import { MyButton } from "./Button"
+import ComponentName from "./ComponentName"
 
 const meta = {
-	title: "MyButton",
-	component: MyButton,
-	args: {
-		text: "Hello world",
-	},
+	title: ComponentName.name,
+	component: ComponentName,
+	args: {},
 	decorators: [
 		(Story) => (
 			<View style={{ padding: 16 }}>
@@ -16,7 +14,7 @@ const meta = {
 			</View>
 		),
 	],
-} satisfies Meta<typeof MyButton>
+} satisfies Meta<typeof ComponentName>
 
 export default meta
 

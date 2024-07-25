@@ -1,13 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import React from "react"
 import { View } from "react-native"
-import { MyButton } from "./Button"
+import IconButton from "./IconButton"
 
 const meta = {
-	title: "MyButton",
-	component: MyButton,
+	title: "IconButton",
+	component: IconButton,
 	args: {
-		text: "Hello world",
+		name: "magnify",
+		size: 24,
 	},
 	decorators: [
 		(Story) => (
@@ -16,7 +17,7 @@ const meta = {
 			</View>
 		),
 	],
-} satisfies Meta<typeof MyButton>
+} satisfies Meta<typeof IconButton>
 
 export default meta
 
