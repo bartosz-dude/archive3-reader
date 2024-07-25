@@ -10,7 +10,7 @@ npm-debug.*
 *.orig.*
 web-build/
 storybook-static
-.expo-shared
+.expo-shared/
 
 # macOS
 .DS_Store

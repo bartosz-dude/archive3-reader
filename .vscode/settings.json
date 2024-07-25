@@ -1,3 +1,22 @@
 {
-	"cSpell.words": ["archiveofourown"]
+	"files.exclude": {
+		"app/.expo": true,
+		"app/.expo-shared": true,
+		"app/node_modules": true,
+		"app/storybook-static": true,
+		"{a,[!a]*,ap,a[!p]*,ap[!p]*,app?*}": true
+	},
+	"folder-scopes.scopes": {
+		"App": {
+			"Archive3 Reader": {
+				"scopedFolderPath": "app",
+				"excludedPaths": [
+					"app/.expo",
+					"app/.expo-shared",
+					"app/node_modules",
+					"app/storybook-static"
+				]
+			}
+		}
+	}
 }
