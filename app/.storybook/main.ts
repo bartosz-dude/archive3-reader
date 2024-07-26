@@ -8,6 +8,7 @@ const main: StorybookConfig = {
 		"../views/**/*.stories.@(js|jsx|ts|tsx)",
 		"../views/**/components/*.stories.@(js|jsx|ts|tsx)",
 		"../views/**/*.story.@(js|jsx|ts|tsx)",
+		"../services/**/*.story.@(js|jsx|ts|tsx)",
 	],
 	addons: [
 		"@storybook/addon-links",

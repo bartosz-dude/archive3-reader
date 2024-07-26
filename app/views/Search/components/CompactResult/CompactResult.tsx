@@ -6,6 +6,7 @@ import useColorSheet from "../../../../hooks/useColorSheet"
 import IconButton from "../../../../components/ui/IconButton/IconButton"
 import dateText from "../../../../utils/dateText"
 import numberText from "../../../../utils/numberText"
+import StringRenderer from "../../../../services/renderer/StringRenderer"
 
 interface CompactResultProps {
 	title: string
@@ -65,12 +66,11 @@ export default function CompactResult({
 					</View>
 				</View>
 				<View style={colorSheet.center}>
-					{/* Custom HTML Renderer comes here */}
 					<Text
 						numberOfLines={4}
-						style={colorSheet.text}
+						style={[colorSheet.text, colorSheet.summary]}
 					>
-						{summary}
+						{StringRenderer(summary)}
 					</Text>
 				</View>
 				<View style={colorSheet.bottom}>
@@ -130,21 +130,27 @@ const sharedStyle = StyleSheet.create({
 	bottom: {
 		flex: 1,
 		flexDirection: "row",
+		// flexShrink: 1,
 	},
 	bottomInnerLeft: {
 		flex: 1,
 		gap: 15,
+		alignItems: "flex-start",
 	},
 	bottomInnerRight: {
 		flex: 1,
 		gap: 15,
 		// justifyContent: "flex-end",
 		alignItems: "flex-end",
+		flexGrow: 2,
 	},
 	hitsKudos: {
 		flex: 1,
 		flexDirection: "row",
 		gap: 10,
+	},
+	summary: {
+		// textAlign: "justify",
 	},
 })
 const lightStyle = StyleSheet.create({

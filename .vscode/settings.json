@@ -1,11 +1,5 @@
 {
-	"files.exclude": {
-		"app/.expo": true,
-		"app/.expo-shared": true,
-		"app/node_modules": true,
-		"app/storybook-static": true,
-		"{a,[!a]*,ap,a[!p]*,ap[!p]*,app?*}": true
-	},
+	"files.exclude": {},
 	"folder-scopes.scopes": {
 		"App": {
 			"Archive3 Reader": {
