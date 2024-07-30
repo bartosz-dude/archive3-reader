@@ -32,7 +32,6 @@ export default function CompactResult({
 	date,
 }: CompactResultProps) {
 	const colorSheet = useColorSheet(lightStyle, darkStyle, sharedStyle)
-
 	return (
 		<>
 			<View style={colorSheet.container}>
@@ -101,7 +100,7 @@ export default function CompactResult({
 
 const sharedStyle = StyleSheet.create({
 	container: {
-		width: 360,
+		minWidth: 360,
 		paddingHorizontal: 15,
 		paddingVertical: 10,
 	},

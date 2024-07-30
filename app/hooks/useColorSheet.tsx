@@ -26,9 +26,9 @@ export default function useColorSheet<
 		}
 	}, [])
 
-	useEffect(() => {
-		console.log("color", colorSchemeSheet)
-	}, [colorSchemeSheet])
+	// useEffect(() => {
+	// 	console.log("color", colorSchemeSheet)
+	// }, [colorSchemeSheet])
 
 	return colorSchemeSheet
 }

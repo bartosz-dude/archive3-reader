@@ -14,7 +14,7 @@ export default function HighlightableText({
 	highlights,
 	section,
 }: HighlightableTextProps) {
-	console.log(text, highlights, section)
+	// console.log(text, highlights, section)
 
 	return (
 		<>

@@ -7,7 +7,6 @@ import type {
 } from "./generic"
 
 export interface WorkSearchQueryAO3 {
-	page?: number
 	// work info
 	anyField?: string
 	title?: string

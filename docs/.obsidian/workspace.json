@@ -168,9 +168,10 @@
   },
   "active": "514eeeb0b5dee783",
   "lastOpenFiles": [
+    "Services/DB.md",
+    "Services/Search.md",
     "Archive3 Reader.md",
     "Architecture/Api/AO3 Wrapper/Work Search Query.md",
-    "Services/Search.md",
     "Features/Renderer.md",
     "Services",
     "Style Guide.md",

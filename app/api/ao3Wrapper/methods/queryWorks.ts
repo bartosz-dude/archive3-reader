@@ -51,8 +51,11 @@ const directionsIds: Record<
 	descending: "desc",
 }
 
+/**
+ * Queries the ao3 works and returns the results
+ */
 export default async function queryWorks(
-	query: WorkSearchQueryAO3
+	query: WorkSearchQueryAO3 & { page?: number }
 ): Promise<WorksSearchResultsAO3> {
 	const queryUrl = new URL("https://" + Constants.hostname + "/works/search")
 	const queryUrlParams = queryUrl.searchParams
@@ -361,7 +364,7 @@ export default async function queryWorks(
 
 	queryUrlParams.set("commit", "Search")
 
-	console.log(queryUrl)
+	// console.log(queryUrl)
 
 	const queryResponse = await fetch(queryUrl)
 	const queryText = await queryResponse.text()

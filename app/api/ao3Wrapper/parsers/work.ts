@@ -1,6 +1,6 @@
 import { parse } from "node-html-better-parser"
 import type { WorkAO3 } from "../types/work"
-import arrayAsUndefined from "../../../utils/arrayAsUndefined"
+import arrayToUndefined from "../../../utils/arrayToUndefined"
 import ratingRawParser from "./ratingRaw"
 import type {
 	CategoryAO3Raw,
@@ -50,7 +50,7 @@ export default function workParser(html: string): WorkAO3 {
 		})
 	}
 
-	chapters = arrayAsUndefined(chapters)
+	chapters = arrayToUndefined(chapters)
 
 	// meta
 	const workMetaDiv = root.querySelector(".work.meta.group")
