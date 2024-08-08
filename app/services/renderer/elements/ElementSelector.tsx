@@ -26,6 +26,8 @@ export default function ElementSelector({
 			)
 		case "a":
 			return <Anchor elem={elem} />
+		case "br":
+			return <Text>{"\n"}</Text>
 		default:
 			// when renderUnsupportedTags is set to true then this will allow to see what html tags are used, but not yet supported inside the text
 			return (

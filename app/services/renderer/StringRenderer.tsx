@@ -6,7 +6,13 @@ import { parse } from "node-html-better-parser"
 export default function StringRenderer(html: string) {
 	const document = parse(html)
 
-	const paragraphs = document.children.map((v) => v.text)
+	const paragraphs = document.children.map((v) => {
+		if (v.tagName == "br") {
+			return "\n"
+		}
+
+		return v.text
+	})
 	const joined = paragraphs.join("\n")
 
 	return joined

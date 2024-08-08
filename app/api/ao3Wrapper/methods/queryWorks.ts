@@ -57,6 +57,8 @@ const directionsIds: Record<
 export default async function queryWorks(
 	query: WorkSearchQueryAO3 & { page?: number }
 ): Promise<WorksSearchResultsAO3> {
+	query.page ??= 1
+
 	const queryUrl = new URL("https://" + Constants.hostname + "/works/search")
 	const queryUrlParams = queryUrl.searchParams
 

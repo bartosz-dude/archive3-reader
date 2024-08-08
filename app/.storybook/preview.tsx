@@ -1,6 +1,5 @@
 import type { Decorator, Preview } from "@storybook/react"
 import React from "react"
-import ThemeSwitcher from "./helpers/ThemeSwitcher"
 import { Appearance, View, type ColorSchemeName } from "react-native"
 import ThemeProvider from "../services/theming/ThemeProvider"
 

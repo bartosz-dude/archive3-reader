@@ -5,17 +5,19 @@ import {
 	Text,
 	View,
 	type GestureResponderEvent,
+	type ViewStyle,
 } from "react-native"
 interface NameProps {
 	name: ConstructorParameters<typeof MaterialCommunityIcons>["0"]["name"]
 	size?: number
 	onPress?: (event: GestureResponderEvent) => void
+	style?: ViewStyle
 }
 
-export default function IconButton({ name, size, onPress }: NameProps) {
+export default function IconButton({ name, size, onPress, style }: NameProps) {
 	return (
 		<>
-			<View style={styles.container}>
+			<View style={[styles.container, style]}>
 				<Pressable
 					onPress={onPress}
 					android_ripple={{
@@ -37,7 +39,7 @@ export default function IconButton({ name, size, onPress }: NameProps) {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		display: "flex",
 		justifyContent: "center",
 		alignItems: "center",
 	},

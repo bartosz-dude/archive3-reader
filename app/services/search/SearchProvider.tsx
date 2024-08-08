@@ -1,17 +1,28 @@
 import { useSQLiteContext } from "expo-sqlite"
 import type { WorkSearchQueryAO3 } from "../../api/ao3Wrapper/types/worksSearchQuery"
-import type { resultsState, resultsAction, Status } from "./SearchService"
+import type {
+	resultsState,
+	resultsAction,
+	Status,
+	RenderableResults,
+} from "./SearchService"
 import {
 	createContext,
 	useCallback,
 	useContext,
+	useEffect,
 	useMemo,
+	useRef,
 	useState,
+	type ReactNode,
 } from "react"
 import queryWorks from "../../api/ao3Wrapper/methods/queryWorks"
 import arrayCompare from "../../utils/arrayCompare"
 import type { SavedSearchesTable, SearchSessionsTable } from "../db/tableTypes"
 import stringifyObject from "../../utils/stringifyObject"
+import { SEARCH_CACHE_CREATE_QUERY } from "../db/dbMigrator"
+import { merge } from "ts-deepmerge"
+import type { State } from "../../types/utility"
 
 interface SearchContext {
 	query: WorkSearchQueryAO3 | null
@@ -22,23 +33,27 @@ interface SearchContext {
 			ignoreSavedQueries?: boolean
 		}
 	) => Promise<void>
+	status:
+		| "complete"
+		| "fetchingNewQuery"
+		| "fetchingCurrentQuery"
+		| "failedFetchingNew"
+		| "failedFetchingCurrent"
+		| "empty"
 }
 
-const searchContext = createContext<SearchContext | undefined>(undefined)
+export const searchContext = createContext<SearchContext | undefined>(undefined)
 
 interface SearchProviderProps {
-	children: JSX.Element
+	children: ReactNode
 	searchSessionRef: React.MutableRefObject<{
 		query: WorkSearchQueryAO3
 		date: Date
 		id: number | null
 	} | null>
-	currentQueryState: [
-		WorkSearchQueryAO3 | null,
-		React.Dispatch<React.SetStateAction<WorkSearchQueryAO3 | null>>
-	]
+	currentQueryState: State<WorkSearchQueryAO3 | null>
 	resultsState: [resultsState, React.Dispatch<resultsAction>]
-	statusState: [Status, React.Dispatch<React.SetStateAction<Status>>]
+	statusState: State<Status>
 }
 
 export class MissingQueryError extends Error {
@@ -55,35 +70,50 @@ export default function SearchProvider({
 	children,
 }: SearchProviderProps) {
 	const db = useSQLiteContext()
+	// last fetched query
 	const [currentQuery, setCurrentQuery] = currentQueryState
 	const [results, dispatchResults] = resultsState
 	const [status, setStatus] = statusState
+	// current query to search, may not have been fetched yet
 	const [searchQuery, setSearchQuery] = useState<WorkSearchQueryAO3 | null>(
 		null
 	)
+	const [searchStatus, setSearchStatus] =
+		useState<SearchContext["status"]>("empty")
+	const fetching = useRef(false)
+
+	useEffect(() => {
+		console.log("cq", currentQuery)
+	}, [currentQuery])
 
 	const fetchQuery = useCallback(
 		async (
 			query?: WorkSearchQueryAO3,
 			properties?: { ignoreSavedQueries?: boolean }
 		) => {
+			// prevents multiple fetches at the same time
+			if (fetching.current) {
+				return
+			}
+			fetching.current = true
+
+			// current query to fetch
 			const localQuery = query ?? searchQuery
 
 			const sameQuery =
 				JSON.stringify(currentQuery) === JSON.stringify(localQuery)
 
-			if (query) {
-				updateQuery(query)
-			}
-
 			if (!localQuery) {
+				fetching.current = false
 				throw new MissingQueryError()
 			}
 
+			console.log("queries", currentQuery, localQuery)
 			setStatus("fetching")
 			if (
 				// starting first session
 				currentQuery === null ||
+				!searchSessionRef.current ||
 				// new session when search text is changed
 				currentQuery.anyField !== localQuery.anyField ||
 				// new session when there is no search text and the fandoms updated
@@ -94,12 +124,18 @@ export default function SearchProvider({
 						localQuery.fandoms ?? []
 					))
 			) {
+				console.log("query new")
+				setSearchStatus("fetchingNewQuery")
 				// currentQuery = query
 				searchSessionRef.current = {
 					date: new Date(),
 					query: localQuery,
 					id: null,
 				}
+				setCurrentQuery((prev) => merge(prev ?? {}, localQuery ?? {}))
+			} else {
+				console.log("query current")
+				setSearchStatus("fetchingCurrentQuery")
 			}
 
 			const savedQuery = await db.getFirstAsync<SavedSearchesTable>(
@@ -139,6 +175,7 @@ export default function SearchProvider({
 					if (session !== null) {
 						searchSessionRef.current!.id = session.id
 					} else {
+						fetching.current = false
 						throw new Error(
 							`Search session not found after either updating or inserting one based on saved queries`
 						)
@@ -166,6 +203,7 @@ export default function SearchProvider({
 					if (session !== null) {
 						searchSessionRef.current!.id = session.id
 					} else {
+						fetching.current = false
 						throw new Error(
 							`Search session not found inserting a search session`
 						)
@@ -178,9 +216,7 @@ export default function SearchProvider({
 				// truncates the search_cache, sqlite doesn't support normal truncate
 				await db.withExclusiveTransactionAsync(async (txn) => {
 					await txn.execAsync(`DROP TABLE search_cache`)
-					await txn.execAsync(
-						`CREATE TABLE search_cache (id INTEGER PRIMARY KEY NOT NULL, session_id INTEGER NOT NULL, page INTEGER NOT NULL, results TEXT NOT NULL,  FOREIGN KEY(session_id) REFERENCES search_sessions(id));`
-					)
+					await txn.execAsync(SEARCH_CACHE_CREATE_QUERY)
 					await txn.execAsync(
 						`INSERT INTO search_cache (session_id, page, results) VALUES (${
 							searchSessionRef.current?.id
@@ -188,23 +224,51 @@ export default function SearchProvider({
 					)
 				})
 
-				if (sameQuery) {
-					dispatchResults({ type: "setCurrent", payload: results })
-				} else {
-					dispatchResults({ type: "setForward", payload: results })
-				}
+				// creates a unique key for each item for displaying in lists
+				// ao3 search results sometimes repeat across pages, that's why this is needed
+				const keyBase = Date.now().toString()
+				results.results = results.results.map((v) => {
+					Object.defineProperty(v, "key", {
+						value: v.id.toString() + "n" + keyBase,
+					})
+					return v
+				})
+
+				// if (sameQuery) {
+				dispatchResults({
+					type: "setCurrent",
+					payload: results as RenderableResults,
+				})
+				// } else {
+				// 	dispatchResults({
+				// 		type: "setForward",
+				// 		payload: results as RenderableResults,
+				// 	})
+				// }
+
+				console.log("query complete")
+				// setCurrentQuery((prev) => ({ ...(prev ?? {}), ...query }))
+				setSearchStatus((prev) => "complete")
 				setStatus("complete")
+				fetching.current = false
 			} catch (error) {
 				console.error(error)
+
+				setSearchStatus((prev) =>
+					prev == "fetchingNewQuery"
+						? "failedFetchingNew"
+						: "failedFetchingCurrent"
+				)
 				setStatus("failed")
+				fetching.current = false
 			}
 		},
-		[currentQuery, searchQuery, db]
+		[currentQuery, searchQuery, db, searchStatus, status, dispatchResults]
 	)
 
 	const updateQuery = useCallback((query: WorkSearchQueryAO3) => {
 		setSearchQuery((prev) => ({ ...(prev ?? {}), ...query }))
-		setCurrentQuery((prev) => ({ ...(prev ?? {}), ...query }))
+		// setCurrentQuery((prev) => ({ ...(prev ?? {}), ...query }))
 	}, [])
 
 	const value = useMemo<SearchContext>(
@@ -212,6 +276,7 @@ export default function SearchProvider({
 			fetchQuery,
 			updateQuery,
 			query: searchQuery,
+			status: searchStatus,
 		}),
 		[fetchQuery]
 	)
@@ -229,7 +294,7 @@ export function useSearch() {
 	const context = useContext(searchContext)
 
 	if (context === undefined) {
-		throw new Error(`Must be used inside results pagination context`)
+		throw new Error(`Must be used inside search context`)
 	}
 
 	return context

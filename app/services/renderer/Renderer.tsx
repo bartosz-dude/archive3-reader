@@ -8,6 +8,10 @@ import type { TextPosition } from "./types"
 interface RendererProps {
 	html: string
 }
+
+/**
+ * Renders html string into styled react native components
+ */
 export default function Renderer({ html }: RendererProps) {
 	const style = useRendererStyle()
 

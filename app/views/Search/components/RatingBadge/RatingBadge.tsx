@@ -1,6 +1,8 @@
 import { Appearance, StyleSheet, Text, View } from "react-native"
 import type { RatingAO3 } from "../../../../api/ao3Wrapper/types/generic"
 import useColorSheet from "../../../../hooks/useColorSheet"
+import styleSwitch from "../../../../components/utils/styleSwitch"
+import { useMemo } from "react"
 
 interface RatingBadgeProps {
 	rating: RatingAO3
@@ -9,63 +11,58 @@ interface RatingBadgeProps {
 export default function RatingBadge({ rating }: RatingBadgeProps) {
 	const colorSheet = useColorSheet(lightStyle, darkStyle, sharedStyle)
 
+	const ratingMapping = useMemo(
+		() =>
+			new Map([
+				["explicit", "E"],
+				["generalAudiences", "G"],
+				["mature", "M"],
+				["notRated", "NR"],
+				["teenAndUpAudiences", "T"],
+			]),
+		[]
+	)
+
 	return (
 		<>
-			{rating == "explicit" && (
-				<>
-					<View style={[colorSheet.badge, colorSheet.eBadge]}>
-						<Text style={colorSheet.text}>E</Text>
-					</View>
-				</>
-			)}
-			{rating == "generalAudiences" && (
-				<>
-					<View style={[colorSheet.badge, colorSheet.gBadge]}>
-						<Text style={colorSheet.text}>G</Text>
-					</View>
-				</>
-			)}
-			{rating == "mature" && (
-				<>
-					<View style={[colorSheet.badge, colorSheet.mBadge]}>
-						<Text style={colorSheet.text}>M</Text>
-					</View>
-				</>
-			)}
-			{rating == "notRated" && (
-				<>
-					<View style={[colorSheet.badge, colorSheet.nrBadge]}>
-						<Text style={colorSheet.text}>NR</Text>
-					</View>
-				</>
-			)}
-			{rating == "teenAndUpAudiences" && (
-				<>
-					<View style={[colorSheet.badge, colorSheet.tBadge]}>
-						<Text style={colorSheet.text}>T</Text>
-					</View>
-				</>
-			)}
+			<View
+				style={styleSwitch([
+					colorSheet.badge,
+					[rating == "explicit", colorSheet.eBadge],
+					[rating == "generalAudiences", colorSheet.gBadge],
+					[rating == "mature", colorSheet.mBadge],
+					[rating == "notRated", colorSheet.nrBadge],
+					[rating == "teenAndUpAudiences", colorSheet.tBadge],
+				])}
+			>
+				<Text style={colorSheet.text}>{ratingMapping.get(rating)}</Text>
+			</View>
 		</>
 	)
 }
 
 const sharedStyle = StyleSheet.create({
 	badge: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
+		// flex: 1,
+		// display: "flex",
+		// justifyContent: "center",
+		// alignItems: "center",
 		minWidth: 18,
 		minHeight: 18,
 		width: 18,
 		height: 18,
 		aspectRatio: 1,
 		borderRadius: 5,
-		flexGrow: 0,
+		// flexGrow: 0,
 	},
 	text: {
+		// borderColor: "pink",
+		// borderWidth: 1,
+
+		textAlignVertical: "center",
 		textAlign: "center",
 		fontWeight: "bold",
+		// position: "absolute",
 	},
 	nrBadge: {
 		minWidth: 26,

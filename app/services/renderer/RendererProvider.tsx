@@ -1,9 +1,17 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import {
+	createContext,
+	useContext,
+	useEffect,
+	useState,
+	type ReactNode,
+} from "react"
 import { Appearance, type ColorSchemeName } from "react-native"
 import type { RendererStyle, TextHighlight } from "./types"
+import { merge } from "ts-deepmerge"
 
 interface RendererProviderProps {
-	children: JSX.Element
+	children: ReactNode
+	style?: Partial<RendererStyle>
 }
 
 interface RendererContext {
@@ -11,7 +19,7 @@ interface RendererContext {
 		renderUnsupportedTags: boolean
 	}
 	highlights: TextHighlight[]
-	style: RendererStyle
+	style: Partial<RendererStyle>
 }
 
 const defaultContext: RendererContext = {
@@ -54,10 +62,18 @@ const defaultContext: RendererContext = {
 
 const rendererContext = createContext<RendererContext>(defaultContext)
 
-export default function RendererProvider({ children }: RendererProviderProps) {
+/**
+ * Provides style and options for Renderer
+ */
+export default function RendererProvider({
+	children,
+	style,
+}: RendererProviderProps) {
 	return (
 		<>
-			<rendererContext.Provider value={defaultContext}>
+			<rendererContext.Provider
+				value={merge(defaultContext, { style: style ?? {} })}
+			>
 				{children}
 			</rendererContext.Provider>
 		</>

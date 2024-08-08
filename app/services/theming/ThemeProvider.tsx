@@ -1,9 +1,15 @@
-import { createContext, useContext, useEffect, useState } from "react"
+import {
+	createContext,
+	useContext,
+	useEffect,
+	useState,
+	type ReactNode,
+} from "react"
 import { Appearance, type ColorSchemeName } from "react-native"
 
 interface ThemeProviderProps {
 	overwriteScheme?: ColorSchemeName
-	children: JSX.Element
+	children: ReactNode
 }
 
 interface ThemeContext {

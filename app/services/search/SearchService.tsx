@@ -5,6 +5,7 @@ import {
 	useReducer,
 	useRef,
 	useState,
+	type ReactNode,
 } from "react"
 import type { WorkSearchQueryAO3 } from "../../api/ao3Wrapper/types/worksSearchQuery"
 import type { WorksSearchResultsAO3 } from "../../api/ao3Wrapper/types/worksSearchResults"
@@ -30,15 +31,19 @@ export function useResults() {
 	return context
 }
 
+export type RenderableResults = WorksSearchResultsAO3 & {
+	results: { key: string }[]
+}
+
 export interface resultsState {
-	previous: WorksSearchResultsAO3 | null
-	current: WorksSearchResultsAO3 | null
-	next: WorksSearchResultsAO3 | null
+	previous: RenderableResults | null
+	current: RenderableResults | null
+	next: RenderableResults | null
 }
 
 export interface resultsAction {
 	type: "setForward" | "setBackward" | "setCurrent"
-	payload: WorksSearchResultsAO3
+	payload: RenderableResults
 }
 
 function resultsReducer(
@@ -68,7 +73,7 @@ function resultsReducer(
 	}
 }
 
-export default function SearchService({ children }: { children: JSX.Element }) {
+export default function SearchService({ children }: { children: ReactNode }) {
 	const searchSession = useRef<{
 		query: WorkSearchQueryAO3
 		date: Date

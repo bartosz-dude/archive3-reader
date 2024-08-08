@@ -1,4 +1,4 @@
-import { FlatList, View, Text, StyleSheet } from "react-native"
+import { FlatList, View, Text, StyleSheet, Pressable } from "react-native"
 import type { RatingAO3 } from "../../../../api/ao3Wrapper/types/generic"
 import type { WorksSearchResultsAO3 } from "../../../../api/ao3Wrapper/types/worksSearchResults"
 import RatingBadge from "../RatingBadge/RatingBadge"
@@ -7,8 +7,12 @@ import IconButton from "../../../../components/ui/IconButton/IconButton"
 import dateText from "../../../../utils/dateText"
 import numberText from "../../../../utils/numberText"
 import StringRenderer from "../../../../services/renderer/StringRenderer"
+import ResultModal from "../ResultModal/ResultModal"
+import { useState } from "react"
+import type { RenderableResults } from "../../../../services/search/SearchService"
 
 interface CompactResultProps {
+	result: RenderableResults["results"][0]
 	title: string
 	author: WorksSearchResultsAO3["results"][0]["author"]
 	rating: RatingAO3
@@ -30,10 +34,18 @@ export default function CompactResult({
 	hits,
 	kudos,
 	date,
+	result,
 }: CompactResultProps) {
 	const colorSheet = useColorSheet(lightStyle, darkStyle, sharedStyle)
+	const modalVisibility = useState(false)
+	const [showModal, setShowModal] = modalVisibility
+
 	return (
 		<>
+			<ResultModal
+				visibleState={modalVisibility}
+				result={result}
+			/>
 			<View style={colorSheet.container}>
 				<View style={colorSheet.top}>
 					<View style={colorSheet.header}>
@@ -41,7 +53,7 @@ export default function CompactResult({
 							<Text
 								numberOfLines={1}
 								ellipsizeMode="tail"
-								style={colorSheet.text}
+								style={[colorSheet.text, colorSheet.titleText]}
 							>
 								{title}
 							</Text>
@@ -64,35 +76,39 @@ export default function CompactResult({
 						<IconButton name="bookmark-plus-outline" />
 					</View>
 				</View>
-				<View style={colorSheet.center}>
-					<Text
-						numberOfLines={4}
-						style={[colorSheet.text, colorSheet.summary]}
-					>
-						{StringRenderer(summary)}
-					</Text>
-				</View>
-				<View style={colorSheet.bottom}>
-					<View style={colorSheet.bottomInnerLeft}>
-						<Text style={colorSheet.text}>
-							Words: {numberText(words)}
-						</Text>
-						<Text style={colorSheet.text}>
-							{chapters.current} / {chapters.total ?? "?"}
+				<Pressable onPress={() => setShowModal(true)}>
+					<View style={colorSheet.center}>
+						<Text
+							numberOfLines={4}
+							style={[colorSheet.text, colorSheet.summary]}
+						>
+							{StringRenderer(summary)}
 						</Text>
 					</View>
-					<View style={colorSheet.bottomInnerRight}>
-						<View style={colorSheet.hitsKudos}>
+					<View style={colorSheet.bottom}>
+						<View style={colorSheet.bottomInnerLeft}>
 							<Text style={colorSheet.text}>
-								Hits: {numberText(hits)}
+								Words: {numberText(words)}
 							</Text>
 							<Text style={colorSheet.text}>
-								Kudos: {numberText(kudos)}
+								{chapters.current} / {chapters.total ?? "?"}
 							</Text>
 						</View>
-						<Text style={colorSheet.text}>{dateText(date)}</Text>
+						<View style={colorSheet.bottomInnerRight}>
+							<View style={colorSheet.hitsKudos}>
+								<Text style={colorSheet.text}>
+									Hits: {numberText(hits)}
+								</Text>
+								<Text style={colorSheet.text}>
+									Kudos: {numberText(kudos)}
+								</Text>
+							</View>
+							<Text style={colorSheet.text}>
+								{dateText(date)}
+							</Text>
+						</View>
 					</View>
-				</View>
+				</Pressable>
 			</View>
 		</>
 	)
@@ -109,6 +125,9 @@ const sharedStyle = StyleSheet.create({
 		flexDirection: "row",
 		gap: 5,
 		alignItems: "center",
+	},
+	titleText: {
+		fontWeight: "bold",
 	},
 	header: {
 		flex: 1,
